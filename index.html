@@ -1,37 +1,5 @@
-<!doctype html>
-<html lang="cs">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Šotoušův kalendář – přehled dopravních akcí">
-  <title>Šotoušův kalendář</title>
-  <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-<header class="topbar">
-  <a class="brand" href="#">Šotoušův kalendář</a>
-  <nav><button class="icon-btn" aria-label="Vyhledat">⌕</button><button class="icon-btn" aria-label="Menu">☰</button></nav>
-</header>
-<main>
-  <section class="hero">
-    <p class="eyebrow">Dopravní akce na jednom místě</p>
-    <h1>Kam vyrazit za dopravou?</h1>
-    <p class="lead">Historické jízdy, dny otevřených dveří, výstavy i další dopravní akce.</p>
-    <div class="quick">
-      <button class="chip active">Nejbližší</button><button class="chip">Dnes</button><button class="chip">Tento víkend</button><button class="chip">Příští víkend</button>
-    </div>
-    <div class="filters">
-      <label><span>Kde</span><select><option>Všude</option><option>Praha</option><option>Jihočeský kraj</option></select></label>
-      <label><span>Doprava</span><select><option>Všechny druhy</option><option>Železnice</option><option>Tramvaje</option><option>Autobusy</option></select></label>
-      <button class="primary">Zobrazit akce</button>
-    </div>
-  </section>
-  <section class="content">
-    <div class="section-head"><div><p class="eyebrow">Nejbližší</p><h2>Co se chystá</h2></div><div class="view-switch"><button class="selected">Seznam</button><button>Týden</button><button>Měsíc</button></div></div>
-    <div id="events"></div>
-  </section>
-</main>
-<footer>První návrh · Šotoušův kalendář</footer>
-<script src="app.js"></script>
-</body>
-</html>
+<!doctype html><html lang="cs"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Šotoušův kalendář</title><link rel="stylesheet" href="styles.css"></head><body>
+<header class="topbar"><a class="brand" href="index.html">Šotoušův kalendář</a><nav><a href="index.html">Akce</a><a href="calendar.html">Kalendář</a></nav></header>
+<main class="page"><section class="filterbar"><div class="quick"><button data-period="all" class="active">Vše</button><button data-period="weekend">Tento víkend</button><button data-period="october">Říjen</button></div><label>Oblast<select id="region"><option value="">Všude</option></select></label><label>Doprava<select id="transport"><option value="">Vše</option><option>železnice</option><option>tramvaj</option><option>autobus</option><option>trolejbus</option></select></label><label class="search">Hledat<input id="search" type="search" placeholder="Název, město, pořadatel…"></label></section>
+<div class="summary"><strong id="count"></strong><span>25. 9. – 31. 10. 2026</span></div><div id="events"></div></main>
+<script src="events.js"></script><script src="app.js"></script></body></html>
