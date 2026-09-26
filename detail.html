@@ -1,9 +1,54 @@
-<!doctype html><html lang="cs"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Detail akce – Šotoušův kalendář</title><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css"><link rel="stylesheet" href="styles.css"></head><body><header class="topbar"><a class="brand" href="index.html"><img src="assets/metrobus-symbol.svg" alt=""><span>ŠOTOUŠŮV KALENDÁŘ</span></a><nav class="main-nav"><a href="index.html">Akce</a><a href="calendar.html">Kalendář</a><a href="add.html">Přidat akci</a><a href="about.html">O projektu</a></nav></header><main class="page detail"><a class="back" href="index.html">← Zpět na akce</a><div id="detail"></div></main><script src="events.js"></script><script>
-const iconFor=s=>{s=String(s||"").toLowerCase();if(s.includes("tram"))return"fa-tram";if(s.includes("trolej"))return"fa-bus";if(s.includes("autobus"))return"fa-bus";if(s.includes("metro"))return"fa-subway";if(s.includes("lod")||s.includes("loď"))return"fa-ship";if(s.includes("letad")||s.includes("letec"))return"fa-plane";return"fa-train"};
-const id=new URLSearchParams(location.search).get("id"),e=EVENTS.find(x=>x.id===id),esc=s=>String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-if(!e)document.querySelector("#detail").innerHTML="<h1>Akce nenalezena</h1>";else{document.title=e.title+" – Šotoušův kalendář";let facts=[["Termín",e.from+(e.to&&e.to!==e.from?" – "+e.to:"")+(e.time?" · "+e.time:"")],["Místo",e.place||e.city],["Oblast",e.region],["Doprava",e.transport],["Typ akce",e.type],["Pořadatel",e.organizer],["Trasa",e.route],["Stav",e.verification==="POTVRZENÁ"?"Potvrzeno":e.verification]].filter(x=>x[1]);document.querySelector("#detail").innerHTML=`<section class="detail-head"><div class="detail-kind"><i class="fas ${iconFor(e.transport)}" aria-hidden="true"></i><span>${esc(e.transport||"Dopravní akce")}</span></div><h1>${esc(e.title)}</h1><div class="meta">${esc([e.from,e.time,e.city].filter(Boolean).join(" · "))}</div></section><section class="facts">${facts.map(f=>`<div class="fact"><b>${esc(f[0])}</b>${esc(f[1])}</div>`).join("")}</section>${e.description?`<section class="description">${esc(e.description)}${e.source?`<br><a class="source" href="${esc(e.source)}" target="_blank" rel="noopener">Oficiální zdroj ↗</a>`:""}</section>`:""}`}</script><nav class="mobile-nav" aria-label="Hlavní navigace">
-<a href="index.html"><i class="fas fa-list" aria-hidden="true"></i><span>Akce</span></a>
-<a href="calendar.html"><i class="fas fa-calendar-alt" aria-hidden="true"></i><span>Kalendář</span></a>
-<a href="add.html"><i class="fas fa-plus-circle" aria-hidden="true"></i><span>Přidat</span></a>
-<a href="about.html"><i class="fas fa-info-circle" aria-hidden="true"></i><span>O projektu</span></a>
-</nav></body></html>
+<!doctype html>
+<html lang="cs">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width,initial-scale=1">
+ <title>Detail akce – Šotoušův kalendář</title>
+ <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">
+ <link rel="stylesheet" href="styles.css">
+</head>
+<body class="page-detail">
+<header class="topbar">
+ <a class="brand" href="index.html"><img src="assets/metrobus-symbol.svg" alt=""><span>ŠOTOUŠŮV KALENDÁŘ</span></a>
+ <nav class="main-nav"><a href="index.html">Akce</a><a href="calendar.html">Kalendář</a><a href="add.html">Přidat akci</a><a href="about.html">O projektu</a></nav>
+</header>
+<main class="page detail">
+ <a class="detail-back" href="index.html"><i class="fas fa-arrow-left" aria-hidden="true"></i> Zpět na akce</a>
+ <article id="detail"></article>
+</main>
+<script src="events.js"></script>
+<script>
+const esc=s=>String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const stripEmoji=s=>String(s||"").replace(/[\p{Extended_Pictographic}\uFE0F]/gu,"").replace(/\s{2,}/g," ").trim();
+const id=new URLSearchParams(location.search).get("id");
+const e=EVENTS.find(x=>x.id===id);
+const root=document.querySelector("#detail");
+
+function term(e){
+ const dates=e.to&&e.to!==e.from?e.from+" – "+e.to:e.from;
+ const times=e.time?(e.endTime?e.time+"–"+e.endTime:e.time):"";
+ return [dates,times].filter(Boolean).join(" · ");
+}
+
+if(!e){
+ root.innerHTML='<div class="detail-missing"><h1>Akce nenalezena</h1><p>Odkaz už nemusí být platný nebo akce není v aktuálních datech.</p></div>';
+}else{
+ document.title=stripEmoji(e.title)+" – Šotoušův kalendář";
+ root.innerHTML=
+  '<header class="event-detail-head">'+
+   '<h1>'+esc(stripEmoji(e.title))+'</h1>'+
+   (e.organizer?'<div class="event-organizer">'+esc(e.organizer)+'</div>':"")+
+  '</header>'+
+  '<div class="event-term">'+esc(term(e))+'</div>'+
+  (e.source?'<a class="official-link" href="'+esc(e.source)+'" target="_blank" rel="noopener"><span>Oficiální informace o akci</span><i class="fas fa-external-link-alt" aria-hidden="true"></i></a>':"")+
+  (e.description?'<section class="event-description"><h2>O akci</h2><p>'+esc(e.description)+'</p></section>':"");
+}
+</script>
+<nav class="mobile-nav" aria-label="Hlavní navigace">
+ <a href="index.html"><i class="fas fa-list" aria-hidden="true"></i><span>Akce</span></a>
+ <a href="calendar.html"><i class="fas fa-calendar-alt" aria-hidden="true"></i><span>Kalendář</span></a>
+ <a href="add.html"><i class="fas fa-plus-circle" aria-hidden="true"></i><span>Přidat</span></a>
+ <a href="about.html"><i class="fas fa-info-circle" aria-hidden="true"></i><span>O projektu</span></a>
+</nav>
+</body>
+</html>
