@@ -11,7 +11,7 @@ const categoryHtml=e=>categories(e).map(c=>'<span class="category category-'+c.i
 const displayLocation=e=>String(e.city||e.place||"").trim().split(/\s*\/\s*|\s*;\s*/).filter(Boolean).join(", ");
 const regions=[...new Set(EVENTS.flatMap(e=>String(e.region||"").split("/").map(x=>x.trim())).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"cs"));
 const selectedCategories=new Set(),selectedRegions=new Set();
-$("#categoryFilter").innerHTML=CATEGORY_DEFS.map(c=>'<button type="button" class="filter-chip category-'+c.id+'" data-category="'+c.id+'" aria-pressed="false"><i class="fas '+c.icon+'"></i><span>'+c.label+'</span><i class="fas fa-check check"></i></button>').join("");
+$("#categoryFilter").innerHTML=CATEGORY_DEFS.map(c=>'<button type="button" class="filter-chip category-'+c.id+'" data-category="'+c.id+'" aria-pressed="false"><i class="fas '+c.icon+'"></i><span>'+c.label+'</span></button>').join("");
 $("#regionPicker").innerHTML=regions.map(r=>'<button type="button" class="region-option" data-region="'+esc(r)+'" aria-pressed="false"><span class="modern-check"><i class="fas fa-check"></i></span><span>'+esc(r)+'</span></button>').join("");
 const DAY=86400000;
 const dayStart=d=>new Date(d.getFullYear(),d.getMonth(),d.getDate());
