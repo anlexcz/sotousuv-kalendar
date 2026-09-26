@@ -395,8 +395,8 @@ body.feed-complete .feed-footer{display:block}
 .admin-editor-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:7px;margin-top:10px;padding-top:18px;border-top:1px solid #d9dcde}
 .admin-prototype-note{margin:14px 0 0;color:#7b8083;font-size:9.5px;line-height:1.5}.admin-prototype-note i{margin-right:5px}
 .admin-modal-open{overflow:hidden}
-.editor-detail-bar{margin-bottom:20px;padding:8px 9px;border:1px solid #c9dce5;background:#eaf4f8;display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:10px;font-weight:700;color:#466572}
-.editor-detail-bar a{padding:6px 8px;background:#fff;border:1px solid #c9dce5;text-decoration:none;color:#326f8b}.editor-detail-bar i{margin-right:5px}
+.editor-shortcut{position:fixed;right:18px;bottom:18px;z-index:9000;min-height:38px;padding:0 12px;border:1px solid #4da9d5;border-radius:3px;background:#30363a;color:#fff;display:flex;align-items:center;gap:7px;text-decoration:none;font-size:10px;font-weight:800;box-shadow:0 3px 12px rgba(0,0,0,.18)}
+.editor-shortcut:hover{background:#252a2d}.editor-shortcut i{color:var(--accent)}
 
 @media(max-width:760px){
  .admin-page{padding:24px 10px 96px}
@@ -406,5 +406,5 @@ body.feed-complete .feed-footer{display:block}
  .admin-editor{padding:18px 14px calc(85px + env(safe-area-inset-bottom))}
  .admin-form-grid{grid-template-columns:1fr 1fr}
  .admin-editor-actions{justify-content:stretch}.admin-editor-actions>*{flex:1 1 auto;justify-content:center}
- .editor-detail-bar{margin-bottom:16px}
+ .editor-shortcut{right:10px;bottom:calc(var(--mobile-nav-height) + 10px + env(safe-area-inset-bottom));min-height:36px;padding:0 10px;box-shadow:0 2px 9px rgba(0,0,0,.16)}
 }
