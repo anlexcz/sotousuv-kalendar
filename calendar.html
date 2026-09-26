@@ -1,7 +1,7 @@
 <!doctype html><html lang="cs"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Kalendář – Šotoušův kalendář</title><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css"><link rel="stylesheet" href="styles.css"></head><body class="page-calendar">
 <header class="topbar"><div class="brand"><a class="brand-home" href="index.html"><img src="assets/metrobus-symbol.svg" alt=""><span class="brand-copy"><span>ŠOTOUŠŮV KALENDÁŘ</span></span></a><a class="brand-metrobus" href="https://metrobus.cz/" target="_blank" rel="noopener">METROBUS</a></div><nav class="main-nav"><a href="index.html">Akce</a><a href="calendar.html">Kalendář</a><a href="add.html">Přidat akci</a><a href="about.html">O projektu</a></nav></header>
 <main class="calendar-page"><div class="calendar-toolbar"><button id="prevMonth" aria-label="Předchozí měsíc"><i class="fas fa-chevron-left"></i></button><h1 id="monthTitle"></h1><button id="nextMonth" aria-label="Další měsíc"><i class="fas fa-chevron-right"></i></button></div><div class="month-grid" id="monthGrid"></div><section class="day-agenda" id="dayAgenda"></section></main>
-<script src="events.js"></script><script src="shared.js"></script><script>
+<script src="events.js"></script><script src="js/utils.js"></script><script src="js/categories.js"></script><script src="js/dates.js"></script><script src="js/events.js"></script><script>
 const cats=Object.fromEntries(SK.CATEGORY_DEFS.map(c=>[c.id,c.color]));
 const key=SK.dateKey;
 const occurrenceDates=SK.occurrenceDates;
