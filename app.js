@@ -5,11 +5,14 @@ const esc=s=>String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&
 const stripEmoji=s=>String(s||"").replace(/[\p{Extended_Pictographic}\uFE0F]/gu,"").replace(/\s{2,}/g," ").trim();
 
 const CATEGORY_DEFS=[
- {id:"rail",label:"Železnice",icon:"fa-train",keys:["želez","vlak","motorá","úzkokole","dráha","rail"]},
- {id:"mhd",label:"MHD",icon:"fa-tram",keys:["tram","trolej","autobus","bus","metro","mhd"]},
- {id:"road",label:"Silnice",icon:"fa-car",keys:["automobil","silnič","auto ","veterán"]},
- {id:"water",label:"Lodě",icon:"fa-ship",keys:["loď","lod","plav","parník"]},
- {id:"air",label:"Letectví",icon:"fa-plane",keys:["letad","letec","leteck"]},
+ {id:"rail",label:"Železnice",icon:"fa-train",keys:["želez","vlak","motorá","lokomotiv","zubačk","úzkokole","drezín"]},
+ {id:"bus",label:"Autobus",icon:"fa-bus",keys:["autobus","bus","karosa","ikarus"]},
+ {id:"tram",label:"Tramvaj",icon:"fa-tram",keys:["tramvaj","tram","električk"]},
+ {id:"trolleybus",label:"Trolejbus",icon:"fa-bus-alt",keys:["trolejbus","trolej"]},
+ {id:"metro",label:"Metro",icon:"fa-subway",keys:["metro","metra","metru"]},
+ {id:"water",label:"Loď",icon:"fa-ship",keys:["loď","lodní","parník","plavb","přívoz"]},
+ {id:"air",label:"Letadlo",icon:"fa-plane",keys:["letad","letec","letišt"]},
+ {id:"cableway",label:"Lanovka",icon:"fa-mountain",keys:["lanovk","funikul","kabinov"]}
 ];
 function categories(e){
  if(Array.isArray(e.categories)&&e.categories.length){const byId=Object.fromEntries(CATEGORY_DEFS.map(c=>[c.id,c]));byId.other={id:"other",label:"Ostatní",icon:"fa-compass"};return e.categories.map(id=>byId[id]).filter(Boolean)}
