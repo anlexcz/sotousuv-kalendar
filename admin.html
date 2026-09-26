@@ -1,1 +1,25 @@
-<!doctype html><html lang="cs"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Administrace – Šotoušův kalendář</title><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css"><link rel="stylesheet" href="styles.css"></head><body data-page="admin"><div data-layout="header"></div><script src="js/layout.js"></script><main class="content-page"><div class="page-kicker">ADMINISTRACE</div><h1>Tady se zatím neodbavuje.</h1><p class="lead">Administraci Šotoušova kalendáře teprve připravujeme.</p><a class="back-link" href="index.html">← Zpět na akce</a></main><div data-layout="footer"></div><script src="js/layout.js"></script></body></html>
+<!doctype html>
+<html lang="cs"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Administrace – Šotoušův kalendář</title><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css"><link rel="stylesheet" href="styles.css"></head>
+<body class="page-admin" data-page="admin"><div data-layout="header"></div><script src="js/layout.js"></script>
+<main class="admin-page">
+ <section id="adminLogin" class="admin-login"><div class="page-kicker">ADMINISTRACE</div><h1>Redakční vstup</h1><p>Toto je prototyp. Přihlášení pouze zapne redakční režim v tomto prohlížeči.</p><button id="adminLoginButton" class="admin-primary"><i class="fas fa-sign-in-alt"></i> Přihlásit do prototypu</button></section>
+ <section id="adminApp" hidden>
+  <div class="admin-head"><div><div class="page-kicker">ADMINISTRACE</div><h1>Akce</h1></div><button id="adminLogout" class="admin-quiet"><i class="fas fa-sign-out-alt"></i> Odhlásit</button></div>
+  <div class="admin-stats" id="adminStats"></div>
+  <div class="admin-toolbar"><label class="admin-search"><i class="fas fa-search"></i><input id="adminSearch" type="search" placeholder="Hledat akci nebo místo…"></label><select id="adminState"><option value="">Všechny stavy</option><option value="active">Aktivní</option><option value="cancelled">Zrušené</option><option value="hidden">Skryté</option></select><select id="adminReview"><option value="">Všechny kontroly</option><option value="automatic">Automatické</option><option value="human_reviewed">Zkontrolované</option></select></div>
+  <div class="admin-list" id="adminList"></div>
+ </section>
+</main>
+<div class="admin-editor-backdrop" id="adminEditor" hidden><section class="admin-editor" role="dialog" aria-modal="true" aria-labelledby="editorTitle"><div class="admin-editor-head"><div><div class="page-kicker">ÚPRAVA AKCE</div><h2 id="editorTitle"></h2></div><button id="editorClose" class="admin-icon" aria-label="Zavřít"><i class="fas fa-times"></i></button></div>
+ <form id="editorForm"><input type="hidden" name="id">
+  <label>Název<input name="title" required></label>
+  <div class="admin-form-grid"><label>Od<input name="from"></label><label>Do<input name="to"></label><label>Čas<input name="time"></label><label>Konec<input name="endTime"></label></div>
+  <div class="admin-form-grid"><label>Město<input name="city"></label><label>Místo<input name="place"></label><label>Kraj<input name="region"></label></div>
+  <fieldset><legend>Doprava</legend><div id="editorCategories" class="admin-category-grid"></div></fieldset>
+  <label>Popis<textarea name="description" rows="5"></textarea></label><label>Odkaz na akci<input name="source" type="url"></label>
+  <div class="admin-form-grid"><label>Stav<select name="editorState"><option value="active">Aktivní</option><option value="cancelled">Zrušená</option><option value="hidden">Skrytá</option></select></label><label>Redakční kontrola<select name="reviewStatus"><option value="automatic">Automatická</option><option value="human_reviewed">Zkontrolovaná člověkem</option></select></label></div>
+  <div class="admin-editor-actions"><a id="editorPublicLink" class="admin-quiet" href="#"><i class="fas fa-external-link-alt"></i> Veřejný detail</a><button type="button" id="markReviewed" class="admin-quiet"><i class="fas fa-check"></i> Označit jako zkontrolované</button><button class="admin-primary" type="submit"><i class="fas fa-save"></i> Uložit změny</button></div>
+  <p class="admin-prototype-note"><i class="fas fa-flask"></i> Prototyp: změny se ukládají jen do tohoto prohlížeče a nemění veřejná data.</p>
+ </form>
+</section></div>
+<script src="events.js"></script><script src="js/utils.js"></script><script src="js/categories.js"></script><script src="js/dates.js"></script><script src="js/events.js"></script><script src="admin.js"></script><div data-layout="footer"></div><script src="js/layout.js"></script></body></html>
