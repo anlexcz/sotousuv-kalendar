@@ -7,8 +7,15 @@
  const footer='<footer class="site-footer'+(page==="events"?" feed-footer":"")+'"><div class="footer-fun">Konečná! Prosíme, vystupte.</div><div class="footer-brand"><a href="https://metrobus.cz/" target="_blank" rel="noopener">Metrobus</a> · <span class="footer-year">2026</span></div><div class="footer-links"><a href="about.html#kontakt">Kontakt</a><a href="admin.html">Administrace</a></div></footer>';
  const mobile='<nav class="mobile-nav" aria-label="Hlavní navigace"><a href="index.html" data-nav="events"><i class="fas fa-list" aria-hidden="true"></i><span>Akce</span></a><a href="calendar.html" data-nav="calendar"><i class="fas fa-calendar-alt" aria-hidden="true"></i><span>Kalendář</span></a><a href="add.html" data-nav="add"><i class="fas fa-plus-circle" aria-hidden="true"></i><span>Přidat</span></a><a href="about.html" data-nav="about"><i class="fas fa-info-circle" aria-hidden="true"></i><span>O projektu</span></a></nav>';
  const top=document.querySelector('[data-layout="header"]'),bottom=document.querySelector('[data-layout="footer"]');
+ const editor=localStorage.getItem("sk-admin-session")==="1";
+ const editId=page==="detail"?new URLSearchParams(location.search).get("id"):"";
+ const editorHref=editId?"admin.html?event="+encodeURIComponent(editId):"admin.html";
+ const editorLabel=editId?"Upravit akci":"Administrace";
+ const editorIcon=editId?"fa-pen":"fa-user-edit";
+ const editorShortcut=editor?'<a class="editor-shortcut" href="'+editorHref+'"><i class="fas '+editorIcon+'" aria-hidden="true"></i><span>'+editorLabel+'</span></a>':"";
  if(top)top.outerHTML=header;
- if(bottom)bottom.outerHTML=footer+mobile;
+ if(bottom)bottom.outerHTML=footer+mobile+editorShortcut;
+ else document.body.insertAdjacentHTML("beforeend",mobile+editorShortcut);
  document.querySelectorAll('.main-nav a,.mobile-nav a').forEach(a=>{
   const target=a.dataset.nav||({index:"events",calendar:"calendar",add:"add",about:"about"}[a.getAttribute("href")?.replace(".html","")]||"");
   const active=target===page||(page==="detail"&&target==="events");
