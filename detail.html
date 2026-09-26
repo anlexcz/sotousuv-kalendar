@@ -16,8 +16,16 @@
  <a class="detail-back" href="index.html"><i class="fas fa-arrow-left" aria-hidden="true"></i> Zpět na akce</a>
  <article id="detail"></article>
 </main>
-<script src="events.js"></script>
-<script src="shared.js"></script>
+<script src="events.js">
+</script>
+<script src="js/utils.js">
+</script>
+<script src="js/categories.js">
+</script>
+<script src="js/dates.js">
+</script>
+<script src="js/events.js">
+</script>
 <script>
 const {escapeHtml:esc,stripEmoji,categoryIds:eventCategories,displayLocation:displayPlace,CATEGORY_BY_ID}=SK;
 const id=new URLSearchParams(location.search).get("id");
