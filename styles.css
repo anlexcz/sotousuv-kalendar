@@ -38,3 +38,23 @@ body{background:#f3f4f5}
 /* Sticky den musí přesně navazovat na hlavičku */
 @media(min-width:761px){.date{top:62px}}
 @media(max-width:760px){.date{top:58px}}
+
+/* Kategorie v6: šest pevných dopravních skupin */
+.categories{display:flex;align-items:center;flex-wrap:wrap;gap:5px;margin:0 0 8px}
+.category{min-height:23px;padding:4px 8px;border:1px solid transparent;border-radius:2px;display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.025em;line-height:1}
+.category i{width:1.2em;text-align:center;color:inherit}
+.category-rail{background:#e4f3e8;border-color:#b9ddc2;color:#28623a}
+.category-mhd{background:#e6f4fd;border-color:#b9def5;color:#276887}
+.category-road{background:#fff4d8;border-color:#ead89e;color:#795e12}
+.category-water{background:#e1f5f3;border-color:#b2ded9;color:#246d67}
+.category-air{background:#f0e9f8;border-color:#d6c4e8;color:#62457d}
+.category-other{background:#eceeef;border-color:#d4d7d9;color:#5f6366}
+.location-meta{display:flex;align-items:center;gap:7px;color:#73777a;font-size:11px;font-weight:500;min-width:0}
+.location-meta i{width:1.1em;text-align:center;color:#8a8d90;flex:0 0 auto}
+.location-meta span{min-width:0}
+.event{border-radius:2px}
+.event h2{margin-bottom:9px}
+@media(max-width:760px){
+ .category{min-height:22px;padding:4px 7px}
+ .event{border-radius:2px}
+}
