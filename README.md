@@ -34,7 +34,9 @@ Typ akce (např. den otevřených dveří) není dopravní kategorií. Kategorie
 Doprava je barevný multiselect. Neaktivní položka zůstává světle ve své kategorické barvě, aktivní je sytější a obsahuje fajfku. Více kategorií funguje jako OR. Oblast je rozbalovací multiselect s moderními checkboxy. Změny se aplikují okamžitě; panel ukazuje počet aktivních voleb a umožňuje jejich hromadné vymazání.
 
 ### Feed
-Zobrazuje akce se začátkem dnes nebo později. Starší akce se nemažou z dat. Karta obsahuje název, kategorie a město/místo; region je filtrovací/detailový údaj. Celá karta je klikací a datum dne je sticky.
+Zobrazuje akce se začátkem dnes nebo později. Feed používá lazy rendering po blocích 12 celých dnů s akcemi; další blok se automaticky vykreslí při přiblížení ke konci seznamu. Aktuální statický prototyp má data stále načtená v `events.js`, takže nejde ještě o síťové stránkování z databáze. Patička homepage se zobrazí až po vykreslení posledního bloku.
+
+ Starší akce se nemažou z dat. Karta obsahuje název, kategorie a město/místo; region je filtrovací/detailový údaj. Celá karta je klikací a datum dne je sticky.
 
 ### Kalendář a termíny
 Kalendář je klasická měsíční mřížka Po–Ne. Kliknutí na den zobrazí jeho akce. Skutečná vícedenní akce patří do všech dnů svého intervalu. U opakované akce se však musí používat konkrétní výskyty; rozmezí mezi prvním a posledním termínem nesmí znamenat každodenní konání.
