@@ -94,3 +94,6 @@ Stránkové skripty mají používat tyto společné moduly místo vlastních ko
 
 ### Sdílený layout
 Hlavička, desktopová navigace, mobilní navigace a patička jsou generovány z `js/layout.js`. Jednotlivé HTML stránky obsahují pouze kotvy `data-layout="header"` a `data-layout="footer"` a identifikují sekci přes `data-page`. Homepage si zachovává vlastní vyhledávání v hlavičce a speciální `feed-footer` chování navázané na lazy rendering.
+
+### JavaScript jednotlivých stránek
+Stránková aplikační logika je oddělena od HTML: `app.js` obsluhuje homepage, `calendar.js` kalendář a `detail.js` detail akce. `calendar.html` ani `detail.html` už neobsahují velké inline bloky JavaScriptu. Sdílená logika zůstává v modulech pod `js/`.
