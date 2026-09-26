@@ -79,4 +79,4 @@ Administrace musí umožnit minimálně upravit, skrýt či zrušit akci, kontro
 
 ### Transparentnost automatického zpracování
 
-Pokud aktuální publikovaná verze ještě neprošla lidskou kontrolou, detail dole zobrazí kompaktní informační banner: **„Tady pracoval robot. A i robot občas ujede — před cestou si proto informace raději ověř na odkazu na akci.“** Po lidské kontrole poznámka zmizí. Stav se tedy vztahuje ke konkrétní publikované verzi, nikoli trvale k celé akci.
+Pokud aktuální publikovaná verze ještě neprošla lidskou kontrolou, detail dole zobrazí nenápadnou patičku oddělenou tenkou linkou s ikonou robota: **„Tady pracoval robot. Občas mu něco ujede, takže před cestou raději mrkni na odkaz na akci.“** Po lidské kontrole poznámka zmizí. Stav se tedy vztahuje ke konkrétní publikované verzi, nikoli trvale k celé akci.
