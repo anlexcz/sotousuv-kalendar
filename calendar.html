@@ -1,26 +1,10 @@
 <!doctype html><html lang="cs"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Kalendář – Šotoušův kalendář</title><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css"><link rel="stylesheet" href="styles.css"></head><body class="page-calendar">
 <header class="topbar"><div class="brand"><a class="brand-home" href="index.html"><img src="assets/metrobus-symbol.svg" alt=""><span class="brand-copy"><span>ŠOTOUŠŮV KALENDÁŘ</span></span></a><a class="brand-metrobus" href="https://metrobus.cz/" target="_blank" rel="noopener">METROBUS</a></div><nav class="main-nav"><a href="index.html">Akce</a><a href="calendar.html">Kalendář</a><a href="add.html">Přidat akci</a><a href="about.html">O projektu</a></nav></header>
 <main class="calendar-page"><div class="calendar-toolbar"><button id="prevMonth" aria-label="Předchozí měsíc"><i class="fas fa-chevron-left"></i></button><h1 id="monthTitle"></h1><button id="nextMonth" aria-label="Další měsíc"><i class="fas fa-chevron-right"></i></button></div><div class="month-grid" id="monthGrid"></div><section class="day-agenda" id="dayAgenda"></section></main>
-<script src="events.js"></script><script>
-const cats={rail:"#4f9b64",bus:"#55add7",tram:"#cf7180",trolleybus:"#718fbe",metro:"#9c70b8",water:"#4fa69d",air:"#8b79bd",cableway:"#b28259",other:"#7b8084"};
-const parseDate=s=>{const m=String(s).match(/(\d{1,2})\.\s*(\d{1,2})\.\s*(\d{4})/);return m?new Date(+m[3],+m[2]-1,+m[1]):null};
-const key=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
-function occurrenceDates(e){
- const dates=[];
- const add=(y,m,d)=>{const x=new Date(+y,+m-1,+d);if(!isNaN(x))dates.push(x)};
- if(e.recurring&&e.seriesDates){
-  for(const raw of e.seriesDates.split(";")){
-   const p=raw.trim();let m;
-   if((m=p.match(/^(\d{1,2})\.\s*(\d{1,2})\.\s*[–-]\s*(\d{1,2})\.\s*(\d{1,2})\.\s*(\d{4})$/))){let a=new Date(+m[5],+m[2]-1,+m[1]),b=new Date(+m[5],+m[4]-1,+m[3]);for(let d=new Date(a);d<=b;d.setDate(d.getDate()+1))dates.push(new Date(d));continue}
-   if((m=p.match(/^(\d{1,2})\.\s*[–-]\s*(\d{1,2})\.\s*(\d{1,2})\.\s*(\d{4})$/))){for(let d=+m[1];d<=+m[2];d++)add(m[4],m[3],d);continue}
-   if((m=p.match(/^(\d{1,2})\.\s*(\d{1,2})\.\s*(\d{4})$/))){add(m[3],m[2],m[1]);continue}
-   if((m=p.match(/^(\d{1,2})\.–(\d{1,2})\.,?\s*(\d{1,2})\.\s*(\d{4})$/))){for(let d=+m[1];d<=+m[2];d++)add(m[4],m[3],d);continue}
-  }
-  if(dates.length)return dates;
- }
- const a=parseDate(e.from),b=parseDate(e.to||e.from);if(!a)return dates;
- const end=b||a;for(let d=new Date(a);d<=end;d.setDate(d.getDate()+1))dates.push(new Date(d));return dates;
-}
+<script src="events.js"></script><script src="shared.js"></script><script>
+const cats=Object.fromEntries(SK.CATEGORY_DEFS.map(c=>[c.id,c.color]));
+const key=SK.dateKey;
+const occurrenceDates=SK.occurrenceDates;
 const occurrenceMap=new Map();EVENTS.forEach(e=>occurrenceDates(e).forEach(d=>{const k=key(d);if(!occurrenceMap.has(k))occurrenceMap.set(k,[]);occurrenceMap.get(k).push(e)}));
 let view=new Date();view.setDate(1);
 function eventsOn(d){return occurrenceMap.get(key(d))||[]}
