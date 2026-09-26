@@ -66,7 +66,7 @@ Aktuální prototyp: `prototype/homepage-v1`.
 
 ### Detail akce
 
-Detail je záměrně minimalistický a funguje jako rozcestník, nikoli jako náhrada webu pořadatele. Veřejně zobrazuje pouze název, zdroj, datum/termín, čas pokud je známý, dopravní kategorii/kategorie, odkaz na akci a krátký popis. Pořadatel není povinný údaj a na veřejném detailu se standardně nezobrazuje. Interní metadata, stav ověření, kompletní program, ceny, jízdní řády, mapy a organizační pokyny se na detail standardně nepřenášejí. Odkaz na akci je před popisem a je hlavním pokračováním uživatelské cesty. Zdroj se na detailu identifikuje bezpečně podle domény odkazu, pokud nemáme samostatně ověřený název zdroje.
+Detail je záměrně minimalistický a funguje jako rozcestník, nikoli jako náhrada webu pořadatele. Veřejně zobrazuje dopravní kategorii/kategorie nad názvem, název, datum/termín, čas pokud je známý, výrazný odkaz na akci a krátký popis. Samostatný textový údaj „Zdroj“ se na detailu nezobrazuje; zdroj reprezentuje cílový odkaz. Pořadatel není povinný údaj a na veřejném detailu se standardně nezobrazuje. Interní metadata, stav ověření, kompletní program, ceny, jízdní řády, mapy a organizační pokyny se na detail standardně nepřenášejí. Odkaz na akci je před popisem a je hlavním pokračováním uživatelské cesty. Zdroj se na detailu identifikuje bezpečně podle domény odkazu, pokud nemáme samostatně ověřený název zdroje.
 
 
 ### Automatické verze, redakční kontrola a administrace
@@ -79,4 +79,4 @@ Administrace musí umožnit minimálně upravit, skrýt či zrušit akci, kontro
 
 ### Transparentnost automatického zpracování
 
-Pokud aktuální publikovaná verze ještě neprošla lidskou kontrolou, detail dole zobrazí nenápadnou poznámku: **„Tady pracoval robot“** a text **„A i robot občas ujede. Aktuální informace si raději ověř na odkazu na akci.“** Po lidské kontrole poznámka zmizí. Stav se tedy vztahuje ke konkrétní publikované verzi, nikoli trvale k celé akci.
+Pokud aktuální publikovaná verze ještě neprošla lidskou kontrolou, detail dole zobrazí kompaktní informační banner: **„Tady pracoval robot. A i robot občas ujede — před cestou si proto informace raději ověř na odkazu na akci.“** Po lidské kontrole poznámka zmizí. Stav se tedy vztahuje ke konkrétní publikované verzi, nikoli trvale k celé akci.
