@@ -28,6 +28,7 @@ const CATEGORY_DEFS={rail:["Železnice","fa-train"],bus:["Autobus","fa-bus"],tra
 const eventCategories=e=>(Array.isArray(e.categories)&&e.categories.length?e.categories:[e.category]).filter(Boolean);
 const categoryTags=e=>eventCategories(e).map(key=>{const def=CATEGORY_DEFS[key]||CATEGORY_DEFS.other;return '<span class="category category-'+esc(key)+'"><i class="fas '+def[1]+'" aria-hidden="true"></i>'+esc(def[0])+'</span>'}).join("");
 const isHumanReviewed=e=>e.reviewStatus==="human_reviewed"||e.reviewed===true;
+const displayPlace=e=>e.city||e.place||"";
 
 function term(e){
  const dates=e.to&&e.to!==e.from?e.from+" – "+e.to:e.from;
@@ -41,7 +42,7 @@ if(!e){
  document.title=stripEmoji(e.title)+" – Šotoušův kalendář";
  root.innerHTML=
   '<header class="event-detail-head">'+
-   (eventCategories(e).length?'<div class="detail-categories">'+categoryTags(e)+'</div>':"")+
+   (eventCategories(e).length||displayPlace(e)?'<div class="detail-meta">'+(eventCategories(e).length?'<div class="detail-categories">'+categoryTags(e)+'</div>':"")+(displayPlace(e)?'<span class="detail-place"><i class="fas fa-map-marker-alt" aria-hidden="true"></i>'+esc(displayPlace(e))+'</span>':"")+'</div>':"")+
    '<h1>'+esc(stripEmoji(e.title))+'</h1>'+
   '</header>'+
   '<div class="event-term">'+esc(term(e))+'</div>'+
