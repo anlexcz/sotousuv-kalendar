@@ -16,7 +16,7 @@ $("#regionPicker").innerHTML=regions.map(r=>'<button type="button" class="region
 const DAY=86400000;
 const dayStart=d=>new Date(d.getFullYear(),d.getMonth(),d.getDate());
 const durationDays=e=>{const a=parse(e.from),b=parse(e.to||e.from);return Math.max(1,Math.round((dayStart(b)-dayStart(a))/DAY)+1)};
-const isLongTerm=e=>durationDays(e)>7&&!e.recurring;
+const isLongTerm=e=>durationDays(e)>7&&(String(e.type||"").toLowerCase().includes("výstava")||!e.recurring);
 const todayDate=()=>dayStart(new Date());
 const occursOn=(e,d)=>{const a=dayStart(parse(e.from)),b=dayStart(parse(e.to||e.from));return d>=a&&d<=b};
 function updateFilterUI(){
@@ -40,8 +40,8 @@ function render(){
  const long=matching.filter(isLongTerm).filter(e=>dayStart(parse(e.to||e.from))>=today);
  const groups={};
  normal.forEach(e=>{const k=e.from;(groups[k]??={date:dayStart(parse(k)),normal:[],long:[]}).normal.push(e)});
- // Long-term events create a day section at start/end and on days already present in the feed.
- long.forEach(e=>{const a=dayStart(parse(e.from)),b=dayStart(parse(e.to||e.from));[a,b].forEach(d=>{if(d>=today){const k=d.toLocaleDateString("cs-CZ");(groups[k]??={date:d,normal:[],long:[]})}})});
+ // Long-term events create a day section at start/end and today when currently active.
+ long.forEach(e=>{const a=dayStart(parse(e.from)),b=dayStart(parse(e.to||e.from));[a,(today>=a&&today<=b?today:null),b].filter(Boolean).forEach(d=>{if(d>=today){const k=d.toLocaleDateString("cs-CZ");(groups[k]??={date:d,normal:[],long:[]})}})});
  Object.values(groups).forEach(g=>{g.long=long.filter(e=>occursOn(e,g.date))});
  const ordered=Object.values(groups).sort((a,b)=>a.date-b.date);
  $("#events").innerHTML=ordered.map((g,i)=>{
