@@ -24,6 +24,10 @@ const id=new URLSearchParams(location.search).get("id");
 const e=EVENTS.find(x=>x.id===id);
 const root=document.querySelector("#detail");
 const sourceLabel=url=>{try{return new URL(url).hostname.replace(/^www\./,"")}catch{return""}};
+const CATEGORY_DEFS={rail:["Železnice","fa-train"],bus:["Autobus","fa-bus"],tram:["Tramvaj","fa-tram"],trolleybus:["Trolejbus","fa-bus"],metro:["Metro","fa-subway"],water:["Loď","fa-ship"],air:["Letadlo","fa-plane"],cableway:["Lanovka","fa-mountain"],other:["Ostatní","fa-circle"]};
+const eventCategories=e=>(Array.isArray(e.categories)&&e.categories.length?e.categories:[e.category]).filter(Boolean);
+const categoryTags=e=>eventCategories(e).map(key=>{const def=CATEGORY_DEFS[key]||CATEGORY_DEFS.other;return '<span class="category category-'+esc(key)+'"><i class="fas '+def[1]+'" aria-hidden="true"></i>'+esc(def[0])+'</span>'}).join("");
+const isHumanReviewed=e=>e.reviewStatus==="human_reviewed"||e.reviewed===true;
 
 function term(e){
  const dates=e.to&&e.to!==e.from?e.from+" – "+e.to:e.from;
@@ -41,8 +45,10 @@ if(!e){
    (e.source?'<div class="event-source">Zdroj: '+esc(sourceLabel(e.source))+'</div>':"")+
   '</header>'+
   '<div class="event-term">'+esc(term(e))+'</div>'+
+  (eventCategories(e).length?'<div class="detail-categories">'+categoryTags(e)+'</div>':"")+
   (e.source?'<a class="official-link" href="'+esc(e.source)+'" target="_blank" rel="noopener"><span>Odkaz na akci</span><i class="fas fa-external-link-alt" aria-hidden="true"></i></a>':"")+
-  (e.description?'<section class="event-description"><h2>O akci</h2><p>'+esc(e.description)+'</p></section>':"");
+  (e.description?'<section class="event-description"><h2>O akci</h2><p>'+esc(e.description)+'</p></section>':"")+
+  (!isHumanReviewed(e)?'<aside class="auto-note"><i class="fas fa-robot" aria-hidden="true"></i><div><strong>Tady pracoval robot</strong><span>A i robot občas ujede. Aktuální informace si raději ověř na odkazu na akci.</span></div></aside>':"");
 }
 </script>
 <nav class="mobile-nav" aria-label="Hlavní navigace">
