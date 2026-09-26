@@ -26,9 +26,9 @@ function displayLocation(e){
 const regions=[...new Set(EVENTS.flatMap(e=>(e.region||"").split("/").map(x=>x.trim())).filter(Boolean))].sort();
 $("#region").innerHTML+=regions.map(x=>'<option>'+esc(x)+'</option>').join("");
 function isCurrentOrFuture(e){
- const end=parse(e.to||e.from);
+ const start=parse(e.from);
  const today=new Date();today.setHours(0,0,0,0);
- return end>=today;
+ return start>=today;
 }
 function render(){
  let q=$("#search").value.toLowerCase(),r=$("#region").value,t=$("#transport").value;
