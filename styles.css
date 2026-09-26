@@ -187,3 +187,12 @@ body{background:#f3f4f5}
  .date{gap:8px}.date-label{display:block}.date-label span{margin-left:6px}
  .longterm-toggle{height:28px;padding:0 7px;font-size:9px}
 }
+
+/* 2026-09 sjednocení filtru s kartami akcí */
+.filter-label{font-family:'Montserrat',sans-serif;font-size:11px!important;font-weight:700!important;letter-spacing:.055em!important;color:#666b6e!important}
+.filter-chip{min-height:32px!important;padding:5px 8px!important;border-radius:2px!important;background:var(--cat-bg)!important;border:1px solid var(--cat-border)!important;color:var(--cat-text)!important;font-family:'Montserrat',sans-serif!important;font-size:10px!important;font-weight:700!important;letter-spacing:0!important;text-transform:uppercase}
+.filter-chip>i:first-child{font-size:10px}.filter-chip.active{background:var(--cat-active)!important;border-color:var(--cat-active)!important;color:#fff!important}
+.region-trigger{font-family:'Montserrat',sans-serif!important;font-size:12px!important;font-weight:600!important;border-radius:2px!important}
+.region-option{font-family:'Montserrat',sans-serif!important}
+.longterm-toggle{font-family:'Montserrat',sans-serif!important;border-radius:2px!important;text-transform:none!important;letter-spacing:0!important}
+@media(max-width:760px){.category-filter{gap:6px}.filter-chip{min-height:31px!important;padding:5px 8px!important}}
