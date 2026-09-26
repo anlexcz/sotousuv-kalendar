@@ -89,3 +89,12 @@ body{background:#f3f4f5}
  .main-nav a{display:block;padding:12px 4px;border:0;border-bottom:1px solid #4b4b4b;font-weight:700}
  .main-nav a:last-child{border-bottom:0}
 }
+/* Doladění mobilní hlavičky */
+.brand span{color:#fff}
+@media(max-width:760px){
+ .topbar .main-nav{display:none}
+ .topbar .main-nav.open{display:block}
+ .brand span{font-size:1.04em}
+ .brand img{transform:scale(.94)}
+ .menu-toggle{font-size:20px}
+}
