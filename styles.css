@@ -35,3 +35,6 @@ body{background:#f3f4f5}
  .location-meta{gap:6px 16px}
  .arrow{margin-left:8px}
 }
+/* Sticky den musí přesně navazovat na hlavičku */
+@media(min-width:761px){.date{top:62px}}
+@media(max-width:760px){.date{top:58px}}
