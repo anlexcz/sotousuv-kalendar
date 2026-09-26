@@ -25,6 +25,11 @@ function displayLocation(e){
 }
 const regions=[...new Set(EVENTS.flatMap(e=>(e.region||"").split("/").map(x=>x.trim())).filter(Boolean))].sort();
 $("#region").innerHTML+=regions.map(x=>'<option>'+esc(x)+'</option>').join("");
+function isCurrentOrFuture(e){
+ const end=parse(e.to||e.from);
+ const today=new Date();today.setHours(0,0,0,0);
+ return end>=today;
+}
 function render(){
  let q=$("#search").value.toLowerCase(),r=$("#region").value,t=$("#transport").value;
  let a=EVENTS.filter(e=>{let hay=[e.title,e.city,e.region,e.organizer,e.type,e.transport].join(" ").toLowerCase(),ok=!q||hay.includes(q);ok=ok&&(!r||(e.region||"").includes(r));ok=ok&&(!t||(e.transport||"").toLowerCase().includes(t));if(period==="october")ok=ok&&parse(e.from).getMonth()===9;if(period==="weekend"){let d=parse(e.from);ok=ok&&d>=new Date(2026,8,25)&&d<=new Date(2026,8,27,23,59)}return ok}).sort((x,y)=>parse(x.from)-parse(y.from));
