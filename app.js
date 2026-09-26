@@ -50,8 +50,7 @@ function render(resetLazy=true){
  const groups={};
  normal.forEach(e=>{const k=e.from;(groups[k]??={date:dayStart(parse(k)),normal:[],long:[]}).normal.push(e)});
  // Long-term events create a day section at start/end and today when currently active.
- long.forEach(e=>{const a=dayStart(parse(e.from)),b=dayStart(parse(e.to||e.from));[a,(today>=a&&today<=b?today:null),b].filter(Boolean).forEach(d=>{if(d>=today){const k=d.toLocaleDateString("cs-CZ");(groups[k]??={date:d,normal:[],long:[]})}})});
- Object.values(groups).forEach(g=>{g.long=long.filter(e=>occursOn(e,g.date))});
+ long.forEach(e=>{const a=dayStart(parse(e.from)),b=dayStart(parse(e.to||e.from));[a,(today>=a&&today<=b?today:null),b].filter(Boolean).forEach(d=>{if(d>=today){const k=d.toLocaleDateString("cs-CZ"),g=(groups[k]??={date:d,normal:[],long:[]});if(!g.long.some(x=>x.id===e.id))g.long.push(e)}})});
  const ordered=Object.values(groups).sort((a,b)=>a.date-b.date);
  const visible=ordered.slice(0,visibleDayCount),hasMore=visibleDayCount<ordered.length;
  $("#events").innerHTML=visible.map((g,i)=>{
