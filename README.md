@@ -60,7 +60,7 @@ Současný `events.js` je přechodný prototypový formát. Cílově má jedna a
 Aktuální prototyp: `prototype/homepage-v1`.
 
 ### Technický dluh
-- doplnit automatické testy pro společnou datovou logiku, termíny a opakované akce;
+- rozšiřovat automatické testy společně s novou datovou logikou a později je zapojit do CI;
 - postupně nahradit přechodný `events.js` databází/API a skutečným stránkovaným načítáním;
 - před databázovou fází dále hlídat, aby se stránková logika znovu neduplikovala.
 
@@ -94,3 +94,6 @@ Hlavička, desktopová navigace, mobilní navigace a patička jsou generovány z
 
 ### JavaScript jednotlivých stránek
 Stránková aplikační logika je oddělena od HTML: `app.js` obsluhuje homepage, `calendar.js` kalendář a `detail.js` detail akce. `calendar.html` ani `detail.html` už neobsahují velké inline bloky JavaScriptu. Sdílená logika zůstává v modulech pod `js/`.
+
+### Automatické testy
+Základní regresní sada je v `tests/` a běží přímo v prohlížeči bez frameworku nebo build procesu. `tests/test.html` načte stejné sdílené moduly jako web a `tests/tests.js` ověřuje parsování českých datumů, occurrenceDates a seriesDates, hranici dlouhodobých akcí, kategorie, lokalitu a textové utility. Selhání je na testovací stránce viditelné červeně a vyvolá JavaScriptovou chybu. Další krok je podle potřeby zapojit stejnou logiku do CI.
