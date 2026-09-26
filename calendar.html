@@ -2,20 +2,37 @@
 <header class="topbar"><a class="brand" href="index.html"><img src="assets/metrobus-symbol.svg" alt=""><span>ŠOTOUŠŮV KALENDÁŘ</span></a><nav class="main-nav"><a href="index.html">Akce</a><a href="calendar.html">Kalendář</a><a href="add.html">Přidat akci</a><a href="about.html">O projektu</a></nav></header>
 <main class="calendar-page"><div class="calendar-toolbar"><button id="prevMonth" aria-label="Předchozí měsíc"><i class="fas fa-chevron-left"></i></button><h1 id="monthTitle"></h1><button id="nextMonth" aria-label="Další měsíc"><i class="fas fa-chevron-right"></i></button></div><div class="month-grid" id="monthGrid"></div><section class="day-agenda" id="dayAgenda"></section></main>
 <script src="events.js"></script><script>
-const cats={rail:"#72bd8a",bus:"#72c6e8",tram:"#e08b96",trolleybus:"#8eabd8",metro:"#c19ad9",water:"#64c5bc",air:"#b99bd5",cableway:"#d29a63",other:"#a9adb0"};
+const cats={rail:"#4f9b64",bus:"#55add7",tram:"#cf7180",trolleybus:"#718fbe",metro:"#9c70b8",water:"#4fa69d",air:"#8b79bd",cableway:"#b28259",other:"#7b8084"};
 const parseDate=s=>{const m=String(s).match(/(\d{1,2})\.\s*(\d{1,2})\.\s*(\d{4})/);return m?new Date(+m[3],+m[2]-1,+m[1]):null};
+const key=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+function occurrenceDates(e){
+ const dates=[];
+ const add=(y,m,d)=>{const x=new Date(+y,+m-1,+d);if(!isNaN(x))dates.push(x)};
+ if(e.recurring&&e.seriesDates){
+  for(const raw of e.seriesDates.split(";")){
+   const p=raw.trim();let m;
+   if((m=p.match(/^(\d{1,2})\.\s*(\d{1,2})\.\s*[–-]\s*(\d{1,2})\.\s*(\d{1,2})\.\s*(\d{4})$/))){let a=new Date(+m[5],+m[2]-1,+m[1]),b=new Date(+m[5],+m[4]-1,+m[3]);for(let d=new Date(a);d<=b;d.setDate(d.getDate()+1))dates.push(new Date(d));continue}
+   if((m=p.match(/^(\d{1,2})\.\s*[–-]\s*(\d{1,2})\.\s*(\d{1,2})\.\s*(\d{4})$/))){for(let d=+m[1];d<=+m[2];d++)add(m[4],m[3],d);continue}
+   if((m=p.match(/^(\d{1,2})\.\s*(\d{1,2})\.\s*(\d{4})$/))){add(m[3],m[2],m[1]);continue}
+   if((m=p.match(/^(\d{1,2})\.–(\d{1,2})\.,?\s*(\d{1,2})\.\s*(\d{4})$/))){for(let d=+m[1];d<=+m[2];d++)add(m[4],m[3],d);continue}
+  }
+  if(dates.length)return dates;
+ }
+ const a=parseDate(e.from),b=parseDate(e.to||e.from);if(!a)return dates;
+ const end=b||a;for(let d=new Date(a);d<=end;d.setDate(d.getDate()+1))dates.push(new Date(d));return dates;
+}
+const occurrenceMap=new Map();EVENTS.forEach(e=>occurrenceDates(e).forEach(d=>{const k=key(d);if(!occurrenceMap.has(k))occurrenceMap.set(k,[]);occurrenceMap.get(k).push(e)}));
 let view=new Date();view.setDate(1);
-function sameDay(d,e){const from=parseDate(e.from),to=parseDate(e.to||e.from);if(!from||!to)return false;const day=new Date(d.getFullYear(),d.getMonth(),d.getDate());from.setHours(0,0,0,0);to.setHours(23,59,59,999);return day>=from&&day<=to}
+function eventsOn(d){return occurrenceMap.get(key(d))||[]}
 function draw(){
  document.querySelector("#monthTitle").textContent=view.toLocaleDateString("cs-CZ",{month:"long",year:"numeric"});
- const g=document.querySelector("#monthGrid"), names=["Po","Út","St","Čt","Pá","So","Ne"];g.innerHTML=names.map(n=>'<div class="month-weekday">'+n+'</div>').join("");
+ const g=document.querySelector("#monthGrid"),names=["Po","Út","St","Čt","Pá","So","Ne"];g.innerHTML=names.map(n=>'<div class="month-weekday">'+n+'</div>').join("");
  const first=new Date(view.getFullYear(),view.getMonth(),1),off=(first.getDay()+6)%7,last=new Date(view.getFullYear(),view.getMonth()+1,0).getDate();
  for(let i=0;i<off;i++)g.innerHTML+='<div class="month-day outside"></div>';
- for(let n=1;n<=last;n++){const d=new Date(view.getFullYear(),view.getMonth(),n), ev=EVENTS.filter(e=>sameDay(d,e));const dots=[...new Set(ev.flatMap(e=>e.categories||["other"]))].slice(0,5).map(c=>'<i style="background:'+cats[c]+'"></i>').join("");g.innerHTML+='<button class="month-day'+(ev.length?' has-events':'')+'" data-day="'+n+'"><span>'+n+'</span><div class="day-dots">'+dots+'</div>'+(ev.length?'<small>'+ev.length+'</small>':'')+'</button>'}
- g.querySelectorAll(".has-events").forEach(b=>b.onclick=()=>showDay(+b.dataset.day,b));
- const firstEvent=g.querySelector(".has-events");if(firstEvent)firstEvent.click();else document.querySelector("#dayAgenda").innerHTML='<p class="calendar-empty">V tomto měsíci zatím nejsou žádné akce.</p>';
+ for(let n=1;n<=last;n++){const d=new Date(view.getFullYear(),view.getMonth(),n),ev=eventsOn(d),dots=[...new Set(ev.flatMap(e=>e.categories||["other"]))].slice(0,6).map(c=>'<i style="background:'+(cats[c]||cats.other)+'"></i>').join("");g.innerHTML+='<button class="month-day'+(ev.length?' has-events':'')+'" data-day="'+n+'"><span>'+n+'</span><div class="day-dots">'+dots+'</div>'+(ev.length?'<small>'+ev.length+'</small>':'')+'</button>'}
+ g.querySelectorAll(".month-day").forEach(b=>b.onclick=()=>showDay(+b.dataset.day,b));
+ const today=new Date(),todayButton=view.getFullYear()===today.getFullYear()&&view.getMonth()===today.getMonth()?g.querySelector('[data-day="'+today.getDate()+'"]'):null;(todayButton||g.querySelector(".has-events")||g.querySelector(".month-day:not(.outside)"))?.click();
 }
-function showDay(n,b){document.querySelectorAll(".month-day.selected").forEach(x=>x.classList.remove("selected"));b.classList.add("selected");const d=new Date(view.getFullYear(),view.getMonth(),n),ev=EVENTS.filter(e=>sameDay(d,e));document.querySelector("#dayAgenda").innerHTML='<h2>'+d.toLocaleDateString("cs-CZ",{weekday:"long",day:"numeric",month:"long"})+'</h2>'+ev.map(e=>'<a href="detail.html?id='+encodeURIComponent(e.id)+'"><strong>'+e.title+'</strong><span>'+(e.city||e.place||"")+'</span></a>').join("")}
+function showDay(n,b){document.querySelectorAll(".month-day.selected").forEach(x=>x.classList.remove("selected"));b.classList.add("selected");const d=new Date(view.getFullYear(),view.getMonth(),n),ev=eventsOn(d),a=document.querySelector("#dayAgenda");a.innerHTML='<h2>'+d.toLocaleDateString("cs-CZ",{weekday:"long",day:"numeric",month:"long"})+'</h2>'+(ev.length?ev.map(e=>'<a href="detail.html?id='+encodeURIComponent(e.id)+'"><strong>'+e.title+'</strong><span>'+(e.city||e.place||"")+'</span></a>').join(""):'<p class="calendar-empty">Na tento den zatím nemáme žádnou akci.</p>')}
 document.querySelector("#prevMonth").onclick=()=>{view.setMonth(view.getMonth()-1);draw()};document.querySelector("#nextMonth").onclick=()=>{view.setMonth(view.getMonth()+1);draw()};draw();
-</script>
-<nav class="mobile-nav" aria-label="Hlavní navigace"><a href="index.html"><i class="fas fa-list"></i><span>Akce</span></a><a href="calendar.html"><i class="fas fa-calendar-alt"></i><span>Kalendář</span></a><a href="add.html"><i class="fas fa-plus-circle"></i><span>Přidat</span></a><a href="about.html"><i class="fas fa-info-circle"></i><span>O projektu</span></a></nav></body></html>
+</script><nav class="mobile-nav" aria-label="Hlavní navigace"><a href="index.html"><i class="fas fa-list"></i><span>Akce</span></a><a href="calendar.html"><i class="fas fa-calendar-alt"></i><span>Kalendář</span></a><a href="add.html"><i class="fas fa-plus-circle"></i><span>Přidat</span></a><a href="about.html"><i class="fas fa-info-circle"></i><span>O projektu</span></a></nav></body></html>
