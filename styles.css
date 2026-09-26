@@ -258,3 +258,7 @@ body{background:#f3f4f5}
 /* Optické vyvážení podpisu Metrobus vůči symbolu v hlavičce */
 .brand-copy small{font-size:8.5px;line-height:.95;margin-top:1px;letter-spacing:.1em}
 @media(max-width:760px){.brand-copy small{font-size:7.5px;line-height:.95;margin-top:1px}}
+
+/* Jemné další zvětšení podpisu Metrobus */
+.brand-copy small{font-size:9.5px}
+@media(max-width:760px){.brand-copy small{font-size:8.5px}}
