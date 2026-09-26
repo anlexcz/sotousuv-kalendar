@@ -58,3 +58,23 @@ body{background:#f3f4f5}
  .category{min-height:22px;padding:4px 7px}
  .event{border-radius:2px}
 }
+/* Kompaktní karta: název + společný informační řádek */
+.summary{display:none}
+.event{border-left:1px solid #e0e1e2;padding:12px 14px}
+.event:hover{border-left-color:#c8cacc}
+.event h2{margin:0 0 10px}
+.event-info{display:flex;align-items:center;flex-wrap:wrap;gap:7px 14px}
+.event-info .categories{margin:0}
+.category{border-color:color-mix(in srgb,currentColor 18%,transparent)}
+.location-meta{margin:0}
+.arrow{display:none}
+.date{display:flex;align-items:baseline;gap:10px}
+.date strong{text-transform:none}
+.date span{font-size:12px;font-weight:500;color:#8a8d90;text-transform:lowercase;letter-spacing:0}
+@media(max-width:760px){
+ .event{padding:12px 14px}
+ .event-info{gap:7px 12px}
+ .date{gap:8px}
+ .date strong{font-size:18px}
+ .date span{font-size:11px}
+}
