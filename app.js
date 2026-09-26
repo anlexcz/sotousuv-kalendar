@@ -19,7 +19,7 @@ function updateFilterUI(){
  $("#regionSummary").textContent=!selectedRegions.size?"Celá ČR":selectedRegions.size===1?[...selectedRegions][0]:[...selectedRegions][0]+" + "+(selectedRegions.size-1)+" další";
 }
 const eventMatches=(e,q)=>{
- const hay=[e.title,e.city,e.place,e.region,e.organizer,e.type,e.transport,e.route].join(" ").toLowerCase();
+ const hay=[e.title,e.city,e.place,e.region,e.type,e.transport,e.route].join(" ").toLowerCase();
  const catOk=!selectedCategories.size||(e.categories||["other"]).some(c=>selectedCategories.has(c));
  const regParts=String(e.region||"").split("/").map(x=>x.trim());
  const regOk=!selectedRegions.size||regParts.some(r=>selectedRegions.has(r));
