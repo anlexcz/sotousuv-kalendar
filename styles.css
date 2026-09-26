@@ -327,10 +327,12 @@ body.feed-complete .feed-footer{display:block}
  body>.mobile-nav>a::before{display:none}
  body.page-calendar>.mobile-nav>a[href="calendar.html"],
  body.page-add>.mobile-nav>a[href="add.html"],
+ body.page-admin>.mobile-nav>a[href="admin.html"],
  body.page-about>.mobile-nav>a[href="about.html"],
  body:not(.page-calendar):not(.page-add):not(.page-about)>.mobile-nav>a[href="index.html"]{color:#4baed9}
  body.page-calendar>.mobile-nav>a[href="calendar.html"]::before,
  body.page-add>.mobile-nav>a[href="add.html"]::before,
+ body.page-admin>.mobile-nav>a[href="admin.html"]::before,
  body.page-about>.mobile-nav>a[href="about.html"]::before,
  body:not(.page-calendar):not(.page-add):not(.page-about)>.mobile-nav>a[href="index.html"]::before{
   display:block;content:"";position:absolute;top:0;left:24%;right:24%;height:3px;background:var(--accent);border-radius:0 0 3px 3px
