@@ -262,3 +262,18 @@ body{background:#f3f4f5}
 /* Jemné další zvětšení podpisu Metrobus */
 .brand-copy small{font-size:9.5px}
 @media(max-width:760px){.brand-copy small{font-size:8.5px}}
+
+/* Samostatný proklik na mateřský Metrobus v hlavičce */
+.brand{gap:0}
+.brand-home{display:flex;align-items:center;gap:10px;color:inherit;text-decoration:none}
+.brand-home img{width:36px;height:36px;object-fit:contain;display:block;flex:0 0 36px}
+.brand-copy{display:block}
+.brand-metrobus{position:absolute;margin-left:46px;margin-top:22px;font-family:'Audiowide',sans-serif;font-size:9.5px;line-height:.95;letter-spacing:.1em;color:#b9bdc0;text-decoration:none}
+.brand-metrobus:hover{color:#fff}
+.footer-brand a{color:inherit;text-decoration:none}.footer-brand a:hover{color:#397e9e;text-decoration:underline}
+@media(max-width:760px){
+ .brand-home{gap:7px}.brand-home img{width:30px;height:30px;flex-basis:30px}
+ .brand-metrobus{margin-left:37px;margin-top:20px;font-size:8.5px}
+ .header-search{padding-left:12px}
+ .header-search input{margin-left:0}
+}
