@@ -82,3 +82,12 @@ Administrace musí umožnit minimálně upravit, skrýt či zrušit akci, kontro
 ### Transparentnost automatického zpracování
 
 Pokud aktuální publikovaná verze ještě neprošla lidskou kontrolou, detail dole zobrazí nenápadnou patičku oddělenou tenkou linkou s ikonou robota: **„Tady pracoval robot. Občas mu něco ujede, takže před cestou raději mrkni na odkaz na akci.“** Po lidské kontrole poznámka zmizí. Stav se tedy vztahuje ke konkrétní publikované verzi, nikoli trvale k celé akci.
+
+### Struktura společné JavaScript logiky
+Společná logika není soustředěna v jednom supersouboru. Je rozdělena podle odpovědnosti:
+- `js/utils.js` – obecné pomocné funkce pro text/HTML,
+- `js/categories.js` – definice a normalizace kategorií,
+- `js/dates.js` – datumy a konkrétní termíny akcí,
+- `js/events.js` – obecná logika nad akcí (lokalita, délka, dlouhodobost).
+
+Stránkové skripty mají používat tyto společné moduly místo vlastních kopií stejné logiky. Pořadí načtení je utils → categories → dates → events → stránkový skript.
