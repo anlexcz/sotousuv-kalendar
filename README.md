@@ -21,7 +21,7 @@ Otevřete `index.html` v prohlížeči.
 ### Rozdělení rolí
 - **Akce = co a kde:** chronologický feed budoucích akcí.
 - **Kalendář = kdy:** měsíční mřížka pro orientaci podle konkrétního dne.
-- **Hledání:** samostatné fulltextové hledání; na mobilu se otevírá lupou v hlavičce.
+- **Hledání:** samostatné fulltextové hledání; na desktopu je vyhledávací pole v hlavičce stále viditelné, na mobilu se kvůli prostoru otevírá lupou.
 - **Filtr:** pouze dopravní kategorie a oblast. Datum ani textové hledání do filtru nepatří.
 
 ### Dopravní kategorie
@@ -42,7 +42,7 @@ Zobrazuje akce se začátkem dnes nebo později. Feed používá lazy rendering 
 Kalendář je klasická měsíční mřížka Po–Ne. Kliknutí na den zobrazí jeho akce. Skutečná vícedenní akce patří do všech dnů svého intervalu. U opakované akce se však musí používat konkrétní výskyty; rozmezí mezi prvním a posledním termínem nesmí znamenat každodenní konání.
 
 ### Design
-Mobile-first. Montserrat pro UI, Audiowide pouze pro značku. Hlavní akcent `#87CEFA`, tmavě šedá hlavička, světlé plochy. Cílem je informačně hutný vzhled blízký jízdnímu řádu/editorialu, nikoli generický dashboard.
+Mobile-first. Montserrat pro UI, Audiowide pouze pro značku. Pod názvem ŠOTOUŠŮV KALENDÁŘ je v hlavičce těsně umístěný drobný podpis METROBUS, rovněž v Audiowide. Šotoušův kalendář je projekt Metrobusu. Hlavní akcent `#87CEFA`, tmavě šedá hlavička, světlé plochy. Cílem je informačně hutný vzhled blízký jízdnímu řádu/editorialu, nikoli generický dashboard.
 
 ## Datový a technický směr MVP
 
