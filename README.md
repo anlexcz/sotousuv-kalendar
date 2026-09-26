@@ -31,7 +31,7 @@ Jedna akce může mít více kategorií:
 Typ akce (např. den otevřených dveří) není dopravní kategorií. Kategorie mají vlastní barevnou identitu.
 
 ### Filtr
-Doprava je barevný multiselect. Neaktivní položka zůstává světle ve své kategorické barvě, aktivní je sytější a obsahuje fajfku. Více kategorií funguje jako OR. Oblast je rozbalovací multiselect s moderními checkboxy. Změny se aplikují okamžitě; panel ukazuje počet aktivních voleb a umožňuje jejich hromadné vymazání.
+Doprava je barevný multiselect. Neaktivní položka zůstává světle ve své kategorické barvě, aktivní je sytější. Více kategorií funguje jako OR. Oblast je rozbalovací multiselect s moderními checkboxy. Změny se aplikují okamžitě; panel ukazuje počet aktivních voleb a umožňuje jejich hromadné vymazání.
 
 ### Feed
 Zobrazuje akce se začátkem dnes nebo později. Feed používá lazy rendering po blocích 12 celých dnů s akcemi; další blok se automaticky vykreslí při přiblížení ke konci seznamu. Aktuální statický prototyp má data stále načtená v `events.js`, takže nejde ještě o síťové stránkování z databáze. Patička homepage se zobrazí až po vykreslení posledního bloku.
