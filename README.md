@@ -97,3 +97,6 @@ Stránková aplikační logika je oddělena od HTML: `app.js` obsluhuje homepage
 
 ### Automatické testy
 Základní regresní sada je v `tests/` a běží přímo v prohlížeči bez frameworku nebo build procesu. `tests/test.html` načte stejné sdílené moduly jako web a `tests/tests.js` ověřuje parsování českých datumů, occurrenceDates a seriesDates, hranici dlouhodobých akcí, kategorie, lokalitu a textové utility. Selhání je na testovací stránce viditelné červeně a vyvolá JavaScriptovou chybu. Další krok je podle potřeby zapojit stejnou logiku do CI.
+
+### Prototyp administrace
+`admin.html` obsahuje mobile-first prototyp redakční administrace nad současnými daty z `events.js`. Simulované přihlášení, redakční změny a stav kontroly se ukládají pouze do `localStorage` daného prohlížeče; nejde o bezpečné přihlášení ani produkční úložiště. Administrace umí hledat a filtrovat akce, otevřít editor, měnit základní veřejná pole a kategorie, nastavit Aktivní/Zrušená/Skrytá a Automatická/Zkontrolovaná člověkem a otevřít veřejný detail. V redakčním režimu se na veřejném detailu zobrazí lišta „Upravit akci“, která vede přímo na editor dané akce. Prototyp slouží k ověření workflow před návrhem skutečné autentizace, databáze a verzování.
