@@ -16,17 +16,11 @@
  <a class="detail-back" href="index.html"><i class="fas fa-arrow-left" aria-hidden="true"></i> Zpět na akce</a>
  <article id="detail"></article>
 </main>
-<script src="events.js"></script>
-<script>
-const esc=s=>String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const stripEmoji=s=>String(s||"").replace(/[\p{Extended_Pictographic}\uFE0F]/gu,"").replace(/\s{2,}/g," ").trim();
+<script src="events.js"></script>\n<script src="shared.js"></script>\n<script>\nconst {escapeHtml:esc,stripEmoji,categoryIds:eventCategories,displayLocation:displayPlace,CATEGORY_BY_ID}=SK;
 const id=new URLSearchParams(location.search).get("id");
 const e=EVENTS.find(x=>x.id===id);
 const root=document.querySelector("#detail");
-const sourceLabel=url=>{try{return new URL(url).hostname.replace(/^www\./,"")}catch{return""}};
-const CATEGORY_DEFS={rail:["Železnice","fa-train"],bus:["Autobus","fa-bus"],tram:["Tramvaj","fa-tram"],trolleybus:["Trolejbus","fa-bus"],metro:["Metro","fa-subway"],water:["Loď","fa-ship"],air:["Letadlo","fa-plane"],cableway:["Lanovka","fa-mountain"],other:["Ostatní","fa-circle"]};
-const eventCategories=e=>(Array.isArray(e.categories)&&e.categories.length?e.categories:[e.category]).filter(Boolean);
-const categoryTags=e=>eventCategories(e).map(key=>{const def=CATEGORY_DEFS[key]||CATEGORY_DEFS.other;return '<span class="category category-'+esc(key)+'"><i class="fas '+def[1]+'" aria-hidden="true"></i>'+esc(def[0])+'</span>'}).join("");
+const categoryTags=e=>eventCategories(e).map(key=>{const def=CATEGORY_BY_ID[key]||CATEGORY_BY_ID.other;return '<span class="category category-'+esc(key)+'"><i class="fas '+def.icon+'" aria-hidden="true"></i>'+esc(def.label)+'</span>'}).join("");
 const isHumanReviewed=e=>e.reviewStatus==="human_reviewed"||e.reviewed===true;
 const displayPlace=e=>e.city||e.place||"";
 
