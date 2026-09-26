@@ -1,7 +1,21 @@
-<!doctype html><html lang="cs"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Kalendář – Šotoušův kalendář</title><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css"><link rel="stylesheet" href="styles.css"></head><body class="page-calendar"><header class="topbar"><a class="brand" href="index.html"><img src="assets/metrobus-symbol.svg" alt=""><span>ŠOTOUŠŮV KALENDÁŘ</span></a><nav class="main-nav"><a href="index.html">Akce</a><a href="calendar.html">Kalendář</a><a href="add.html">Přidat akci</a><a href="about.html">O projektu</a></nav></header><main class="page"><div class="month-head"><h1>Říjen 2026</h1><a href="index.html">Seznam akcí</a></div><div class="calendar-grid" id="calendar"></div></main><script src="events.js"></script><script>
-const names=["Po","Út","St","Čt","Pá","So","Ne"],box=document.querySelector("#calendar");box.innerHTML=names.map(x=>'<div class="weekday">'+x+'</div>').join("");const first=new Date(2026,9,1),offset=(first.getDay()+6)%7;for(let i=0;i<offset;i++)box.innerHTML+='<div class="cal-day"></div>';for(let d=1;d<=31;d++){let ds=d+". 10. 2026",ev=EVENTS.filter(e=>e.from===ds);box.innerHTML+=`<div class="cal-day"><strong>${d}.</strong>${ev.map(e=>`<a class="cal-event" href="detail.html?id=${encodeURIComponent(e.id)}">${e.title}</a>`).join("")}</div>`}</script><nav class="mobile-nav" aria-label="Hlavní navigace">
-<a href="index.html"><i class="fas fa-list" aria-hidden="true"></i><span>Akce</span></a>
-<a href="calendar.html"><i class="fas fa-calendar-alt" aria-hidden="true"></i><span>Kalendář</span></a>
-<a href="add.html"><i class="fas fa-plus-circle" aria-hidden="true"></i><span>Přidat</span></a>
-<a href="about.html"><i class="fas fa-info-circle" aria-hidden="true"></i><span>O projektu</span></a>
-</nav></body></html>
+<!doctype html><html lang="cs"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Kalendář – Šotoušův kalendář</title><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css"><link rel="stylesheet" href="styles.css"></head><body class="page-calendar">
+<header class="topbar"><a class="brand" href="index.html"><img src="assets/metrobus-symbol.svg" alt=""><span>ŠOTOUŠŮV KALENDÁŘ</span></a><nav class="main-nav"><a href="index.html">Akce</a><a href="calendar.html">Kalendář</a><a href="add.html">Přidat akci</a><a href="about.html">O projektu</a></nav></header>
+<main class="calendar-page"><div class="calendar-toolbar"><button id="prevMonth" aria-label="Předchozí měsíc"><i class="fas fa-chevron-left"></i></button><h1 id="monthTitle"></h1><button id="nextMonth" aria-label="Další měsíc"><i class="fas fa-chevron-right"></i></button></div><div class="month-grid" id="monthGrid"></div><section class="day-agenda" id="dayAgenda"></section></main>
+<script src="events.js"></script><script>
+const cats={rail:"#72bd8a",mhd:"#72c6e8",road:"#e2c65d",water:"#64c5bc",air:"#b99bd5",other:"#a9adb0"};
+const parseDate=s=>{const m=String(s).match(/(\d{1,2})\.\s*(\d{1,2})\.\s*(\d{4})/);return m?new Date(+m[3],+m[2]-1,+m[1]):null};
+let view=new Date();view.setDate(1);
+function sameDay(d,e){const x=parseDate(e.from);return x&&x.getFullYear()===d.getFullYear()&&x.getMonth()===d.getMonth()&&x.getDate()===d.getDate()}
+function draw(){
+ document.querySelector("#monthTitle").textContent=view.toLocaleDateString("cs-CZ",{month:"long",year:"numeric"});
+ const g=document.querySelector("#monthGrid"), names=["Po","Út","St","Čt","Pá","So","Ne"];g.innerHTML=names.map(n=>'<div class="month-weekday">'+n+'</div>').join("");
+ const first=new Date(view.getFullYear(),view.getMonth(),1),off=(first.getDay()+6)%7,last=new Date(view.getFullYear(),view.getMonth()+1,0).getDate();
+ for(let i=0;i<off;i++)g.innerHTML+='<div class="month-day outside"></div>';
+ for(let n=1;n<=last;n++){const d=new Date(view.getFullYear(),view.getMonth(),n), ev=EVENTS.filter(e=>sameDay(d,e));const dots=[...new Set(ev.flatMap(e=>e.categories||["other"]))].slice(0,5).map(c=>'<i style="background:'+cats[c]+'"></i>').join("");g.innerHTML+='<button class="month-day'+(ev.length?' has-events':'')+'" data-day="'+n+'"><span>'+n+'</span><div class="day-dots">'+dots+'</div>'+(ev.length?'<small>'+ev.length+'</small>':'')+'</button>'}
+ g.querySelectorAll(".has-events").forEach(b=>b.onclick=()=>showDay(+b.dataset.day,b));
+ const firstEvent=g.querySelector(".has-events");if(firstEvent)firstEvent.click();else document.querySelector("#dayAgenda").innerHTML='<p class="calendar-empty">V tomto měsíci zatím nejsou žádné akce.</p>';
+}
+function showDay(n,b){document.querySelectorAll(".month-day.selected").forEach(x=>x.classList.remove("selected"));b.classList.add("selected");const d=new Date(view.getFullYear(),view.getMonth(),n),ev=EVENTS.filter(e=>sameDay(d,e));document.querySelector("#dayAgenda").innerHTML='<h2>'+d.toLocaleDateString("cs-CZ",{weekday:"long",day:"numeric",month:"long"})+'</h2>'+ev.map(e=>'<a href="detail.html?id='+encodeURIComponent(e.id)+'"><strong>'+e.title+'</strong><span>'+(e.city||e.place||"")+'</span></a>').join("")}
+document.querySelector("#prevMonth").onclick=()=>{view.setMonth(view.getMonth()-1);draw()};document.querySelector("#nextMonth").onclick=()=>{view.setMonth(view.getMonth()+1);draw()};draw();
+</script>
+<nav class="mobile-nav" aria-label="Hlavní navigace"><a href="index.html"><i class="fas fa-list"></i><span>Akce</span></a><a href="calendar.html"><i class="fas fa-calendar-alt"></i><span>Kalendář</span></a><a href="add.html"><i class="fas fa-plus-circle"></i><span>Přidat</span></a><a href="about.html"><i class="fas fa-info-circle"></i><span>O projektu</span></a></nav></body></html>
