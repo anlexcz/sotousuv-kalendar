@@ -14,8 +14,9 @@
  const editorIcon=editId?"fa-pen":"fa-user-edit";
  const editorShortcut=editor?'<a class="editor-shortcut" href="'+editorHref+'"><i class="fas '+editorIcon+'" aria-hidden="true"></i><span>'+editorLabel+'</span></a>':"";
  if(top)top.outerHTML=header;
- if(bottom)bottom.outerHTML=footer+mobile+editorShortcut;
- else document.body.insertAdjacentHTML("beforeend",mobile+editorShortcut);
+ if(bottom)bottom.outerHTML=footer;
+ if(!document.querySelector(".mobile-nav"))document.body.insertAdjacentHTML("beforeend",mobile);
+ if(editor&&!document.querySelector(".editor-shortcut"))document.body.insertAdjacentHTML("beforeend",editorShortcut);
  document.querySelectorAll('.main-nav a,.mobile-nav a').forEach(a=>{
   const target=a.dataset.nav||({index:"events",calendar:"calendar",add:"add",about:"about"}[a.getAttribute("href")?.replace(".html","")]||"");
   const active=target===page||(page==="detail"&&target==="events");
