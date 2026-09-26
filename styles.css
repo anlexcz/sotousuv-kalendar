@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Audiowide&family=Montserrat:wght@400;500;600;700;800&display=swap');
 
 :root{
- --accent:#87CEFA;--ink:#333;--muted:#707070;--line:#ddd;
+ --accent:#87CEFA;--ink:#333;--line:#ddd;
  --header:#3a3a3a;--link:#397e9e;--mobile-nav-height:66px
 }
 *{box-sizing:border-box}
