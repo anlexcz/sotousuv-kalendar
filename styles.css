@@ -98,3 +98,14 @@ body{background:#f3f4f5}
  .brand img{transform:scale(.94)}
  .menu-toggle{font-size:20px}
 }
+/* Spodní mobilní navigace */
+.mobile-nav{display:none}
+@media(max-width:760px){
+ .menu-toggle{display:none!important}
+ .topbar .main-nav{display:none!important}
+ body{padding-bottom:68px}
+ .mobile-nav{position:fixed;display:grid;grid-template-columns:repeat(4,1fr);left:0;right:0;bottom:0;z-index:50;background:#fff;border-top:1px solid #dfe1e3;padding-bottom:env(safe-area-inset-bottom);box-shadow:0 -1px 4px rgba(0,0,0,.04)}
+ .mobile-nav a{min-width:0;height:62px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;color:#74787b;text-decoration:none;font-size:10px;font-weight:700;line-height:1}
+ .mobile-nav a i{font-size:18px}
+ .mobile-nav a[href="index.html"]{color:var(--accent)}
+}
