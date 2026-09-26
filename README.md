@@ -16,7 +16,7 @@ Otevřete `index.html` v prohlížeči.
 ## Aktuální produktová specifikace – září 2026
 
 ### Veřejná struktura
-Čtyři hlavní sekce: **Akce**, **Kalendář**, **Přidat**, **O projektu**. Mobil používá fixní spodní navigaci; desktop horní navigaci.
+Čtyři hlavní sekce: **Akce**, **Kalendář**, **Přidat**, **O projektu**. Mobil používá fixní spodní navigaci; desktop horní navigaci. Všechny stránky zakončuje nenápadná patička s hláškou **„Konečná! Prosíme, vystupte.“**, označením Metrobus a odkazy na Kontakt a Administraci. Kontakt vede na sekci v O projektu; kontaktní e-mail je `anlex@metrobus.cz`.
 
 ### Rozdělení rolí
 - **Akce = co a kde:** chronologický feed budoucích akcí.
