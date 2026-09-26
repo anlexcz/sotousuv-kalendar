@@ -32,7 +32,7 @@ const eventMatches=(e,q)=>{
  const regOk=!selectedRegions.size||regParts.some(r=>selectedRegions.has(r));
  return (!q||hay.includes(q))&&catOk&&regOk;
 };
-const eventCard=e=>{const loc=displayLocation(e);return '<a class="event" href="detail.html?id='+encodeURIComponent(e.id)+'"><div class="event-main"><h2>'+esc(stripEmoji(e.title))+'</h2><div class="event-info"><div class="categories">'+categoryHtml(e)+'</div>'+(loc?'<div class="location-meta" title="'+esc(e.region||"")+'"><i class="fas fa-map-marker-alt"></i><span>'+esc(loc)+'</span></div>':"")+'</div></div></a>'};
+const eventCard=(e,extraClass='')=>{const loc=displayLocation(e);return '<a class="event '+extraClass+'" href="detail.html?id='+encodeURIComponent(e.id)+'"><div class="event-main"><h2>'+esc(stripEmoji(e.title))+'</h2><div class="event-info"><div class="categories">'+categoryHtml(e)+'</div>'+(loc?'<div class="location-meta" title="'+esc(e.region||"")+'"><i class="fas fa-map-marker-alt"></i><span>'+esc(loc)+'</span></div>':"")+'</div></div></a>'};
 function render(){
  const q=$("#search").value.trim().toLowerCase(),today=todayDate();
  const matching=EVENTS.filter(e=>eventMatches(e,q));
@@ -46,8 +46,8 @@ function render(){
  const ordered=Object.values(groups).sort((a,b)=>a.date-b.date);
  $("#events").innerHTML=ordered.map((g,i)=>{
   const dateKey=g.date.toISOString().slice(0,10),longCount=g.long.length;
-  const longToggle=longCount?'<button type="button" class="longterm-toggle" data-long-day="'+dateKey+'" aria-expanded="false"><span>Dlouhodobé ('+longCount+')</span><i class="fas fa-chevron-down"></i></button>':"";
-  return '<section class="day" data-date="'+dateKey+'"><div class="date"><div class="date-label"><strong>'+g.date.toLocaleDateString("cs-CZ",{day:"numeric",month:"long",year:"numeric"})+'</strong><span>'+g.date.toLocaleDateString("cs-CZ",{weekday:"long"})+'</span></div>'+longToggle+'</div><div class="cards">'+g.normal.map(eventCard).join("")+(longCount?'<div class="longterm-cards" hidden>'+g.long.map(eventCard).join("")+'</div>':"")+'</div></section>'
+  const longToggle=longCount?'<button type="button" class="longterm-toggle" data-long-day="'+dateKey+'" aria-expanded="false"><span>Dlouhodobé · '+longCount+'</span><i class="fas fa-chevron-down"></i></button>':"";
+  return '<section class="day" data-date="'+dateKey+'"><div class="date"><div class="date-label"><strong>'+g.date.toLocaleDateString("cs-CZ",{day:"numeric",month:"long",year:"numeric"})+'</strong><span>'+g.date.toLocaleDateString("cs-CZ",{weekday:"long"})+'</span></div>'+longToggle+'</div><div class="cards">'+g.normal.map(eventCard).join("")+(longCount?'<div class="longterm-cards" hidden>'+g.long.map(e=>eventCard(e,'longterm-event')).join("")+'</div>':"")+'</div></section>'
  }).join("")||'<div class="empty-state"><i class="fas fa-filter"></i><strong>Žádné akce neodpovídají filtru.</strong><button type="button" id="emptyClear">Vymazat filtry</button></div>';
  document.querySelectorAll(".longterm-toggle").forEach(b=>b.onclick=()=>{const box=b.closest(".day").querySelector(".longterm-cards"),open=box.hidden;box.hidden=!open;b.setAttribute("aria-expanded",open);b.classList.toggle("open",open);b.querySelector("i").className="fas "+(open?"fa-chevron-up":"fa-chevron-down")});
  const ec=$("#emptyClear");if(ec)ec.onclick=clearFilters;
