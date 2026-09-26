@@ -176,9 +176,7 @@ body{background:#f3f4f5}
 }
 .category i,.filter-chip>i:first-child{width:1.2em;text-align:center;color:inherit;font-size:1em}
 .filter-chip{appearance:none;cursor:pointer;transition:background .12s,border-color .12s,color .12s}
-.filter-chip .check{display:none;font-size:8px;width:auto}
-.filter-chip.active{background:var(--cat-active)!important;border-color:var(--cat-active)!important;color:#fff!important}
-.filter-chip.active .check{display:inline-block}
+.filter-chip.active{background:color-mix(in srgb,var(--cat-bg) 62%,var(--cat-active))!important;border-color:color-mix(in srgb,var(--cat-border) 55%,var(--cat-active))!important;color:var(--cat-text)!important}
 
 /* Filtr je utilita, ne druhá hlavní plocha stránky. */
 .filterbar{display:block;padding:11px 12px;border:1px solid #dfe1e3;border-radius:2px;background:#fff}
@@ -203,7 +201,7 @@ body{background:#f3f4f5}
 .date-label span{margin:0!important}
 .longterm-toggle{flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;padding:2px 0;border:0;background:transparent;color:#777d80;font:600 10px 'Montserrat',sans-serif;letter-spacing:0;cursor:pointer}
 .longterm-toggle i{font-size:8px}.longterm-toggle:hover{color:#3f7f9e}
-.longterm-toggle.open{color:#216f94;font-weight:800}.longterm-toggle.open i{color:#216f94}
+.longterm-toggle.open{padding:4px 7px;background:#dce7ec;color:#244f63;font-weight:800;border-radius:2px;box-shadow:inset 3px 0 0 #66747b}.longterm-toggle.open i{color:#244f63}
 .longterm-cards[hidden]{display:none}.longterm-cards{display:contents}
 .longterm-event{position:relative;border-left:4px solid #686d70!important;background:#fbfcfc}
 .longterm-event:hover{border-left-color:#4f5457!important}
