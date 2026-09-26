@@ -23,6 +23,7 @@ const stripEmoji=s=>String(s||"").replace(/[\p{Extended_Pictographic}\uFE0F]/gu,
 const id=new URLSearchParams(location.search).get("id");
 const e=EVENTS.find(x=>x.id===id);
 const root=document.querySelector("#detail");
+const sourceLabel=url=>{try{return new URL(url).hostname.replace(/^www\./,"")}catch{return""}};
 
 function term(e){
  const dates=e.to&&e.to!==e.from?e.from+" – "+e.to:e.from;
@@ -37,10 +38,10 @@ if(!e){
  root.innerHTML=
   '<header class="event-detail-head">'+
    '<h1>'+esc(stripEmoji(e.title))+'</h1>'+
-   (e.organizer?'<div class="event-organizer">'+esc(e.organizer)+'</div>':"")+
+   (e.source?'<div class="event-source">Zdroj: '+esc(sourceLabel(e.source))+'</div>':"")+
   '</header>'+
   '<div class="event-term">'+esc(term(e))+'</div>'+
-  (e.source?'<a class="official-link" href="'+esc(e.source)+'" target="_blank" rel="noopener"><span>Oficiální informace o akci</span><i class="fas fa-external-link-alt" aria-hidden="true"></i></a>':"")+
+  (e.source?'<a class="official-link" href="'+esc(e.source)+'" target="_blank" rel="noopener"><span>Odkaz na akci</span><i class="fas fa-external-link-alt" aria-hidden="true"></i></a>':"")+
   (e.description?'<section class="event-description"><h2>O akci</h2><p>'+esc(e.description)+'</p></section>':"");
 }
 </script>
