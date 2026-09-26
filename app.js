@@ -12,6 +12,7 @@ const CATEGORY_DEFS=[
  {id:"air",label:"Letectví",icon:"fa-plane",keys:["letad","letec","leteck"]},
 ];
 function categories(e){
+ if(Array.isArray(e.categories)&&e.categories.length){const byId=Object.fromEntries(CATEGORY_DEFS.map(c=>[c.id,c]));byId.other={id:"other",label:"Ostatní",icon:"fa-compass"};return e.categories.map(id=>byId[id]).filter(Boolean)}
  const hay=[e.transport,e.type,e.title].join(" ").toLowerCase(),out=[];
  CATEGORY_DEFS.forEach(c=>{if(c.keys.some(k=>hay.includes(k)))out.push(c)});
  return out.length?out:[{id:"other",label:"Ostatní",icon:"fa-compass"}];
