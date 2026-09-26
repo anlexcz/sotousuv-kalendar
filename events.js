@@ -41,7 +41,7 @@ window.EVENTS=[
   },
   {
     "id": "he14i4vb4tls4bp7udn0cqr3k4",
-    "title": "🚆 Praha: Pražské tunely a mosty",
+    "title": "Praha: Pražské tunely a mosty",
     "from": "26. 9. 2026",
     "to": "26. 9. 2026",
     "time": "",
