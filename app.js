@@ -1,22 +1,10 @@
 const $=s=>document.querySelector(s);
-const parse=s=>{const m=String(s).match(/(\d{1,2})\.\s*(\d{1,2})\.\s*(\d{4})/);return m?new Date(+m[3],+m[2]-1,+m[1]):new Date(9999,0,1)};
-const fmt=s=>{const d=parse(s);return {date:d.toLocaleDateString("cs-CZ",{day:"numeric",month:"long",year:"numeric"}),weekday:d.toLocaleDateString("cs-CZ",{weekday:"long"})}};
-const esc=s=>String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const stripEmoji=s=>String(s||"").replace(/[\p{Extended_Pictographic}\uFE0F]/gu,"").replace(/\s{2,}/g," ").trim();
-const CATEGORY_DEFS=[
-{id:"rail",label:"Železnice",icon:"fa-train"},{id:"bus",label:"Autobus",icon:"fa-bus"},{id:"tram",label:"Tramvaj",icon:"fa-tram"},{id:"trolleybus",label:"Trolejbus",icon:"fa-bus-alt"},{id:"metro",label:"Metro",icon:"fa-subway"},{id:"water",label:"Loď",icon:"fa-ship"},{id:"air",label:"Letadlo",icon:"fa-plane"},{id:"cableway",label:"Lanovka",icon:"fa-mountain"},{id:"other",label:"Ostatní",icon:"fa-compass"}];
-const byId=Object.fromEntries(CATEGORY_DEFS.map(c=>[c.id,c]));
-const categories=e=>(e.categories||["other"]).map(id=>byId[id]).filter(Boolean);
+const {CATEGORY_DEFS,CATEGORY_BY_ID:byId,parseDate:parse,dayStart,escapeHtml:esc,stripEmoji,categories,displayLocation,isLongTerm}=SK;
 const categoryHtml=e=>categories(e).map(c=>'<span class="category category-'+c.id+'"><i class="fas '+c.icon+'"></i>'+c.label+'</span>').join("");
-const displayLocation=e=>String(e.city||e.place||"").trim().split(/\s*\/\s*|\s*;\s*/).filter(Boolean).join(", ");
 const regions=[...new Set(EVENTS.flatMap(e=>String(e.region||"").split("/").map(x=>x.trim())).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"cs"));
 const selectedCategories=new Set(),selectedRegions=new Set();
 $("#categoryFilter").innerHTML=CATEGORY_DEFS.map(c=>'<button type="button" class="filter-chip category-'+c.id+'" data-category="'+c.id+'" aria-pressed="false"><i class="fas '+c.icon+'"></i><span>'+c.label+'</span></button>').join("");
 $("#regionPicker").innerHTML=regions.map(r=>'<button type="button" class="region-option" data-region="'+esc(r)+'" aria-pressed="false"><span class="modern-check"><i class="fas fa-check"></i></span><span>'+esc(r)+'</span></button>').join("");
-const DAY=86400000;
-const dayStart=d=>new Date(d.getFullYear(),d.getMonth(),d.getDate());
-const durationDays=e=>{const a=parse(e.from),b=parse(e.to||e.from);return Math.max(1,Math.round((dayStart(b)-dayStart(a))/DAY)+1)};
-const isLongTerm=e=>durationDays(e)>7&&(String(e.type||"").toLowerCase().includes("výstava")||!e.recurring);
 const todayDate=()=>dayStart(new Date());
 const occursOn=(e,d)=>{const a=dayStart(parse(e.from)),b=dayStart(parse(e.to||e.from));return d>=a&&d<=b};
 function updateFilterUI(){
