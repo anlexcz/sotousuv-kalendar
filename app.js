@@ -73,7 +73,6 @@ $("#clearFilters").onclick=clearFilters;
 $("#regionTrigger").onclick=()=>{const p=$("#regionPicker"),open=p.classList.toggle("open");$("#regionTrigger").setAttribute("aria-expanded",open)};
 $("#search").addEventListener("input",render);
 $("#searchToggle").onclick=()=>{document.body.classList.add("search-open");$("#search").focus()};
-$("#searchClose").onclick=()=>document.body.classList.remove("search-open");
-$("#searchClear").onclick=()=>{$("#search").value="";$("#search").focus();render()};
+$("#searchClear").onclick=()=>{const input=$("#search");if(input.value){input.value="";input.focus();render()}else{document.body.classList.remove("search-open")}};
 const filterToggle=$("#filterToggle"),filterbar=$("#filterbar");filterToggle.onclick=()=>{const open=filterbar.classList.toggle("open");filterbar.classList.toggle("collapsed",!open);filterToggle.setAttribute("aria-expanded",open);filterToggle.querySelector(".filter-caret").classList.toggle("fa-chevron-up",open);filterToggle.querySelector(".filter-caret").classList.toggle("fa-chevron-down",!open)};
 updateFilterUI();render();
