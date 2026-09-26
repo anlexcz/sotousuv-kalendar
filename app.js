@@ -39,7 +39,10 @@ const eventMatches=(e,q)=>{
  return (!q||hay.includes(q))&&catOk&&regOk;
 };
 const eventCard=(e,extraClass='')=>{const loc=displayLocation(e);return '<a class="event '+extraClass+'" href="detail.html?id='+encodeURIComponent(e.id)+'"><div class="event-main"><h2>'+esc(stripEmoji(e.title))+'</h2><div class="event-info"><div class="categories">'+categoryHtml(e)+'</div>'+(loc?'<div class="location-meta" title="'+esc(e.region||"")+'"><i class="fas fa-map-marker-alt"></i><span>'+esc(loc)+'</span></div>':"")+'</div></div></a>'};
-function render(){
+const LAZY_DAY_BATCH=12;
+let visibleDayCount=LAZY_DAY_BATCH,lazyObserver=null;
+function render(resetLazy=true){
+ if(resetLazy)visibleDayCount=LAZY_DAY_BATCH;
  const q=$("#search").value.trim().toLowerCase(),today=todayDate();
  const matching=EVENTS.filter(e=>eventMatches(e,q));
  const normal=matching.filter(e=>!isLongTerm(e)&&dayStart(parse(e.from))>=today).sort((x,y)=>parse(x.from)-parse(y.from));
@@ -50,13 +53,18 @@ function render(){
  long.forEach(e=>{const a=dayStart(parse(e.from)),b=dayStart(parse(e.to||e.from));[a,(today>=a&&today<=b?today:null),b].filter(Boolean).forEach(d=>{if(d>=today){const k=d.toLocaleDateString("cs-CZ");(groups[k]??={date:d,normal:[],long:[]})}})});
  Object.values(groups).forEach(g=>{g.long=long.filter(e=>occursOn(e,g.date))});
  const ordered=Object.values(groups).sort((a,b)=>a.date-b.date);
- $("#events").innerHTML=ordered.map((g,i)=>{
+ const visible=ordered.slice(0,visibleDayCount),hasMore=visibleDayCount<ordered.length;
+ $("#events").innerHTML=visible.map((g,i)=>{
   const dateKey=g.date.toISOString().slice(0,10),longCount=g.long.length;
   const longToggle=longCount?'<button type="button" class="longterm-toggle" data-long-day="'+dateKey+'" aria-expanded="false"><span>Dlouhodobé · '+longCount+'</span><i class="fas fa-chevron-down"></i></button>':"";
   return '<section class="day" data-date="'+dateKey+'"><div class="date"><div class="date-label"><strong>'+g.date.toLocaleDateString("cs-CZ",{day:"numeric",month:"long",year:"numeric"})+'</strong><span>'+g.date.toLocaleDateString("cs-CZ",{weekday:"long"})+'</span></div>'+longToggle+'</div><div class="cards">'+g.normal.map(eventCard).join("")+(longCount?'<div class="longterm-cards" hidden>'+g.long.map(e=>eventCard(e,'longterm-event')).join("")+'</div>':"")+'</div></section>'
- }).join("")||'<div class="empty-state"><i class="fas fa-filter"></i><strong>Žádné akce neodpovídají filtru.</strong><button type="button" id="emptyClear">Vymazat filtry</button></div>';
+ }).join("")+(hasMore?'<div class="lazy-loader" id="lazyLoader" aria-live="polite"><i class="fas fa-circle-notch fa-spin" aria-hidden="true"></i><span>Načítám další akce…</span></div>':"")||'<div class="empty-state"><i class="fas fa-filter"></i><strong>Žádné akce neodpovídají filtru.</strong><button type="button" id="emptyClear">Vymazat filtry</button></div>';
  document.querySelectorAll(".longterm-toggle").forEach(b=>b.onclick=()=>{const box=b.closest(".day").querySelector(".longterm-cards"),open=box.hidden;box.hidden=!open;b.setAttribute("aria-expanded",open);b.classList.toggle("open",open);b.querySelector("i").className="fas "+(open?"fa-chevron-up":"fa-chevron-down")});
  const ec=$("#emptyClear");if(ec)ec.onclick=clearFilters;
+ if(lazyObserver)lazyObserver.disconnect();
+ const loader=$("#lazyLoader");
+ if(loader){lazyObserver=new IntersectionObserver(entries=>{if(entries.some(x=>x.isIntersecting)){lazyObserver.disconnect();visibleDayCount+=LAZY_DAY_BATCH;render(false)}},{rootMargin:"500px 0px"});lazyObserver.observe(loader)}
+ document.body.classList.toggle("feed-complete",!hasMore);
 }
 function clearFilters(){selectedCategories.clear();selectedRegions.clear();updateFilterUI();render()}
 document.querySelectorAll("[data-category]").forEach(b=>b.onclick=()=>{selectedCategories.has(b.dataset.category)?selectedCategories.delete(b.dataset.category):selectedCategories.add(b.dataset.category);updateFilterUI();render()});
