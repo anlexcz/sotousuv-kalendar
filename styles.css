@@ -155,7 +155,7 @@ body{background:#f3f4f5}
 }
 
 
-/* 2026-09: finální dopravní kategorie + filtr */
+/* Jednotný UI systém: kategorie, filtr, hledání a dlouhodobé akce */
 .category-rail,.filter-chip.category-rail{--cat-bg:#e4f3e8;--cat-border:#b9ddc2;--cat-text:#28623a;--cat-active:#4f9b64}
 .category-bus,.filter-chip.category-bus{--cat-bg:#e6f4fd;--cat-border:#b9def5;--cat-text:#276887;--cat-active:#55add7}
 .category-tram,.filter-chip.category-tram{--cat-bg:#fbe8eb;--cat-border:#edc1c8;--cat-text:#8b3d49;--cat-active:#cf7180}
@@ -165,34 +165,64 @@ body{background:#f3f4f5}
 .category-air,.filter-chip.category-air{--cat-bg:#eeeafb;--cat-border:#d1c7ee;--cat-text:#5d4c8c;--cat-active:#8b79bd}
 .category-cableway,.filter-chip.category-cableway{--cat-bg:#f7eee5;--cat-border:#e5ceb7;--cat-text:#79583b;--cat-active:#b28259}
 .category-other,.filter-chip.category-other{--cat-bg:#eceeef;--cat-border:#d4d7d9;--cat-text:#5f6366;--cat-active:#7b8084}
-.category{background:var(--cat-bg);border-color:var(--cat-border)!important;color:var(--cat-text)}
+
+/* Jeden vzhled category tagu; filtr je pouze jeho interaktivní varianta. */
+.category,.filter-chip{
+ min-height:23px;padding:4px 7px;border:1px solid var(--cat-border)!important;border-radius:2px;
+ background:var(--cat-bg)!important;color:var(--cat-text)!important;
+ display:inline-flex;align-items:center;gap:6px;
+ font-family:'Montserrat',sans-serif!important;font-size:10px!important;font-weight:800!important;
+ text-transform:uppercase;letter-spacing:.025em!important;line-height:1;
+}
+.category i,.filter-chip>i:first-child{width:1.2em;text-align:center;color:inherit;font-size:1em}
+.filter-chip{appearance:none;cursor:pointer;transition:background .12s,border-color .12s,color .12s}
+.filter-chip .check{display:none;font-size:8px;width:auto}
+.filter-chip.active{background:var(--cat-active)!important;border-color:var(--cat-active)!important;color:#fff!important}
+.filter-chip.active .check{display:inline-block}
+
+/* Filtr je utilita, ne druhá hlavní plocha stránky. */
+.filterbar{display:block;padding:11px 12px;border:1px solid #dfe1e3;border-radius:2px;background:#fff}
+.filterbar.collapsed{display:none}.filterbar.open{margin-top:6px}
+.filter-section+.filter-section{margin-top:11px;padding-top:10px;border-top:1px solid #eceeef}
+.filter-label{margin-bottom:7px;font-family:'Montserrat',sans-serif;font-size:10px!important;font-weight:700!important;text-transform:uppercase;letter-spacing:.055em!important;color:#686d70!important}
+.filter-label-row{display:flex;justify-content:space-between;align-items:center}
+.category-filter{display:flex;flex-wrap:wrap;gap:5px}
+.region-trigger{width:100%;height:34px;padding:0 10px;border:1px solid #d5d8da;border-radius:2px;background:#fff;display:flex;align-items:center;justify-content:space-between;font:600 11px 'Montserrat',sans-serif;color:#383d40;cursor:pointer}
+.region-picker{display:none;margin-top:4px;border:1px solid #dfe1e3;background:#fff;max-height:300px;overflow:auto}.region-picker.open{display:block}
+.region-option{width:100%;min-height:36px;padding:6px 9px;border:0;border-bottom:1px solid #f0f1f2;background:#fff;display:flex;align-items:center;gap:9px;text-align:left;font:500 11px 'Montserrat',sans-serif;cursor:pointer}
+.region-option:hover{background:#f7f8f8}
+.modern-check{width:17px;height:17px;border:1px solid #c7cbce;border-radius:2px;display:flex;align-items:center;justify-content:center;color:transparent;flex:0 0 17px}
+.region-option.active .modern-check{background:#57b7e4;border-color:#57b7e4;color:#fff}.modern-check i{font-size:8px}
+.clear-filters{display:none;border:0;background:transparent;padding:0;color:#4589a8;font:700 10px 'Montserrat',sans-serif;cursor:pointer}.clear-filters.visible{display:block}
+.filter-title{display:flex;align-items:center;gap:7px}.filter-title b{font-size:10px;color:#4386a5;background:#e7f5fc;padding:3px 6px;border-radius:2px}
+.empty-state{padding:60px 20px;text-align:center;color:#777}.empty-state i{display:block;font-size:24px;margin-bottom:12px}.empty-state strong{display:block}.empty-state button{margin-top:14px;border:0;background:transparent;color:#397e9e;font-weight:700;cursor:pointer}
+
+/* Datum zůstává hlavní navigační prvek; dlouhodobé je sekundární akce vpravo. */
+.date{display:flex!important;align-items:baseline!important;justify-content:space-between;gap:10px}
+.date-label{display:flex;align-items:baseline;gap:8px;min-width:0;white-space:nowrap}
+.date-label span{margin:0!important}
+.longterm-toggle{flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;padding:2px 0;border:0;background:transparent;color:#777d80;font:600 10px 'Montserrat',sans-serif;letter-spacing:0;cursor:pointer}
+.longterm-toggle i{font-size:8px}.longterm-toggle:hover{color:#3f7f9e}
+.longterm-toggle.open{color:#216f94;font-weight:800}.longterm-toggle.open i{color:#216f94}
+.longterm-cards[hidden]{display:none}.longterm-cards{display:contents}
+.longterm-event{position:relative;border-left:4px solid #686d70!important;background:#fbfcfc}
+.longterm-event:hover{border-left-color:#4f5457!important}
+
+/* Hledání v hlavičce */
 .header-search-toggle{display:none}
-.filterbar{display:block;padding:16px;border-radius:2px}.filterbar.collapsed{display:none}.filter-section+.filter-section{margin-top:18px;padding-top:16px;border-top:1px solid #eceeef}.filter-label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:#707579;margin-bottom:9px}.filter-label-row{display:flex;justify-content:space-between;align-items:center}.category-filter{display:flex;flex-wrap:wrap;gap:7px}.filter-chip{position:relative;display:inline-flex;align-items:center;gap:7px;min-height:36px;padding:7px 10px;border:1px solid var(--cat-border);border-radius:3px;background:color-mix(in srgb,var(--cat-bg) 58%,white);color:var(--cat-text);font:700 11px 'Montserrat',sans-serif;cursor:pointer;transition:background .12s,border-color .12s,color .12s}.filter-chip .check{display:none;font-size:9px}.filter-chip.active{background:var(--cat-active);border-color:var(--cat-active);color:#fff}.filter-chip.active .check{display:inline-block}.region-trigger{width:100%;height:42px;padding:0 12px;border:1px solid #d5d8da;border-radius:3px;background:#fff;display:flex;align-items:center;justify-content:space-between;font:600 13px 'Montserrat',sans-serif;color:#383d40;cursor:pointer}.region-picker{display:none;margin-top:5px;border:1px solid #dfe1e3;background:#fff;max-height:300px;overflow:auto}.region-picker.open{display:block}.region-option{width:100%;min-height:42px;padding:7px 11px;border:0;border-bottom:1px solid #f0f1f2;background:#fff;display:flex;align-items:center;gap:10px;text-align:left;font:500 12px 'Montserrat',sans-serif;cursor:pointer}.region-option:hover{background:#f7f8f8}.modern-check{width:20px;height:20px;border:1.5px solid #c7cbce;border-radius:5px;display:flex;align-items:center;justify-content:center;color:transparent;flex:0 0 20px}.region-option.active .modern-check{background:#57b7e4;border-color:#57b7e4;color:#fff}.modern-check i{font-size:10px}.clear-filters{display:none;border:0;background:transparent;padding:0;color:#4589a8;font:700 11px 'Montserrat',sans-serif;cursor:pointer}.clear-filters.visible{display:block}.filter-title{display:flex;align-items:center;gap:7px}.filter-title b{font-size:10px;color:#4386a5;background:#e7f5fc;padding:3px 6px;border-radius:3px}.empty-state{padding:60px 20px;text-align:center;color:#777}.empty-state i{display:block;font-size:24px;margin-bottom:12px}.empty-state strong{display:block}.empty-state button{margin-top:14px;border:0;background:transparent;color:#397e9e;font-weight:700;cursor:pointer}
 @media(max-width:760px){
  .header-search-toggle{display:flex;margin-left:auto;width:40px;height:40px;align-items:center;justify-content:center;border:0;background:transparent;color:#fff;font-size:17px}
- .header-search{display:none;position:absolute;inset:0;background:#3a3a3a;align-items:center;padding:0 8px;gap:5px;z-index:3}.search-open .header-search{display:flex}.header-search input{height:38px;flex:1;min-width:0;border:0;border-radius:3px;background:#fff;padding:0 11px;font:500 13px 'Montserrat',sans-serif;outline:0}.header-search button{width:38px;height:38px;border:0;background:transparent;color:#fff;font-size:15px}.filterbar{padding:14px 12px}.category-filter{gap:6px}.filter-chip{min-height:35px;padding:7px 9px}.region-picker{max-height:44vh}
+ .header-search{display:none;position:absolute;inset:0;background:#3a3a3a;align-items:center;padding:0 8px;gap:5px;z-index:3}.search-open .header-search{display:flex}
+ .header-search input{height:38px;flex:1;min-width:0;border:0;border-radius:2px;background:#fff;padding:0 11px;font:500 13px 'Montserrat',sans-serif;outline:0}.header-search button{width:38px;height:38px;border:0;background:transparent;color:#fff;font-size:15px}
+ .filterbar{padding:10px}.filter-section+.filter-section{margin-top:10px;padding-top:9px}.category-filter{gap:5px}.region-picker{max-height:44vh}
+ .date{gap:7px}.date-label{gap:6px}.date-label strong{font-size:18px}.date-label span{font-size:11px}
+ .longterm-toggle{font-size:9px;gap:4px}
 }
-@media(min-width:761px){.header-search{display:flex;align-items:center;margin-left:auto;margin-right:8px}.header-search input{width:0;opacity:0;padding:0;border:0;background:transparent;transition:.15s}.header-search button{display:none}.search-open .header-search input{width:250px;opacity:1;height:34px;padding:0 10px;border:1px solid #666;background:#fff}.header-search-toggle{display:flex;width:38px;height:38px;align-items:center;justify-content:center;border:0;background:transparent;color:#fff;order:2}.main-nav{order:3}}
-
-/* Dlouhodobé akce ve feedu */
-.date{display:flex!important;align-items:center;justify-content:space-between;gap:12px}
-.date-label{display:flex;align-items:baseline;gap:8px;min-width:0}
-.longterm-toggle{flex:0 0 auto;display:inline-flex;align-items:center;gap:7px;height:30px;padding:0 9px;border:1px solid #d8dcde;border-radius:3px;background:#fff;color:#62676a;font:700 10px 'Montserrat',sans-serif;cursor:pointer}
-.longterm-toggle:hover,.longterm-toggle.open{border-color:#b9ddec;color:#347b9c;background:#f5fbfe}
-.longterm-toggle i{font-size:8px}
-.longterm-cards[hidden]{display:none}
-.longterm-cards{display:contents}
-.longterm-cards .event{background:#fbfcfc}
-@media(max-width:760px){
- .date{gap:8px}.date-label{display:block}.date-label span{margin-left:6px}
- .longterm-toggle{height:28px;padding:0 7px;font-size:9px}
+@media(max-width:390px){
+ .date-label{gap:4px}.date-label strong{font-size:17px}.date-label span{font-size:10px}.longterm-toggle{font-size:8.5px}
 }
-
-/* 2026-09 sjednocení filtru s kartami akcí */
-.filter-label{font-family:'Montserrat',sans-serif;font-size:11px!important;font-weight:700!important;letter-spacing:.055em!important;color:#666b6e!important}
-.filter-chip{min-height:32px!important;padding:5px 8px!important;border-radius:2px!important;background:var(--cat-bg)!important;border:1px solid var(--cat-border)!important;color:var(--cat-text)!important;font-family:'Montserrat',sans-serif!important;font-size:10px!important;font-weight:700!important;letter-spacing:0!important;text-transform:uppercase}
-.filter-chip>i:first-child{font-size:10px}.filter-chip.active{background:var(--cat-active)!important;border-color:var(--cat-active)!important;color:#fff!important}
-.region-trigger{font-family:'Montserrat',sans-serif!important;font-size:12px!important;font-weight:600!important;border-radius:2px!important}
-.region-option{font-family:'Montserrat',sans-serif!important}
-.longterm-toggle{font-family:'Montserrat',sans-serif!important;border-radius:2px!important;text-transform:none!important;letter-spacing:0!important}
-@media(max-width:760px){.category-filter{gap:6px}.filter-chip{min-height:31px!important;padding:5px 8px!important}}
+@media(min-width:761px){
+ .header-search{display:flex;align-items:center;margin-left:auto;margin-right:8px}.header-search input{width:0;opacity:0;padding:0;border:0;background:transparent;transition:.15s}.header-search button{display:none}
+ .search-open .header-search input{width:250px;opacity:1;height:34px;padding:0 10px;border:1px solid #666;background:#fff}
+ .header-search-toggle{display:flex;width:38px;height:38px;align-items:center;justify-content:center;border:0;background:transparent;color:#fff;order:2}.main-nav{order:3}
+}
