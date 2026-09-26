@@ -44,7 +44,7 @@ window.EVENTS=[
     "type": "parní jízda / výroční akce",
     "categories": [
       "rail",
-      "mhd"
+      "bus"
     ],
     "organizer": "Plzeňská dráha",
     "description": "Nostalgické vlaky s parní lokomotivou 310.072 Kafemlejnek a historickými vozy mezi Bezdružicemi a Kokašicemi. Součástí je historická autobusová linka a doprovodný program k 125 letům trati.",
@@ -72,7 +72,8 @@ window.EVENTS=[
     "transport": "trolejbus",
     "type": "výstava / výroční akce",
     "categories": [
-      "mhd"
+      "bus",
+      "trolleybus"
     ],
     "organizer": "Dopravní podnik hl. m. Prahy",
     "description": "Putovní výstava k 90 letům pražských trolejbusů představuje historii, technický vývoj, zánik původní sítě i návrat moderních trolejbusů. V roce 2026 postupně navštěvuje Muzeum MHD, OC Smíchov, OC Letňany, den otevřených dveří garáže Řepy, vyhlídkové místo Strahov, OC Černý Most a Sokolovskou.",
@@ -100,7 +101,7 @@ window.EVENTS=[
     "transport": "",
     "type": "",
     "categories": [
-      "other"
+      "tram"
     ],
     "organizer": "",
     "description": "Historická tramvajová linka H4 jezdí z Komenského náměstí přes Českou, náměstí Svobody, Zelný trh a hlavní nádraží na Mendlovo náměstí. DPMB 23. 9. 2026 prodloužil sezonní provoz: linka jezdí o víkendech a svátcích od 4. července nově až do neděle 4. října 2026; platí běžný tarif IDS JMK.",
@@ -128,7 +129,9 @@ window.EVENTS=[
     "transport": "",
     "type": "",
     "categories": [
-      "mhd"
+      "rail",
+      "bus",
+      "tram"
     ],
     "organizer": "",
     "description": "Série historických jízd tramvají a autobusů v Liberci a Jizerských horách. Vedle srpnových jízd jsou oficiálně zveřejněny další termíny při Crystal Valley Week, Dnech evropského dědictví a státních svátcích; autobus Na zubačku pojede také 26. září.",
@@ -184,7 +187,7 @@ window.EVENTS=[
     "transport": "",
     "type": "",
     "categories": [
-      "other"
+      "trolleybus"
     ],
     "organizer": "",
     "description": "Historická trolejbusová linka H propojuje Malvíny, Techmanii, DEPO2015, hlavní nádraží a Prazdroj. O víkendech a svátcích do konce prázdnin jsou nasazovány historické trolejbusy 14Tr, 15Tr a 21Tr; celodenní jízdenka na linku stojí 100 Kč.",
@@ -240,7 +243,7 @@ window.EVENTS=[
     "transport": "",
     "type": "",
     "categories": [
-      "other"
+      "rail"
     ],
     "organizer": "",
     "description": "Prázdninové nostalgické jízdy po trati Tábor–Bechyně, první elektrifikované železniční trati v Česku. Národní technické muzeum aktuálně potvrzuje, že v sobotu 22. a 29. srpna 2026 je nasazen historický Křižíkův elektromotorový vůz EM 400.001 „Elinka“ ze sbírek NTM.",
@@ -268,7 +271,7 @@ window.EVENTS=[
     "transport": "",
     "type": "",
     "categories": [
-      "other"
+      "rail"
     ],
     "organizer": "",
     "description": "Pravidelné sobotní turistické vlaky Kolej-klubu do Lomnice nad Popelkou slouží jako výchozí spoj pro výlety na Tábor, Kumburk, Alainovu věž nebo k prameni Cidliny. Dne 22. srpna je plánován historický motorový vůz M 131.1081 „Hurvínek“ z roku 1949; v ostatních termínech motorový vůz M 152.0.",
@@ -324,7 +327,8 @@ window.EVENTS=[
     "transport": "",
     "type": "",
     "categories": [
-      "other"
+      "rail",
+      "tram"
     ],
     "organizer": "",
     "description": "Pravidelný letní víkendový provoz historické Trenčianské elektrické železnice mezi Trenčianskou Teplou a Trenčianskými Teplicemi. Během pobytu električky v Trenčianské Teplé je odpoledne zpřístupněno také depo s dopravní expozicí; letní provoz trvá do 30. srpna 2026.",
@@ -352,7 +356,8 @@ window.EVENTS=[
     "transport": "",
     "type": "",
     "categories": [
-      "other"
+      "rail",
+      "air"
     ],
     "organizer": "",
     "description": "Pravidelné sobotní turistické vlaky Kolej-klubu s historickým motorovým vozem M 152.0469 na lokálce Královec–Žacléř. Pravidelná osobní doprava se na trať v létě 2026 vrátila po osmnácti letech; Žacléř je výchozím bodem pro Rýchory, Hornický skanzen, Růžový palouček nebo pevnost Stachelberg.",
@@ -436,7 +441,7 @@ window.EVENTS=[
     "transport": "",
     "type": "",
     "categories": [
-      "other"
+      "rail"
     ],
     "organizer": "",
     "description": "Víkendové jízdy motorovými drezínami po trati ze Žacléře. Projekt Kolej-klubu a města Žacléř doplňuje obnovené turistické vlaky do Žacléře a nabízí krátké svezení po místní železniční trati v krajině pod Rýchorami.",
@@ -464,7 +469,7 @@ window.EVENTS=[
     "transport": "autobus",
     "type": "nostalgická jízda / výroční akce",
     "categories": [
-      "mhd"
+      "bus"
     ],
     "organizer": "Dopravní podnik hl. m. Prahy",
     "description": "Jízda historickým autobusem Škoda 506 N připomene 100 let od zahájení provozu autobusové linky C mezi Kobylisy a Bohnicemi. Vstupenky za 200 Kč jsou vyprodané.",
@@ -576,7 +581,8 @@ window.EVENTS=[
     "transport": "",
     "type": "",
     "categories": [
-      "mhd"
+      "bus",
+      "trolleybus"
     ],
     "organizer": "",
     "description": "Sezóna jízd historických autobusů a trolejbusů DPMP pokračuje v budoucích termínech 9. a 23. srpna, 6. a 19. září a 4. října 2026. Na historických spojích platí zvláštní tarif; jednotlivá jízdenka u řidiče stojí 30 Kč a platí ve všech historických vozidlech po celý den.",
@@ -745,7 +751,7 @@ window.EVENTS=[
     "type": "zvláštní autobusová jízda / železniční festival",
     "categories": [
       "rail",
-      "mhd"
+      "bus"
     ],
     "organizer": "Valenta Rail",
     "description": "Autobusový výlet z Prahy do Chemnitz na 33. Heizhausfest s více než 50 historickými lokomotivami, muzejní výstavou a nostalgickými jízdami. Odjezd ze Smíchova je v 7:30.",
@@ -774,7 +780,7 @@ window.EVENTS=[
     "type": "zvláštní jízda / prezentační akce",
     "categories": [
       "rail",
-      "mhd"
+      "bus"
     ],
     "organizer": "Prdbus z. s. / Metrobus",
     "description": "Dobrodružná jízda předváděcím autobusem SOR BN12 z Prahy na Zubačku do Kořenova. Odjezd z depa Hostivař je v 9:00 a z Černého Mostu v 9:15; v Kořenově je plánována cesta přes Harrachov a Tanvald, návrat do Prahy mezi 19:00 a 20:00.",
@@ -803,7 +809,7 @@ window.EVENTS=[
     "type": "nostalgická jízda",
     "categories": [
       "rail",
-      "mhd"
+      "bus"
     ],
     "organizer": "Pardubický spolek historie železniční dopravy",
     "description": "Nostalgický vlak z Pardubic přes Chrudim a Skuteč do Předhradí, odkud navazuje autobus na hrad Rychmburk. Odjezd z Pardubic centra v 9:10, návrat v 14:57; jízdné 150 Kč jedním směrem.",
@@ -859,7 +865,7 @@ window.EVENTS=[
     "transport": "autobus",
     "type": "zvláštní jízda / prohlídka infrastruktury",
     "categories": [
-      "mhd"
+      "bus"
     ],
     "organizer": "Valenta Rail",
     "description": "Výlet historickým autobusem Karosa ŠD 11 Tourist ze Smíchovského nádraží na rozšířenou odbornou prohlídku vodní elektrárny Orlík. Odjezd v 10:30, návrat v 16:00; cena 790 Kč pro dospělého.",
@@ -887,7 +893,7 @@ window.EVENTS=[
     "transport": "MHD / historická vozidla",
     "type": "nostalgická jízda / výstava historických vozidel",
     "categories": [
-      "mhd"
+      "bus"
     ],
     "organizer": "Dopravní podnik Ostrava",
     "description": "V rámci Dne ostravské dopravní nostalgie se uskuteční vyhlídkové jízdy z Náměstí Republiky přes Karolinu U Lávky, Konzervatoř a Most Pionýrů k ZOO a zpět. U nádraží Ostrava střed budou od 9:00 do 17:00 vystaveny historické autobusy ze sbírky DPO.",
@@ -915,7 +921,7 @@ window.EVENTS=[
     "transport": "MHD / modelářství",
     "type": "muzejní akce",
     "categories": [
-      "mhd"
+      "other"
     ],
     "organizer": "Dopravní podnik hl. m. Prahy",
     "description": "Dvoudenní mezinárodní setkání modelářů v Muzeu MHD ve Střešovicích. Podrobný program zatím pořadatel připravuje.",
@@ -943,7 +949,7 @@ window.EVENTS=[
     "transport": "autobus",
     "type": "nostalgická jízda",
     "categories": [
-      "mhd"
+      "bus"
     ],
     "organizer": "Dopravní podnik hl. m. Prahy",
     "description": "Zvláštní jízda historickým autobusem Škoda 706 RTO z Chodova na Tankový den ve Vojenském technickém muzeu Lešany a zpět. Odjezd je v 7:45, předpokládaný návrat v 15:15 a jízdenka stojí 450 Kč.",
@@ -971,7 +977,8 @@ window.EVENTS=[
     "transport": "železnice",
     "type": "zvláštní jízda / historický vlak",
     "categories": [
-      "rail"
+      "rail",
+      "bus"
     ],
     "organizer": "České dráhy / ROPID",
     "description": "Historická vlaková souprava z Prahy přes Krhanice do Týnce nad Sázavou vypravená při příležitosti Tankového dne v Lešanech. Jde o samostatnou železniční akci vedle historického autobusu DPP do Lešan.",
@@ -999,7 +1006,8 @@ window.EVENTS=[
     "transport": "autobus / trolejbus",
     "type": "den otevřených dveří",
     "categories": [
-      "mhd"
+      "bus",
+      "trolleybus"
     ],
     "organizer": "Dopravní podnik měst Chomutova a Jirkova",
     "description": "Den otevřených dveří ve vozovně Písečná začne v 10:00 a vstup je zdarma. Potvrzeny jsou tři mimořádné linky DOD1–DOD3 s historickými a netradičními vozidly, bezplatné svezení zapůjčeným kloubovým autobusem SOR NS 18, vystavení patnáctimetrové Setry v nátěru PID, prezentace vozového parku DPCHJ, složek IZS a další doprovodný program. Pořadatel nyní zveřejnil také konkrétní trasy všech tří linek a samostatný dokument s jejich jízdními řády.",
@@ -1027,7 +1035,7 @@ window.EVENTS=[
     "transport": "",
     "type": "",
     "categories": [
-      "other"
+      "rail"
     ],
     "organizer": "",
     "description": "Železniční depozitář Národního technického muzea v Chomutově představuje největší státní železniční sbírku v Česku a práci spojenou s uchováváním historických vozidel. V letní sezoně 2026 je otevřen od úterý do neděle od 10:00 do 17:00.",
@@ -1055,7 +1063,8 @@ window.EVENTS=[
     "transport": "trolejbus",
     "type": "komentovaná procházka / výroční akce",
     "categories": [
-      "mhd"
+      "bus",
+      "trolleybus"
     ],
     "organizer": "Dopravní podnik hl. m. Prahy",
     "description": "Komentovaná procházka s Luďkem Fišerem po trase první pražské trolejbusové tratě v rámci oslav 90 let trolejbusů. Přesný čas a podrobnosti zatím nejsou zveřejněny.",
@@ -1083,7 +1092,7 @@ window.EVENTS=[
     "transport": "autobus",
     "type": "zvláštní jízda",
     "categories": [
-      "mhd"
+      "bus"
     ],
     "organizer": "Dopravní podnik hl. m. Prahy",
     "description": "Zvláštní autobusová jízda z Prahy na 8. sraz autobusů Karosa řady 700 v Ralsku. Podrobnosti o vozidle, časech a vstupenkách zatím nebyly zveřejněny.",
@@ -1111,7 +1120,8 @@ window.EVENTS=[
     "transport": "trolejbus",
     "type": "nostalgická jízda / výroční akce",
     "categories": [
-      "mhd"
+      "bus",
+      "trolleybus"
     ],
     "organizer": "Dopravní podnik hl. m. Prahy",
     "description": "Víkendové mimořádné jízdy historických i současných trolejbusů v rámci oslav 90 let pražské trolejbusové dopravy. V sobotu 5. 9. pojedou linky 51 Na Pískách – Na Santince s vozy Tatra 400, Škoda 8Tr a Škoda 14Tr a linka 59 Terminál 3 – Nádraží Veleslavín s vozy Škoda 9Tr, 24Tr a 15Tr. V neděli 6. 9. DPP potvrzuje jízdy na lince 52 v úseku Na Knížecí – Waltrovka s vozy SOR TNS 18 a Škoda 24Tr a na lince 53 v úseku Stadion Strahov – Středočeská s vozy Škoda 9Tr a 15Tr. Jízdenky jsou v prodeji přes fanshop DPP.",
@@ -1167,7 +1177,7 @@ window.EVENTS=[
     "transport": "autobus",
     "type": "sraz vozidel",
     "categories": [
-      "mhd"
+      "bus"
     ],
     "organizer": "",
     "description": "",
@@ -1195,7 +1205,7 @@ window.EVENTS=[
     "transport": "MHD",
     "type": "den otevřených dveří / prezentační akce",
     "categories": [
-      "mhd"
+      "tram"
     ],
     "organizer": "Dopravní podnik Ostrava",
     "description": "Den ostravských dopraváků proběhne 5. září 2026 od 10:00 do 17:00 v areálu Dílny Martinov, vstup je zdarma. DPO potvrzuje prezentaci historických, moderních i technologických vozidel, dopravního dispečinku a autoškoly, dynamické ukázky, vyhlídkové jízdy a doprovodný program. Pro návoz návštěvníků budou přibližně 9:30–16:30 vypravovány posilové tramvajové spoje Poruba, vozovna – Dílny DP Ostrava – Martinov a kapacitně posílena linka 44.",
@@ -1223,7 +1233,8 @@ window.EVENTS=[
     "transport": "autobus",
     "type": "den otevřených dveří",
     "categories": [
-      "mhd"
+      "bus",
+      "trolleybus"
     ],
     "organizer": "Dopravní podnik hl. m. Prahy",
     "description": "Den otevřených dveří garáže Řepy proběhne 5. září 2026 od 10:00 do 16:00. Program nabídne přehlídku současné techniky a historických vozidel, zázemí údržby, technologie, HZS DPP a doprovodný program. DPP potvrzuje speciální linku DOD v trase Garáže Řepy – Terminál 3 – Divoká Šárka – Nádraží Veleslavín (– Na Pískách), v provozu přibližně 9:35–16:10 v intervalu 6–8 minut, do Na Pískách po 15 minutách; propojuje akci také s jízdami historických trolejbusů. Vstup je zdarma.",
@@ -1279,7 +1290,7 @@ window.EVENTS=[
     "transport": "autobus",
     "type": "výroční akce",
     "categories": [
-      "mhd"
+      "bus"
     ],
     "organizer": "",
     "description": "",
@@ -1307,7 +1318,8 @@ window.EVENTS=[
     "transport": "železnice",
     "type": "nostalgická jízda / tematická akce",
     "categories": [
-      "rail"
+      "rail",
+      "bus"
     ],
     "organizer": "Železniční společnost Tanvald o. p. s.",
     "description": "Borůvková sobota na Zubačce nabídne jízdy s unikátní dieselovou ozubnicovou lokomotivou T 426.0 „Rakušanka“ na nejstrmější železniční trati v Česku mezi Tanvaldem, Kořenovem a Harrachovem. Součástí programu Zubačky jsou také muzejní expozice v Kořenově, důlní vláček, historický autobus, občerstvení a stánkový prodej.",
@@ -1335,7 +1347,7 @@ window.EVENTS=[
     "transport": "MHD",
     "type": "den otevřených dveří / výroční akce",
     "categories": [
-      "mhd"
+      "other"
     ],
     "organizer": "Dopravní podnik měst Mostu a Litvínova",
     "description": "Den otevřených dveří v areálu dopravního podniku v Mostě proběhne od 9:00 do 12:00 při příležitosti 125 let městské dopravy na Mostecku. Podrobný program zatím nebyl zveřejněn.",
@@ -1363,7 +1375,7 @@ window.EVENTS=[
     "transport": "MHD",
     "type": "den otevřených dveří",
     "categories": [
-      "mhd"
+      "other"
     ],
     "organizer": "",
     "description": "",
@@ -1504,7 +1516,7 @@ window.EVENTS=[
     "type": "zvláštní jízda / úzkokolejka",
     "categories": [
       "rail",
-      "mhd"
+      "bus"
     ],
     "organizer": "Prdbus z. s. / Metrobus",
     "description": "Metrobusí dobrodružná jízda legendární Karosou C734 z Prahy do Jindřichova Hradce. Na tamní úzkokolejce je plánováno setkání se zvláštní soupravou s lokomotivou Prasátko a vozem Balm a cesta do stanice Chválkov; přesné nástupní časy mají být ještě upřesněny.",
@@ -1532,7 +1544,7 @@ window.EVENTS=[
     "transport": "autobus",
     "type": "nostalgická jízda",
     "categories": [
-      "mhd"
+      "bus"
     ],
     "organizer": "Dopravní podnik hl. m. Prahy",
     "description": "Historický autobus Škoda 706 RTO vyjede 26. 9. 2026 z Karlova náměstí na dostihové závodiště ve Velké Chuchli při příležitosti 120 let chuchelského závodiště. DPP nově zveřejnil dva odjezdy, v 11:00 a 12:00. Jízda trvá přibližně 15–20 minut a stojí 250 Kč; v ceně je místenka s jízdenkou na autobus, voucher na dostihový program a welcome drink, nikoli vstupenka na závodiště.",
@@ -1644,7 +1656,7 @@ window.EVENTS=[
     "transport": "autobus",
     "type": "nostalgická jízda / výstava historických autobusů",
     "categories": [
-      "mhd"
+      "bus"
     ],
     "organizer": "Dopravní podnik Ostrava",
     "description": "Čtyři různé typy historických autobusů pojedou 3. 10. 2026 od 9:10 do 15:10 v 30minutovém intervalu ze zastávky Řecká přes Alšovo náměstí, vozovnu Poruba, Dílny DP Ostrava a Duhu na Porubu, Opavskou. Na konečné budou k prohlídce další dva historické autobusy ze sbírky DPO.",
@@ -1700,7 +1712,7 @@ window.EVENTS=[
     "transport": "tramvaj / MHD",
     "type": "komentovaná prohlídka",
     "categories": [
-      "mhd"
+      "tram"
     ],
     "organizer": "Dopravní podnik hl. m. Prahy",
     "description": "Komentovaná prohlídka tramvajové expozice Muzea MHD s vedoucím Archivu DPP Robertem Marou. Přesný čas a podmínky účasti zatím nebyly zveřejněny.",
@@ -1728,7 +1740,7 @@ window.EVENTS=[
     "transport": "autobus",
     "type": "nostalgická jízda / výroční akce",
     "categories": [
-      "mhd"
+      "bus"
     ],
     "organizer": "Dopravní podnik hl. m. Prahy",
     "description": "Jízdy autobusu Ikarus E91 připomenou 45 let od zahájení provozu linky 256 Stodůlky – Nádraží Radotín a 25 let linky 245 Nádraží Radotín – K Višňovce. Časy a podrobný program zatím nebyly zveřejněny.",
@@ -1812,7 +1824,7 @@ window.EVENTS=[
     "transport": "autobus",
     "type": "zvláštní jízda",
     "categories": [
-      "mhd"
+      "bus"
     ],
     "organizer": "Dopravní podnik hl. m. Prahy",
     "description": "Zvláštní autobusová jízda z Prahy na výlov Jevanského rybníka. Vozidlo, jízdní řád, cena a podmínky účasti zatím nebyly zveřejněny.",
@@ -1924,7 +1936,7 @@ window.EVENTS=[
     "transport": "MHD",
     "type": "muzejní akce",
     "categories": [
-      "mhd"
+      "other"
     ],
     "organizer": "Dopravní podnik hl. m. Prahy",
     "description": "Tematická halloweenská akce v Muzeu MHD ve vozovně Střešovice. Přesný čas a program zatím nebyly zveřejněny.",
@@ -1952,7 +1964,7 @@ window.EVENTS=[
     "transport": "autobus / MHD",
     "type": "komentovaná prohlídka",
     "categories": [
-      "mhd"
+      "bus"
     ],
     "organizer": "Dopravní podnik hl. m. Prahy",
     "description": "Komentovaná prohlídka autobusové expozice Muzea MHD s výkladem Ondřeje Lásky. Přesný čas a podmínky účasti zatím nebyly zveřejněny.",
@@ -2036,7 +2048,8 @@ window.EVENTS=[
     "transport": "autobus / MHD",
     "type": "veletrh / prezentační akce",
     "categories": [
-      "mhd"
+      "bus",
+      "trolleybus"
     ],
     "organizer": "ABF, a.s. / CZECHBUS",
     "description": "Středoevropský veletrh autobusů, hromadné dopravy, telematiky a servisní techniky. Návštěvníci uvidí autobusy a trolejbusy různých výrobců, přípojná vozidla, náhradní díly, vybavení, diagnostiku, servisní technologie a další řešení pro veřejnou dopravu.",
@@ -2148,7 +2161,7 @@ window.EVENTS=[
     "transport": "MHD",
     "type": "muzejní akce",
     "categories": [
-      "mhd"
+      "other"
     ],
     "organizer": "Dopravní podnik hl. m. Prahy",
     "description": "Mikulášská tematická akce v Muzeu MHD ve vozovně Střešovice. Přesný čas a program zatím nebyly zveřejněny.",
@@ -2176,7 +2189,7 @@ window.EVENTS=[
     "transport": "tramvaj",
     "type": "nostalgická jízda / tematická akce",
     "categories": [
-      "mhd"
+      "tram"
     ],
     "organizer": "Dopravní podnik Ostrava",
     "description": "Mikulášské jízdy historickými tramvajemi na trase Dubina – Jubilejní kolonie – Nádraží Vítkovice.",
@@ -2288,7 +2301,7 @@ window.EVENTS=[
     "transport": "tramvaj",
     "type": "nostalgická jízda / adventní akce",
     "categories": [
-      "mhd"
+      "tram"
     ],
     "organizer": "Dopravní podnik Ostrava",
     "description": "Adventní jízdy historickou tramvají na trase Hlavní nádraží – Hranečník ve dvou prosincových termínech.",
@@ -2316,7 +2329,7 @@ window.EVENTS=[
     "transport": "MHD",
     "type": "tematická / prezentační akce",
     "categories": [
-      "mhd"
+      "other"
     ],
     "organizer": "Dopravní podnik hl. m. Prahy",
     "description": "Veřejná adventní akce DPP spojená s Betlémským světlem. Konkrétní místo, vozidla, časy a program zatím nebyly zveřejněny.",
@@ -2400,7 +2413,7 @@ window.EVENTS=[
     "transport": "MHD",
     "type": "komentovaná prohlídka / muzejní akce",
     "categories": [
-      "mhd"
+      "other"
     ],
     "organizer": "Dopravní podnik hl. m. Prahy",
     "description": "Dva samostatné večery nočních komentovaných prohlídek Muzea MHD, kterými provede Luděk Vidím. Přesné časy a rezervační podmínky zatím nebyly zveřejněny.",
@@ -2512,7 +2525,7 @@ window.EVENTS=[
     "transport": "tramvaj",
     "type": "pravidelné nostalgické jízdy / historická linka",
     "categories": [
-      "mhd"
+      "tram"
     ],
     "organizer": "Dopravní podnik hl. m. Prahy",
     "description": "Historická tramvajová linka 41 je v sezoně 2026 v provozu od 28. března do 17. listopadu o sobotách, nedělích a svátcích, přibližně od 10:00 do 18:00. Propojuje Muzeum MHD ve Střešovicích s Pražským hradem, Letnou, Výstavištěm a centrem; na lince neplatí standardní tarif PID.",
@@ -2540,7 +2553,7 @@ window.EVENTS=[
     "transport": "autobus",
     "type": "pravidelné nostalgické jízdy / retro linka",
     "categories": [
-      "mhd"
+      "bus"
     ],
     "organizer": "Dopravní podnik hl. m. Prahy",
     "description": "Retro autobusová linka K je v sezoně 2026 v provozu od 28. března do 17. listopadu o sobotách, nedělích a svátcích. Polookružní trasa vede z oblasti Střešovic a Strahova přes Prahu 6, Podbabu, Dolní Šárku, Jenerálku a Bořislavku; na lince neplatí standardní tarif PID.",
@@ -2596,7 +2609,8 @@ window.EVENTS=[
     "transport": "lanová dráha",
     "type": "výstava / výroční akce",
     "categories": [
-      "rail"
+      "rail",
+      "cableway"
     ],
     "organizer": "Dopravní podnik hl. m. Prahy",
     "description": "Putovní výstava DPP představuje více než 130 let historie Petřínské lanové dráhy a její čtyři generace prostřednictvím dobových fotografií, dokumentů a dalších materiálů. V druhé polovině roku 2026 postupně navštěvuje šest míst v Praze; vstup je zdarma.",
@@ -2624,7 +2638,7 @@ window.EVENTS=[
     "transport": "autobus",
     "type": "nostalgická jízda / historické vozidlo",
     "categories": [
-      "mhd"
+      "bus"
     ],
     "organizer": "Arriva",
     "description": "Historický autobus Karosa B 732 v původním barevném provedení společnosti Connex vyjede v neděli 30. srpna 2026 na dvě odpolední jízdy po Chrudimi. První odjezd ze zastávky Na Větrníku je ve 13:02, druhý ve 14:32; poslední příjezd na dopravní terminál je plánován v 16:03.",
@@ -2876,7 +2890,8 @@ window.EVENTS=[
     "transport": "trolejbus",
     "type": "Mikulášská nostalgická jízda / historické vozidlo",
     "categories": [
-      "mhd"
+      "bus",
+      "trolleybus"
     ],
     "organizer": "PSHŽD",
     "description": "PSHŽD potvrzuje Mikulášský trolejbus na 5. prosince 2026; další podrobnosti zatím nejsou na oficiální stránce zveřejněny.",
@@ -2904,7 +2919,8 @@ window.EVENTS=[
     "transport": "tramvaj / MHD",
     "type": "den otevřených dveří / prezentační akce / historická vozidla",
     "categories": [
-      "mhd"
+      "rail",
+      "tram"
     ],
     "organizer": "Dopravní podnik města Brna",
     "description": "Velký den otevřených dveří Ústředních dílen DPMB zaměřený na výrobu a údržbu tramvají Drak. Program zahrnuje ukázky výroby a oprav tramvají, jednotlivá pracoviště dílen, komentované prohlídky, historické a retro vozy, dopravní trenažéry, drezínu, dětskou stezku a další aktivity. Ve 13:00 proběhne slavnostní zahájení a křest knihy Tramvajemi po městech Česka. Na akci bude možné přijet linkou 1, retro tramvajemi a speciálním pendlem od vozovny k dílnám.",
@@ -2988,7 +3004,8 @@ window.EVENTS=[
     "transport": "autobus / MHD",
     "type": "den otevřených dveří / prezentační akce",
     "categories": [
-      "mhd"
+      "bus",
+      "tram"
     ],
     "organizer": "Dopravní podnik měst Liberce a Jablonce nad Nisou",
     "description": "Den v Dopravním podniku nabídne poprvé veřejnosti autobusové garáže DPMLJ, komentované prohlídky a prezentaci vozového parku autobusů MHD. Součástí budou soutěže, program pro děti, živá hudba a občerstvení; mezi autobusovými garážemi a tramvajovou vozovnou má jezdit kyvadlová doprava každých 15 minut.",
@@ -3100,7 +3117,8 @@ window.EVENTS=[
     "transport": "trolejbus / MHD / technické muzeum",
     "type": "komentovaná prohlídka / výroční akce / historická vozidla",
     "categories": [
-      "mhd"
+      "bus",
+      "trolleybus"
     ],
     "organizer": "Dopravní podnik hl. m. Prahy",
     "description": "Mimořádná komentovaná prohlídka trolejbusové historie Prahy u příležitosti 90. výročí zahájení trolejbusového provozu. Začíná 8. 9. 2026 v 17:30 u pokladny Muzea MHD; průvodci jsou Antonín Petr a Matouš Krakovský. DPP uvádí délku 90–120 minut. Program zahrnuje historické vozy, jejich příběhy, technický vývoj i návrat trolejbusů do pražských ulic.",
@@ -3128,7 +3146,7 @@ window.EVENTS=[
     "transport": "MHD / technické muzeum",
     "type": "mimořádné otevření / technické muzeum",
     "categories": [
-      "mhd"
+      "other"
     ],
     "organizer": "Dopravní podnik hl. m. Prahy",
     "description": "Muzeum MHD ve Střešovicích bude v pátek 30. 10. 2026 během podzimních školních prázdnin mimořádně otevřeno ve standardní době 9:00–17:00.",
@@ -3157,7 +3175,7 @@ window.EVENTS=[
     "type": "zvláštní jízda / historická vozidla / železniční muzeum",
     "categories": [
       "rail",
-      "mhd"
+      "bus"
     ],
     "organizer": "VPH – Vlaky Plzeňského kraje",
     "description": "Zvláštní motorové vlaky 12. 9. 2026 z Plzně do Stupna a mezi Stupnem a Radnicemi. Hlavní vlak odjíždí z Plzně hl. n. v 9:30 a přijíždí do Stupna v 10:05; zpět jede ze Stupna ve 14:55 a do Plzně přijíždí v 15:42. Mezi Stupnem a Radnicemi je pět párů jízd. Součástí programu je Železniční muzeum Stupno, Parostrojní železnice Břasy, slavnostní průvod a okružní jízdy historickým autobusem Karosa C734; autobusová část zahrnuje také spojení z/do Rokycan.",
@@ -3213,7 +3231,7 @@ window.EVENTS=[
     "transport": "autobus / silniční doprava",
     "type": "veřejná dopravně-bezpečnostní akce / prezentace autobusů",
     "categories": [
-      "mhd"
+      "bus"
     ],
     "organizer": "StiBus / Safari Resort Hluboká u Borovan",
     "description": "Čtvrtý ročník Dne se StiBusem se koná 17. 9. 2026 od 14:00 v Safari Resortu Hluboká u Borovan. Oficiální program je zaměřen na bezpečnost na silnicích a prevenci nehod a zahrnuje setkání se StiBusem; Busportal uvádí, že se ročník 2026 poprvé otevírá také široké veřejnosti a součástí jsou autobusy a možnost vyzkoušet si řízení autobusu pod dohledem.",
@@ -3241,7 +3259,8 @@ window.EVENTS=[
     "transport": "MHD / autobus / trolejbus",
     "type": "den otevřených dveří",
     "categories": [
-      "mhd"
+      "bus",
+      "trolleybus"
     ],
     "organizer": "Dopravní podnik města Jihlavy",
     "description": "Dopravácký den / Den otevřených dveří v areálu DPMJ na Brtnické 23. Návštěvníci uvidí nová vozidla a mohou se zdarma svézt retrolinkami; součástí je prezentace nových trolejbusů Škoda 32Tr.",
@@ -3269,7 +3288,7 @@ window.EVENTS=[
     "transport": "autobus / historická vozidla / muzeum dopravy",
     "type": "setkání historických autobusů / muzejní akce",
     "categories": [
-      "mhd"
+      "bus"
     ],
     "organizer": "ŠKODA-BUS klub Plzeň",
     "description": "O víkendu 26.–27. 9. 2026 proběhne ve Strašicích setkání historických autobusů. Oficiální web Muzea dopravy potvrzuje otevření expozice oba dny od 10:00 do 17:00; aktuální přehled Busportalu tento termín uvádí jako Strašické setkání historických autobusů.",
@@ -3297,7 +3316,9 @@ window.EVENTS=[
     "transport": "historická vozidla / autobus / tramvaj / trolejbus / muzeum dopravy",
     "type": "zakončení sezóny / otevření muzea",
     "categories": [
-      "mhd"
+      "bus",
+      "tram",
+      "trolleybus"
     ],
     "organizer": "ŠKODA-BUS klub Plzeň",
     "description": "Muzeum dopravy ve Strašicích uzavírá návštěvnickou sezónu o víkendu 17.–18. 10. 2026. Oficiální web potvrzuje otevření oba dny 10:00–17:00 a uvádí, že se muzeum s návštěvnickou sezónou loučí v říjnu; aktuální přehled Busportalu označuje tento víkend jako zakončení sezóny.",
@@ -3326,7 +3347,7 @@ window.EVENTS=[
     "type": "dopravní slavnost / nostalgické jízdy / historická vozidla",
     "categories": [
       "rail",
-      "mhd"
+      "bus"
     ],
     "organizer": "Město Příbram",
     "description": "Den městské mobility se koná 18. 9. 2026 na dětském dopravním hřišti v Příbrami, hlavní program 14:00–18:00. Na speciální lince PID 1 pojedou zdarma historické autobusy Karosa ŠD 11 a Škoda 706 RTO CAR v půlhodinovém intervalu. Příbramský expres zajistí historický motorový vůz M 240.028 „Singrovka“ mezi Příbramí sídliště, železniční stanicí Příbram a Kovohutěmi; vybrané odpolední spoje zastaví i v Příbrami Klaudově. Na nádraží bude jezdit historická kolejová drezína z roku 1897 a po celý den bude příbramská MHD zdarma.",
@@ -3355,7 +3376,7 @@ window.EVENTS=[
     "type": "výroční železniční slavnost / historická vozidla / zvláštní jízdy",
     "categories": [
       "rail",
-      "mhd"
+      "bus"
     ],
     "organizer": "organizátoři oslav 150 let Kraslické dráhy",
     "description": "Celodenní oslava 150 let Kraslické dráhy. Na nádraží v Kraslicích bude přehlídka drážních vozidel; historické vlaky propojí Sokolov, Kraslice a německý Adorf. Součástí jsou jízdy historickým autobusem Škoda RTO a další autobusová doprava z Kraslic do okolí. Oficiální městský kalendář uvádí začátek v 8:00; konec není doložen.",
@@ -3439,7 +3460,7 @@ window.EVENTS=[
     "transport": "historický autobus / MHD",
     "type": "výroční nostalgické jízdy / historické vozidlo",
     "categories": [
-      "mhd"
+      "bus"
     ],
     "organizer": "Dopravní podnik města Pardubic a.s.",
     "description": "Historické jízdy v neděli 20. 9. 2026 připomínají 50 let od zavedení nočního provozu MHD v Pardubicích. Jízdy proběhnou v odpoledních hodinách po trasách nočních linek 98 a 99. DPMP uvádí, že bude nasazen historický autobus ze soukromé sbírky, který s nočním provozem úzce souvisí; konkrétní vůz na stránce zatím neprozrazuje.",
@@ -3467,7 +3488,7 @@ window.EVENTS=[
     "transport": "MHD / autonomní vozidlo / sdílená doprava",
     "type": "veřejná dopravní akce / prezentace mobility",
     "categories": [
-      "mhd"
+      "other"
     ],
     "organizer": "město Liberec / partneři Evropského týdne mobility",
     "description": "Veřejná akce v rámci Evropského týdne mobility na náměstí Dr. E. Beneše v Liberci. Program 13:00–17:00 zahrnuje ukázku autonomního vozidla, prezentaci výhod MHD, ekologické a sdílené dopravy, bezpečnosti chodců a cyklistů, elektrokol a hybridního vozidla.",
@@ -3495,7 +3516,8 @@ window.EVENTS=[
     "transport": "železnice / motorový vůz",
     "type": "rozlučková nostalgická jízda / festival / historické vozidlo",
     "categories": [
-      "rail"
+      "rail",
+      "water"
     ],
     "organizer": "Jindřichohradecké úzkokolejky",
     "description": "Rozlučkové jízdy motorových vozů řady M27 „ponorka“ 26. 9. 2026. První jízda odjíždí z Jindřichova Hradce ve 14:10, do Černovic přijíždí v 15:45; další jízdy pokračují odpoledne a večer a poslední spoj odjíždí z Černovic ve 23:00 s příjezdem do Jindřichova Hradce v 0:13. V Černovicích proběhne slavnostní loučení, prohlídka města, koncerty a táborák. Pořadatel akci označuje jako poslední „plavbu“ ponorek před plánovaným přesunem vozů do nového působiště.",
@@ -3804,7 +3826,7 @@ window.EVENTS=[
     "type": "zážitková jízda / prohlídka depa",
     "categories": [
       "rail",
-      "mhd"
+      "metro"
     ],
     "organizer": "Dopravní podnik hl. m. Prahy / KŽC Doprava",
     "description": "Speciální zážitková turistika DPP a KŽC dne 10. 10. 2026. Začíná na nádraží Praha-Vysočany jízdou vlaku KŽC vedeného lokomotivou řady 749 s historickými vozy, pokračuje návštěvou Depa Kačerov s fotopříležitostí a jízdou historickou soupravou metra Ečs na trase C. Oficiální Fanshop DPP nabízí dva turnusy s orientačním odjezdem kolem 9:00 a 14:00; cena 890 Kč.",
@@ -3833,7 +3855,7 @@ window.EVENTS=[
     "type": "tematický den / nostalgické jízdy",
     "categories": [
       "rail",
-      "mhd"
+      "bus"
     ],
     "organizer": "Železniční společnost Tanvald",
     "description": "Bramborová sobota s jízdami ozubnicové lokomotivy, muzeem, výtopnou, důlní železnicí a historickým autobusem Liberec–Kořenov–Jizerka.",
@@ -3890,7 +3912,7 @@ window.EVENTS=[
     "type": "zážitková / výletní jízda",
     "categories": [
       "rail",
-      "mhd"
+      "bus"
     ],
     "organizer": "H&H železniční společnost",
     "description": "Speciální retro vlak do Safari Parku včetně svozového autobusu a vstupu do pěší části safari; přesnou nástupní trasu je vhodné před cestou ověřit u pořadatele.",
@@ -3918,7 +3940,7 @@ window.EVENTS=[
     "transport": "loď / historický autobus (výstava)",
     "type": "festival / zvláštní doprava",
     "categories": [
-      "mhd",
+      "bus",
       "water"
     ],
     "organizer": "PID / organizátoři festivalu Poznej Vltavu",
@@ -4059,7 +4081,7 @@ window.EVENTS=[
     "transport": "historická tramvaj",
     "type": "komentovaná jízda",
     "categories": [
-      "mhd"
+      "tram"
     ],
     "organizer": "CAMP / IPR Praha / Den architektury",
     "description": "Dvě přibližně 90minutové komentované jízdy tramvají Architram 9219 v 14:00 a 15:30 s Jiřím Jarošem z IPR; zaměření na pražská transformační území a brownfieldy. Nutná rezervace.",
@@ -4311,7 +4333,7 @@ window.EVENTS=[
     "transport": "historická tramvaj",
     "type": "sváteční nostalgické jízdy",
     "categories": [
-      "mhd"
+      "tram"
     ],
     "organizer": "Boveraclub / DPMLJ",
     "description": "Tradiční jízdy historických tramvají v Liberci ke státnímu svátku 28. října.",
@@ -4927,7 +4949,7 @@ window.EVENTS=[
     "transport": "historická tramvaj / muzeum dopravy",
     "type": "adventní akce",
     "categories": [
-      "mhd"
+      "tram"
     ],
     "organizer": "ŠKODA-BUS klub Plzeň",
     "description": "Adventní otevření muzea; rozsvícení vánoční tramvaje, koledy a svařák.",
@@ -5067,7 +5089,7 @@ window.EVENTS=[
     "transport": "historický autobus",
     "type": "zvláštní nostalgické jízdy",
     "categories": [
-      "mhd"
+      "bus"
     ],
     "organizer": "Boveraclub / Technické muzeum Liberec",
     "description": "Tři okružní jízdy historickým autobusem Karosa B 831; odjezdy z nádvoří muzea ve 13:00, 14:00 a 15:00.",
@@ -5096,7 +5118,8 @@ window.EVENTS=[
     "type": "historická jízda / exkurze",
     "categories": [
       "rail",
-      "mhd"
+      "bus",
+      "tram"
     ],
     "organizer": "Kultura Jablonec / Boveraclub / BusLine",
     "description": "Exkurze do bývalé tramvajové vozovny U Remíze a dvě jízdy historickým autobusem RTO po Jablonci.",
