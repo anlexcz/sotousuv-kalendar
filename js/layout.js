@@ -5,20 +5,21 @@
  const nav='<nav class="main-nav"><a href="index.html">Akce</a><a href="calendar.html">Kalendář</a><a href="add.html">Přidat akci</a><a href="about.html">O projektu</a></nav>';
  const header='<header class="topbar"><div class="brand"><a class="brand-home" href="index.html"><img src="assets/metrobus-symbol.svg" alt=""><span class="brand-copy"><span>ŠOTOUŠŮV KALENDÁŘ</span></span></a><a class="brand-metrobus" href="https://metrobus.cz/" target="_blank" rel="noopener">METROBUS</a></div>'+search+nav+'</header>';
  const footer='<footer class="site-footer'+(page==="events"?" feed-footer":"")+'"><div class="footer-fun">Konečná! Prosíme, vystupte.</div><div class="footer-brand"><a href="https://metrobus.cz/" target="_blank" rel="noopener">Metrobus</a> · <span class="footer-year">2026</span></div><div class="footer-links"><a href="about.html#kontakt">Kontakt</a><a href="admin.html">Administrace</a></div></footer>';
- const mobile='<nav class="mobile-nav" aria-label="Hlavní navigace"><a href="index.html" data-nav="events"><i class="fas fa-list" aria-hidden="true"></i><span>Akce</span></a><a href="calendar.html" data-nav="calendar"><i class="fas fa-calendar-alt" aria-hidden="true"></i><span>Kalendář</span></a><a href="add.html" data-nav="add"><i class="fas fa-plus-circle" aria-hidden="true"></i><span>Přidat</span></a><a href="about.html" data-nav="about"><i class="fas fa-info-circle" aria-hidden="true"></i><span>O projektu</span></a></nav>';
- const top=document.querySelector('[data-layout="header"]'),bottom=document.querySelector('[data-layout="footer"]');
  const editor=localStorage.getItem("sk-admin-session")==="1";
+ const mobileThird=editor?'<a href="admin.html" data-nav="admin"><i class="fas fa-user-edit" aria-hidden="true"></i><span>Administrace</span></a>':'<a href="add.html" data-nav="add"><i class="fas fa-plus-circle" aria-hidden="true"></i><span>Přidat</span></a>';
+ const mobile='<nav class="mobile-nav" aria-label="Hlavní navigace"><a href="index.html" data-nav="events"><i class="fas fa-list" aria-hidden="true"></i><span>Akce</span></a><a href="calendar.html" data-nav="calendar"><i class="fas fa-calendar-alt" aria-hidden="true"></i><span>Kalendář</span></a>'+mobileThird+'<a href="about.html" data-nav="about"><i class="fas fa-info-circle" aria-hidden="true"></i><span>O projektu</span></a></nav>';
+ const top=document.querySelector('[data-layout="header"]'),bottom=document.querySelector('[data-layout="footer"]');
  const editId=page==="detail"?new URLSearchParams(location.search).get("id"):"";
  const editorHref=editId?"admin.html?event="+encodeURIComponent(editId):"admin.html";
  const editorLabel=editId?"Upravit akci":"Administrace";
  const editorIcon=editId?"fa-pen":"fa-user-edit";
- const editorShortcut=editor?'<a class="editor-shortcut" href="'+editorHref+'"><i class="fas '+editorIcon+'" aria-hidden="true"></i><span>'+editorLabel+'</span></a>':"";
+ const editorShortcut=editor&&page==="detail"?'<a class="editor-shortcut" href="'+editorHref+'"><i class="fas '+editorIcon+'" aria-hidden="true"></i><span>'+editorLabel+'</span></a>':"";
  if(top)top.outerHTML=header;
  if(bottom)bottom.outerHTML=footer;
  if(!document.querySelector(".mobile-nav"))document.body.insertAdjacentHTML("beforeend",mobile);
  if(editor&&!document.querySelector(".editor-shortcut"))document.body.insertAdjacentHTML("beforeend",editorShortcut);
  document.querySelectorAll('.main-nav a,.mobile-nav a').forEach(a=>{
-  const target=a.dataset.nav||({index:"events",calendar:"calendar",add:"add",about:"about"}[a.getAttribute("href")?.replace(".html","")]||"");
+  const target=a.dataset.nav||({index:"events",calendar:"calendar",add:"add",admin:"admin",about:"about"}[a.getAttribute("href")?.replace(".html","")]||"");
   const active=target===page||(page==="detail"&&target==="events");
   if(active){a.classList.add("active");a.setAttribute("aria-current","page")}
  });
