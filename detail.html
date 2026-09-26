@@ -41,14 +41,13 @@ if(!e){
  document.title=stripEmoji(e.title)+" – Šotoušův kalendář";
  root.innerHTML=
   '<header class="event-detail-head">'+
+   (eventCategories(e).length?'<div class="detail-categories">'+categoryTags(e)+'</div>':"")+
    '<h1>'+esc(stripEmoji(e.title))+'</h1>'+
-   (e.source?'<div class="event-source">Zdroj: '+esc(sourceLabel(e.source))+'</div>':"")+
   '</header>'+
   '<div class="event-term">'+esc(term(e))+'</div>'+
-  (eventCategories(e).length?'<div class="detail-categories">'+categoryTags(e)+'</div>':"")+
   (e.source?'<a class="official-link" href="'+esc(e.source)+'" target="_blank" rel="noopener"><span>Odkaz na akci</span><i class="fas fa-external-link-alt" aria-hidden="true"></i></a>':"")+
   (e.description?'<section class="event-description"><h2>O akci</h2><p>'+esc(e.description)+'</p></section>':"")+
-  (!isHumanReviewed(e)?'<aside class="auto-note"><i class="fas fa-robot" aria-hidden="true"></i><div><strong>Tady pracoval robot</strong><span>A i robot občas ujede. Aktuální informace si raději ověř na odkazu na akci.</span></div></aside>':"");
+  (!isHumanReviewed(e)?'<aside class="auto-note"><i class="fas fa-robot" aria-hidden="true"></i><p><strong>Tady pracoval robot.</strong> A i robot občas ujede — před cestou si proto informace raději ověř na odkazu na akci.</p></aside>':"");
 }
 </script>
 <nav class="mobile-nav" aria-label="Hlavní navigace">
