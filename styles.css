@@ -227,3 +227,12 @@ body{background:#f3f4f5}
 
 /* Detail akce: stručný rozcestník k oficiálnímu zdroji */
 @media(max-width:760px){.detail{padding-top:14px}.detail-back{margin-bottom:25px}.event-detail-head{padding-bottom:15px}.event-detail-head h1{font-size:27px;line-height:1.13}.event-term{padding:16px 0;font-size:15px}.official-link{min-height:44px}.event-description{margin-top:25px;padding-top:16px}.event-description p{font-size:13px;line-height:1.68}}
+
+/* Nenápadné zakončení všech veřejných stránek */
+.site-footer{width:100%;max-width:1280px;margin:26px auto 0;padding:22px 20px 30px;border-top:1px solid #e1e3e4;text-align:center;color:#858a8d;font-size:10px;line-height:1.5}
+.footer-fun{margin-bottom:10px;color:#686e71;font-size:11px;font-weight:700}
+.footer-brand{font-weight:700}
+.footer-links{display:flex;justify-content:center;gap:14px;margin-top:3px}
+.footer-links a{color:#777d80;text-decoration:none}.footer-links a:hover{color:#397e9e;text-decoration:underline}
+#kontakt a{color:#397e9e;font-weight:700}
+@media(max-width:760px){.site-footer{margin-top:18px;padding:20px 20px calc(82px + env(safe-area-inset-bottom));}}
