@@ -22,7 +22,13 @@ const occursOn=(e,d)=>{const a=dayStart(parse(e.from)),b=dayStart(parse(e.to||e.
 function updateFilterUI(){
  document.querySelectorAll("[data-category]").forEach(b=>{const on=selectedCategories.has(b.dataset.category);b.classList.toggle("active",on);b.setAttribute("aria-pressed",on)});
  document.querySelectorAll("[data-region]").forEach(b=>{const on=selectedRegions.has(b.dataset.region);b.classList.toggle("active",on);b.setAttribute("aria-pressed",on)});
- const n=selectedCategories.size+selectedRegions.size;$("#filterCount").textContent=n?n+" aktivní":"";$("#clearFilters").classList.toggle("visible",n>0);
+ const n=selectedCategories.size+selectedRegions.size;
+ const chosenCats=[...selectedCategories].map(id=>byId[id]).filter(Boolean);
+ const chosenRegs=[...selectedRegions];
+ const shownCats=chosenCats.slice(0,2),room=Math.max(0,3-shownCats.length),shownRegs=chosenRegs.slice(0,room);
+ const hidden=n-shownCats.length-shownRegs.length;
+ $("#filterCount").innerHTML=shownCats.map(c=>'<span class="filter-summary-category category-'+c.id+'"><i class="fas '+c.icon+'"></i>'+c.label+'</span>').join("")+shownRegs.map(r=>'<span class="filter-summary-region">'+esc(r)+'</span>').join("")+(hidden?'<span class="filter-summary-more">+'+hidden+'</span>':"");
+ $("#clearFilters").classList.toggle("visible",n>0);
  $("#regionSummary").textContent=!selectedRegions.size?"Celá ČR":selectedRegions.size===1?[...selectedRegions][0]:[...selectedRegions][0]+" + "+(selectedRegions.size-1)+" další";
 }
 const eventMatches=(e,q)=>{
