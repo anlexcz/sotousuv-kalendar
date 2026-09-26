@@ -236,3 +236,6 @@ body{background:#f3f4f5}
 .footer-links a{color:#777d80;text-decoration:none}.footer-links a:hover{color:#397e9e;text-decoration:underline}
 #kontakt a{color:#397e9e;font-weight:700}
 @media(max-width:760px){.site-footer{margin-top:18px;padding:20px 20px calc(82px + env(safe-area-inset-bottom));}}
+
+/* Postupné vykreslování feedu po celých dnech */
+.lazy-loader{min-height:70px;display:flex;align-items:center;justify-content:center;gap:8px;color:#858a8d;font-size:10px;font-weight:600}.lazy-loader i{font-size:11px;color:#6baed0}.feed-footer{display:none}body.feed-complete .feed-footer{display:block}
