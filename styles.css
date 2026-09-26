@@ -192,7 +192,7 @@ body{background:#f3f4f5}
 .modern-check{width:17px;height:17px;border:1px solid #c7cbce;border-radius:2px;display:flex;align-items:center;justify-content:center;color:transparent;flex:0 0 17px}
 .region-option.active .modern-check{background:#57b7e4;border-color:#57b7e4;color:#fff}.modern-check i{font-size:8px}
 .clear-filters{display:none;border:0;background:transparent;padding:0;color:#4589a8;font:700 10px 'Montserrat',sans-serif;cursor:pointer}.clear-filters.visible{display:block}
-.filter-title{display:flex;align-items:center;gap:7px}.filter-title b{font-size:10px;color:#4386a5;background:#e7f5fc;padding:3px 6px;border-radius:2px}
+.filter-title{display:flex;align-items:center;gap:7px;min-width:0}.filter-title b{display:flex;align-items:center;gap:4px;min-width:0;font:700 9px 'Montserrat',sans-serif;color:inherit;background:transparent;padding:0;border-radius:0}.filter-summary-category,.filter-summary-region,.filter-summary-more{display:inline-flex;align-items:center;gap:4px;min-height:20px;padding:3px 5px;border-radius:2px;white-space:nowrap;line-height:1}.filter-summary-category{background:var(--cat-bg);border:1px solid var(--cat-border);color:var(--cat-text);text-transform:uppercase}.filter-summary-category i{font-size:8px}.filter-summary-region{background:#eef0f1;border:1px solid #d9dcde;color:#5e6366}.filter-summary-more{padding-left:2px;padding-right:2px;color:#5e777f}
 .empty-state{padding:60px 20px;text-align:center;color:#777}.empty-state i{display:block;font-size:24px;margin-bottom:12px}.empty-state strong{display:block}.empty-state button{margin-top:14px;border:0;background:transparent;color:#397e9e;font-weight:700;cursor:pointer}
 
 /* Datum zůstává hlavní navigační prvek; dlouhodobé je sekundární akce vpravo. */
@@ -201,7 +201,7 @@ body{background:#f3f4f5}
 .date-label span{margin:0!important}
 .longterm-toggle{flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;padding:2px 0;border:0;background:transparent;color:#777d80;font:600 10px 'Montserrat',sans-serif;letter-spacing:0;cursor:pointer}
 .longterm-toggle i{font-size:8px}.longterm-toggle:hover{color:#3f7f9e}
-.longterm-toggle.open{padding:4px 7px;background:#dce7ec;color:#244f63;font-weight:800;border-radius:2px;box-shadow:inset 3px 0 0 #66747b}.longterm-toggle.open i{color:#244f63}
+.longterm-toggle.open{padding:4px 7px;background:#dce7ec;color:#244f63;font-weight:800;border-radius:2px;box-shadow:none}.longterm-toggle.open i{color:#244f63}
 .longterm-cards[hidden]{display:none}.longterm-cards{display:contents}
 .longterm-event{position:relative;border-left:4px solid #686d70!important;background:#fbfcfc}
 .longterm-event:hover{border-left-color:#4f5457!important}
@@ -212,7 +212,7 @@ body{background:#f3f4f5}
  .header-search-toggle{display:flex;margin-left:auto;width:40px;height:40px;align-items:center;justify-content:center;border:0;background:transparent;color:#fff;font-size:17px}
  .header-search{display:none;position:absolute;inset:0;background:#3a3a3a;align-items:center;padding:0 8px;gap:5px;z-index:3}.search-open .header-search{display:flex}
  .header-search input{height:38px;flex:1;min-width:0;border:0;border-radius:2px;background:#fff;padding:0 11px;font:500 13px 'Montserrat',sans-serif;outline:0}.header-search button{width:38px;height:38px;border:0;background:transparent;color:#fff;font-size:15px}
- .filterbar{padding:10px}.filter-section+.filter-section{margin-top:10px;padding-top:9px}.category-filter{gap:5px}.region-picker{max-height:44vh}
+ .filterbar{padding:10px}.filter-toggle{min-width:0}.filter-title{overflow:hidden}.filter-title b{overflow:hidden}.filter-summary-category,.filter-summary-region{max-width:105px;overflow:hidden;text-overflow:ellipsis}.filter-section+.filter-section{margin-top:10px;padding-top:9px}.category-filter{gap:5px}.region-picker{max-height:44vh}
  .date{gap:7px}.date-label{gap:6px}.date-label strong{font-size:18px}.date-label span{font-size:11px}
  .longterm-toggle{font-size:9px;gap:4px}
 }
