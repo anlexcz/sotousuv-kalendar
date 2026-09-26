@@ -78,3 +78,14 @@ body{background:#f3f4f5}
  .date strong{font-size:18px}
  .date span{font-size:11px}
 }
+/* Hlavička: Metrobus modrá + mobilní hamburger */
+.brand,.brand:visited,.main-nav a,.main-nav a:visited,.menu-toggle{color:var(--accent)}
+.menu-toggle{display:none;background:transparent;border:0;padding:8px;font-size:22px;line-height:1;cursor:pointer}
+@media(max-width:760px){
+ .topbar{position:sticky;top:0;z-index:20}
+ .menu-toggle{display:block;margin-left:auto}
+ .main-nav{display:none;position:absolute;top:100%;left:0;right:0;background:#3a3a3a;border-top:1px solid #505050;border-bottom:4px solid var(--accent);padding:4px 12px 10px;z-index:21}
+ .main-nav.open{display:block}
+ .main-nav a{display:block;padding:12px 4px;border:0;border-bottom:1px solid #4b4b4b;font-weight:700}
+ .main-nav a:last-child{border-bottom:0}
+}
