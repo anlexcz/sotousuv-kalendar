@@ -63,3 +63,7 @@ Aktuální prototyp: `prototype/homepage-v1`.
 - stabilizovat finální JSON schéma;
 - dopracovat detail akce;
 - doplnit testy pro termíny, opakované akce a kombinace filtrů.
+
+### Detail akce
+
+Detail je záměrně minimalistický a funguje jako rozcestník, nikoli jako náhrada webu pořadatele. Veřejně zobrazuje pouze název, pořadatele, datum/termín, čas pokud je známý, odkaz na oficiální informace a krátký popis. Interní metadata, stav ověření, kompletní program, ceny, jízdní řády, mapy a organizační pokyny se na detail standardně nepřenášejí. Oficiální odkaz je před popisem a je hlavním pokračováním uživatelské cesty.
