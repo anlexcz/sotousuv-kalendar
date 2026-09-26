@@ -66,4 +66,4 @@ Aktuální prototyp: `prototype/homepage-v1`.
 
 ### Detail akce
 
-Detail je záměrně minimalistický a funguje jako rozcestník, nikoli jako náhrada webu pořadatele. Veřejně zobrazuje pouze název, pořadatele, datum/termín, čas pokud je známý, odkaz na oficiální informace a krátký popis. Interní metadata, stav ověření, kompletní program, ceny, jízdní řády, mapy a organizační pokyny se na detail standardně nepřenášejí. Oficiální odkaz je před popisem a je hlavním pokračováním uživatelské cesty.
+Detail je záměrně minimalistický a funguje jako rozcestník, nikoli jako náhrada webu pořadatele. Veřejně zobrazuje pouze název, zdroj, datum/termín, čas pokud je známý, odkaz na akci a krátký popis. Pořadatel není povinný údaj a na veřejném detailu se standardně nezobrazuje. Interní metadata, stav ověření, kompletní program, ceny, jízdní řády, mapy a organizační pokyny se na detail standardně nepřenášejí. Odkaz na akci je před popisem a je hlavním pokračováním uživatelské cesty. Zdroj se na detailu identifikuje bezpečně podle domény odkazu, pokud nemáme samostatně ověřený název zdroje.
