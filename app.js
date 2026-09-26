@@ -6,7 +6,6 @@ const selectedCategories=new Set(),selectedRegions=new Set();
 $("#categoryFilter").innerHTML=CATEGORY_DEFS.map(c=>'<button type="button" class="filter-chip category-'+c.id+'" data-category="'+c.id+'" aria-pressed="false"><i class="fas '+c.icon+'"></i><span>'+c.label+'</span></button>').join("");
 $("#regionPicker").innerHTML=regions.map(r=>'<button type="button" class="region-option" data-region="'+esc(r)+'" aria-pressed="false"><span class="modern-check"><i class="fas fa-check"></i></span><span>'+esc(r)+'</span></button>').join("");
 const todayDate=()=>dayStart(new Date());
-const occursOn=(e,d)=>{const a=dayStart(parse(e.from)),b=dayStart(parse(e.to||e.from));return d>=a&&d<=b};
 function updateFilterUI(){
  document.querySelectorAll("[data-category]").forEach(b=>{const on=selectedCategories.has(b.dataset.category);b.classList.toggle("active",on);b.setAttribute("aria-pressed",on)});
  document.querySelectorAll("[data-region]").forEach(b=>{const on=selectedRegions.has(b.dataset.region);b.classList.toggle("active",on);b.setAttribute("aria-pressed",on)});
