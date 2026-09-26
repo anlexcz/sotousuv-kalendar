@@ -226,4 +226,4 @@ body{background:#f3f4f5}
 }
 
 /* Detail akce: stručný rozcestník k oficiálnímu zdroji */
-@media(max-width:760px){.detail{padding-top:14px}.detail-back{margin-bottom:25px}.event-detail-head{padding-bottom:15px}.event-detail-head h1{font-size:27px;line-height:1.13}.event-source{margin-top:6px;font-size:10.5px}.event-term{padding:16px 0;font-size:15px}.official-link{min-height:43px}.event-description{margin-top:25px;padding-top:16px}.event-description p{font-size:13px;line-height:1.68}}
+@media(max-width:760px){.detail{padding-top:14px}.detail-back{margin-bottom:25px}.event-detail-head{padding-bottom:15px}.event-detail-head h1{font-size:27px;line-height:1.13}.event-source{margin-top:6px;font-size:10.5px}.event-term{padding:16px 0;font-size:15px}.official-link{min-height:30px}.event-description{margin-top:25px;padding-top:16px}.event-description p{font-size:13px;line-height:1.68}}
