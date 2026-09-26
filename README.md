@@ -4,11 +4,11 @@ Webová aplikace pro přehled dopravních a šotoušských akcí.
 
 ## Stav projektu
 
-Projekt je v návrhové fázi. Větve `prototype/*` slouží k ověřování UX a vizuálního směru před volbou finálního technického řešení.
+Projekt je ve fázi funkčního beta/prototypu. Větve `prototype/*` slouží k bezpečnému ověřování UX, technického refaktoru a dalších změn před jejich případným převzetím do stabilní větve.
 
 ### První prototyp
 
-Statický prototyp homepage používá pouze HTML/CSS/JS a ukázková data. Je záměrně bez frameworku a databáze: cílem je nejdříve rozhodnout, jak má web fungovat a vypadat.
+Statický beta prototyp používá HTML/CSS/JS bez frameworku. Obsahuje importovaná data akcí v přechodném `events.js`; serverová databáze a administrace jsou cílová další architektura.
 
 Otevřete `index.html` v prohlížeči.
 
@@ -47,7 +47,7 @@ Mobile-first. Montserrat pro UI, Audiowide pouze pro značku. Pod názvem ŠOTOU
 ## Datový a technický směr MVP
 
 Cílový tok:
-`automatický sběr → surová Google tabulka → redakční zpracování → Akce pro web → JSON → veřejný web`.
+`automatický sběr → Google tabulka jako vstupní fronta → automatický import/synchronizace → webová databáze → veřejný web / administrace`.
 
 Aktuální cílový návrh počítá se serverovou databází a jednoduchou mobilně použitelnou administrací. Google tabulka zůstává vstupní frontou zdrojových nálezů; databáze je autoritativní stav webu. Automatický import může nové akce publikovat i bez ručního zásahu, ale ruční redakční změny mají před automatickým přepisem přednost.
 
@@ -60,16 +60,13 @@ Současný `events.js` je přechodný prototypový formát. Cílově má jedna a
 Aktuální prototyp: `prototype/homepage-v1`.
 
 ### Technický dluh
-- po stabilizaci vzhledu uklidit nahromaděné CSS override vrstvy;
-- přesunout opakovanou logiku kategorií a termínů do sdílených utilit;
-- stabilizovat finální JSON schéma;
-- dopracovat detail akce;
-- doplnit testy pro termíny, opakované akce a kombinace filtrů.
+- doplnit automatické testy pro společnou datovou logiku, termíny a opakované akce;
+- postupně nahradit přechodný `events.js` databází/API a skutečným stránkovaným načítáním;
+- před databázovou fází dále hlídat, aby se stránková logika znovu neduplikovala.
 
 ### Detail akce
 
-Detail je záměrně minimalistický a funguje jako rozcestník, nikoli jako náhrada webu pořadatele. Veřejně zobrazuje dopravní kategorii/kategorie a město nad názvem, název, datum/termín, čas pokud je známý, výrazný odkaz na akci a krátký popis. Samostatný textový údaj „Zdroj“ se na detailu nezobrazuje; zdroj reprezentuje cílový odkaz. Pořadatel není povinný údaj a na veřejném detailu se standardně nezobrazuje. Interní metadata, stav ověření, kompletní program, ceny, jízdní řády, mapy a organizační pokyny se na detail standardně nepřenášejí. Odkaz na akci je před popisem, je hlavním pokračováním uživatelské cesty a používá brandovou modrou jako primární CTA. Zdroj se na detailu identifikuje bezpečně podle domény odkazu, pokud nemáme samostatně ověřený název zdroje.
-
+Detail je záměrně minimalistický a funguje jako rozcestník, nikoli jako náhrada webu pořadatele. Veřejně zobrazuje dopravní kategorii/kategorie a město nad názvem, název, datum/termín, čas pokud je známý, výrazný odkaz na akci a krátký popis. Samostatný textový údaj „Zdroj“ se na detailu nezobrazuje; zdroj reprezentuje cílový odkaz. Pořadatel není povinný údaj a na veřejném detailu se standardně nezobrazuje. Interní metadata, stav ověření, kompletní program, ceny, jízdní řády, mapy a organizační pokyny se na detail standardně nepřenášejí. Odkaz na akci je před popisem, je hlavním pokračováním uživatelské cesty a používá brandovou modrou jako primární CTA. 
 
 ### Automatické verze, redakční kontrola a administrace
 
