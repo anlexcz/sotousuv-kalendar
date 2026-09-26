@@ -1,44 +1,46 @@
-const $=s=>document.querySelector(s);let period="all";
+const $=s=>document.querySelector(s);
 const parse=s=>{const m=String(s).match(/(\d{1,2})\.\s*(\d{1,2})\.\s*(\d{4})/);return m?new Date(+m[3],+m[2]-1,+m[1]):new Date(9999,0,1)};
 const fmt=s=>{const d=parse(s);return {date:d.toLocaleDateString("cs-CZ",{day:"numeric",month:"long",year:"numeric"}),weekday:d.toLocaleDateString("cs-CZ",{weekday:"long"})}};
 const esc=s=>String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const stripEmoji=s=>String(s||"").replace(/[\p{Extended_Pictographic}\uFE0F]/gu,"").replace(/\s{2,}/g," ").trim();
-
 const CATEGORY_DEFS=[
- {id:"rail",label:"Železnice",icon:"fa-train",keys:["želez","vlak","motorá","lokomotiv","zubačk","úzkokole","drezín"]},
- {id:"bus",label:"Autobus",icon:"fa-bus",keys:["autobus","bus","karosa","ikarus"]},
- {id:"tram",label:"Tramvaj",icon:"fa-tram",keys:["tramvaj","tram","električk"]},
- {id:"trolleybus",label:"Trolejbus",icon:"fa-bus-alt",keys:["trolejbus","trolej"]},
- {id:"metro",label:"Metro",icon:"fa-subway",keys:["metro","metra","metru"]},
- {id:"water",label:"Loď",icon:"fa-ship",keys:["loď","lodní","parník","plavb","přívoz"]},
- {id:"air",label:"Letadlo",icon:"fa-plane",keys:["letad","letec","letišt"]},
- {id:"cableway",label:"Lanovka",icon:"fa-mountain",keys:["lanovk","funikul","kabinov"]}
-];
-function categories(e){
- if(Array.isArray(e.categories)&&e.categories.length){const byId=Object.fromEntries(CATEGORY_DEFS.map(c=>[c.id,c]));byId.other={id:"other",label:"Ostatní",icon:"fa-compass"};return e.categories.map(id=>byId[id]).filter(Boolean)}
- const hay=[e.transport,e.type,e.title].join(" ").toLowerCase(),out=[];
- CATEGORY_DEFS.forEach(c=>{if(c.keys.some(k=>hay.includes(k)))out.push(c)});
- return out.length?out:[{id:"other",label:"Ostatní",icon:"fa-compass"}];
-}
-const categoryHtml=e=>categories(e).map(c=>'<span class="category category-'+c.id+'"><i class="fas '+c.icon+'" aria-hidden="true"></i>'+c.label+'</span>').join("");
-function displayLocation(e){
- const raw=String(e.city||e.place||"").trim();
- if(!raw)return "";
- return raw.split(/\s*\/\s*|\s*;\s*/).map(x=>x.trim()).filter(Boolean).join(", ");
-}
-const regions=[...new Set(EVENTS.flatMap(e=>(e.region||"").split("/").map(x=>x.trim())).filter(Boolean))].sort();
-$("#region").innerHTML+=regions.map(x=>'<option>'+esc(x)+'</option>').join("");
-function isCurrentOrFuture(e){
- const start=parse(e.from);
- const today=new Date();today.setHours(0,0,0,0);
- return start>=today;
+{id:"rail",label:"Železnice",icon:"fa-train"},{id:"bus",label:"Autobus",icon:"fa-bus"},{id:"tram",label:"Tramvaj",icon:"fa-tram"},{id:"trolleybus",label:"Trolejbus",icon:"fa-bus-alt"},{id:"metro",label:"Metro",icon:"fa-subway"},{id:"water",label:"Loď",icon:"fa-ship"},{id:"air",label:"Letadlo",icon:"fa-plane"},{id:"cableway",label:"Lanovka",icon:"fa-mountain"},{id:"other",label:"Ostatní",icon:"fa-compass"}];
+const byId=Object.fromEntries(CATEGORY_DEFS.map(c=>[c.id,c]));
+const categories=e=>(e.categories||["other"]).map(id=>byId[id]).filter(Boolean);
+const categoryHtml=e=>categories(e).map(c=>'<span class="category category-'+c.id+'"><i class="fas '+c.icon+'"></i>'+c.label+'</span>').join("");
+const displayLocation=e=>String(e.city||e.place||"").trim().split(/\s*\/\s*|\s*;\s*/).filter(Boolean).join(", ");
+const regions=[...new Set(EVENTS.flatMap(e=>String(e.region||"").split("/").map(x=>x.trim())).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"cs"));
+const selectedCategories=new Set(),selectedRegions=new Set();
+$("#categoryFilter").innerHTML=CATEGORY_DEFS.map(c=>'<button type="button" class="filter-chip category-'+c.id+'" data-category="'+c.id+'" aria-pressed="false"><i class="fas '+c.icon+'"></i><span>'+c.label+'</span><i class="fas fa-check check"></i></button>').join("");
+$("#regionPicker").innerHTML=regions.map(r=>'<button type="button" class="region-option" data-region="'+esc(r)+'" aria-pressed="false"><span class="modern-check"><i class="fas fa-check"></i></span><span>'+esc(r)+'</span></button>').join("");
+function isCurrentOrFuture(e){const start=parse(e.from),today=new Date();today.setHours(0,0,0,0);return start>=today}
+function updateFilterUI(){
+ document.querySelectorAll("[data-category]").forEach(b=>{const on=selectedCategories.has(b.dataset.category);b.classList.toggle("active",on);b.setAttribute("aria-pressed",on)});
+ document.querySelectorAll("[data-region]").forEach(b=>{const on=selectedRegions.has(b.dataset.region);b.classList.toggle("active",on);b.setAttribute("aria-pressed",on)});
+ const n=selectedCategories.size+selectedRegions.size;$("#filterCount").textContent=n?n+" aktivní":"";$("#clearFilters").classList.toggle("visible",n>0);
+ $("#regionSummary").textContent=!selectedRegions.size?"Celá ČR":selectedRegions.size===1?[...selectedRegions][0]:[...selectedRegions][0]+" + "+(selectedRegions.size-1)+" další";
 }
 function render(){
- let q=$("#search").value.toLowerCase(),r=$("#region").value,t=$("#transport").value;
- let a=EVENTS.filter(isCurrentOrFuture).filter(e=>{let hay=[e.title,e.city,e.region,e.organizer,e.type,e.transport].join(" ").toLowerCase(),ok=!q||hay.includes(q);ok=ok&&(!r||(e.region||"").includes(r));ok=ok&&(!t||(e.transport||"").toLowerCase().includes(t));if(period==="october")ok=ok&&parse(e.from).getMonth()===9;if(period==="weekend"){let d=parse(e.from);ok=ok&&d>=new Date(2026,8,25)&&d<=new Date(2026,8,27,23,59)}return ok}).sort((x,y)=>parse(x.from)-parse(y.from));
- $("#count").textContent=a.length+" akcí";let groups={};a.forEach(e=>(groups[e.from]??=[]).push(e));
- $("#events").innerHTML=Object.entries(groups).map(([d,es])=>'<section class="day"><div class="date"><strong>'+fmt(d).date+'</strong><span>'+fmt(d).weekday+'</span></div><div class="cards">'+es.map(e=>{const loc=displayLocation(e);return '<a class="event" href="detail.html?id='+encodeURIComponent(e.id)+'"><div class="event-main"><h2>'+esc(stripEmoji(e.title))+'</h2><div class="event-info"><div class="categories">'+categoryHtml(e)+'</div>'+(loc?'<div class="location-meta" title="'+esc(e.region||"")+'"><i class="fas fa-map-marker-alt" aria-hidden="true"></i><span>'+esc(loc)+'</span></div>':"")+'</div></div></a>'}).join("")+'</div></section>').join("")||'<p class="empty">Žádné akce neodpovídají filtru.</p>';
+ const q=$("#search").value.trim().toLowerCase();
+ const a=EVENTS.filter(isCurrentOrFuture).filter(e=>{
+  const hay=[e.title,e.city,e.place,e.region,e.organizer,e.type,e.transport,e.route].join(" ").toLowerCase();
+  const catOk=!selectedCategories.size||(e.categories||["other"]).some(c=>selectedCategories.has(c));
+  const regParts=String(e.region||"").split("/").map(x=>x.trim());
+  const regOk=!selectedRegions.size||regParts.some(r=>selectedRegions.has(r));
+  return (!q||hay.includes(q))&&catOk&&regOk;
+ }).sort((x,y)=>parse(x.from)-parse(y.from));
+ const groups={};a.forEach(e=>(groups[e.from]??=[]).push(e));
+ $("#events").innerHTML=Object.entries(groups).map(([d,es])=>'<section class="day"><div class="date"><strong>'+fmt(d).date+'</strong><span>'+fmt(d).weekday+'</span></div><div class="cards">'+es.map(e=>{const loc=displayLocation(e);return '<a class="event" href="detail.html?id='+encodeURIComponent(e.id)+'"><div class="event-main"><h2>'+esc(stripEmoji(e.title))+'</h2><div class="event-info"><div class="categories">'+categoryHtml(e)+'</div>'+(loc?'<div class="location-meta" title="'+esc(e.region||"")+'"><i class="fas fa-map-marker-alt"></i><span>'+esc(loc)+'</span></div>':"")+'</div></div></a>'}).join("")+'</div></section>').join("")||'<div class="empty-state"><i class="fas fa-filter"></i><strong>Žádné akce neodpovídají filtru.</strong><button type="button" id="emptyClear">Vymazat filtry</button></div>';
+ const ec=$("#emptyClear");if(ec)ec.onclick=clearFilters;
 }
-["search","region","transport"].forEach(id=>$("#"+id).addEventListener("input",render));
-document.querySelectorAll("[data-period]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-period]").forEach(x=>x.classList.remove("active"));b.classList.add("active");period=b.dataset.period;render()});render();
-const filterToggle=$("#filterToggle"),filterbar=$("#filterbar");filterToggle.addEventListener("click",()=>{const open=filterbar.classList.toggle("open");filterbar.classList.toggle("collapsed",!open);filterToggle.setAttribute("aria-expanded",open);filterToggle.querySelector("span").textContent=open?"⌃":"⌄"});
+function clearFilters(){selectedCategories.clear();selectedRegions.clear();updateFilterUI();render()}
+document.querySelectorAll("[data-category]").forEach(b=>b.onclick=()=>{selectedCategories.has(b.dataset.category)?selectedCategories.delete(b.dataset.category):selectedCategories.add(b.dataset.category);updateFilterUI();render()});
+document.querySelectorAll("[data-region]").forEach(b=>b.onclick=()=>{selectedRegions.has(b.dataset.region)?selectedRegions.delete(b.dataset.region):selectedRegions.add(b.dataset.region);updateFilterUI();render()});
+$("#clearFilters").onclick=clearFilters;
+$("#regionTrigger").onclick=()=>{const p=$("#regionPicker"),open=p.classList.toggle("open");$("#regionTrigger").setAttribute("aria-expanded",open)};
+$("#search").addEventListener("input",render);
+$("#searchToggle").onclick=()=>{document.body.classList.add("search-open");$("#search").focus()};
+$("#searchClose").onclick=()=>document.body.classList.remove("search-open");
+$("#searchClear").onclick=()=>{$("#search").value="";$("#search").focus();render()};
+const filterToggle=$("#filterToggle"),filterbar=$("#filterbar");filterToggle.onclick=()=>{const open=filterbar.classList.toggle("open");filterbar.classList.toggle("collapsed",!open);filterToggle.setAttribute("aria-expanded",open);filterToggle.querySelector(".filter-caret").classList.toggle("fa-chevron-up",open);filterToggle.querySelector(".filter-caret").classList.toggle("fa-chevron-down",!open)};
+updateFilterUI();render();
