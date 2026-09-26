@@ -349,44 +349,42 @@ body.feed-complete .feed-footer{display:block}
 
 
 /* ===== Administrace – prototyp ===== */
-.admin-page{width:100%;max-width:1120px;margin:0 auto;padding:32px 20px 110px}
+.admin-page{width:100%;max-width:1180px;margin:0 auto;padding:28px 20px 110px}
 .admin-login{max-width:560px;margin:50px auto;padding:28px;background:#fff;border:1px solid #dfe1e3}
-.admin-login h1,.admin-head h1{margin:0 0 10px;font-size:30px}
-.admin-login p{color:#686d70;line-height:1.6;margin:0 0 22px}
+.admin-login h1,.admin-head h1{margin:0;font-size:28px}.admin-head h1 span{font-size:13px;color:#858a8d;font-weight:600}
+.admin-login p{color:#686d70;line-height:1.6;margin:10px 0 22px}
 .admin-primary,.admin-quiet,.admin-icon{font:700 11px 'Montserrat',sans-serif;cursor:pointer}
 .admin-primary{min-height:38px;padding:0 13px;border:1px solid #59b3e0;border-radius:2px;background:var(--accent);color:#233b46}
 .admin-primary i,.admin-quiet i{margin-right:6px}
 .admin-quiet{min-height:36px;padding:0 11px;border:1px solid #d4d7d9;border-radius:2px;background:#fff;color:#555c60;text-decoration:none;display:inline-flex;align-items:center}
 .admin-icon{width:38px;height:38px;border:0;background:transparent;color:#707578}
-.admin-head{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;margin-bottom:18px}
-.admin-stats{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px}
-.admin-stats span{padding:7px 9px;background:#e9ebec;font-size:10px;color:#606568}
-.admin-stats b{font-size:12px;color:#303538}
-.admin-toolbar{display:grid;grid-template-columns:1fr 180px 190px;gap:7px;margin-bottom:10px}
-.admin-search{position:relative;display:flex;align-items:center}
+.admin-head{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:14px}
+.admin-search{position:relative;display:flex;align-items:center;max-width:520px;margin-bottom:12px}
 .admin-search i{position:absolute;left:11px;color:#888;font-size:11px}
-.admin-search input,.admin-toolbar select,.admin-editor input,.admin-editor textarea,.admin-editor select{
- width:100%;border:1px solid #d4d7d9;border-radius:2px;background:#fff;font:500 12px 'Montserrat',sans-serif;color:#333;outline:0
-}
-.admin-search input,.admin-toolbar select{height:38px}
-.admin-search input{padding:0 10px 0 32px}
-.admin-toolbar select{padding:0 8px}
-.admin-list{border-top:1px solid #d8dbdd}
-.admin-row{width:100%;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center;padding:13px 10px;border:0;border-bottom:1px solid #dfe1e3;background:transparent;text-align:left;font-family:'Montserrat',sans-serif;cursor:pointer}
-.admin-row:hover{background:#fff}
-.admin-row strong{display:block;font-size:13px;line-height:1.35}
-.admin-row small{display:block;margin-top:4px;color:#7a7f82;font-size:10px}
-.admin-row-flags{display:flex;align-items:center;justify-content:flex-end;gap:5px}
-.admin-status,.admin-review{display:inline-flex;align-items:center;gap:5px;padding:4px 6px;border-radius:2px;font-size:9px;font-weight:800;text-transform:uppercase;white-space:nowrap}
+.admin-search input,.admin-editor input,.admin-editor textarea,.admin-editor select{width:100%;border:1px solid #d4d7d9;border-radius:2px;background:#fff;font:500 12px 'Montserrat',sans-serif;color:#333;outline:0}
+.admin-search input{height:38px;padding:0 10px 0 32px}
+.admin-tabs{display:flex;gap:0;border-bottom:1px solid #cfd3d5;margin-bottom:0;overflow-x:auto}
+.admin-tabs button{border:0;border-bottom:3px solid transparent;background:transparent;padding:10px 13px 8px;font:700 11px 'Montserrat',sans-serif;color:#6d7275;white-space:nowrap;cursor:pointer}
+.admin-tabs button.active{border-bottom-color:var(--accent);color:#303538}
+.admin-list-head,.admin-row{display:grid;grid-template-columns:minmax(300px,2.2fr) minmax(100px,.8fr) minmax(110px,.8fr) 90px 115px;gap:12px;align-items:center}
+.admin-list-head{padding:8px 10px;background:#e9ebec;border-bottom:1px solid #d4d7d9;color:#777c7f;font-size:9px;font-weight:800;text-transform:uppercase}
+.admin-list{background:#fff}
+.admin-row{width:100%;padding:9px 10px;border:0;border-bottom:1px solid #e1e3e4;background:#fff;text-align:left;font-family:'Montserrat',sans-serif;cursor:pointer}
+.admin-row:hover{background:#f6f7f7}
+.admin-row-main small{display:block;margin-bottom:2px;color:#858a8d;font-size:9px;font-variant-numeric:tabular-nums}
+.admin-row-main strong{display:block;font-size:11.5px;line-height:1.35}
+.admin-row-mobilemeta{display:none}
+.admin-cell{min-width:0;overflow:hidden;text-overflow:ellipsis;color:#666c6f;font-size:10px;white-space:nowrap}
+.admin-status,.admin-review{display:inline-flex;align-items:center;gap:4px;padding:3px 5px;border-radius:2px;font-size:8px;font-weight:800;text-transform:uppercase;white-space:nowrap}
 .admin-status.active{background:#e4f3e8;color:#28623a}.admin-status.cancelled{background:#fbe8eb;color:#8b3d49}.admin-status.hidden{background:#eceeef;color:#5f6366}
 .admin-review{background:#eef0f1;color:#656a6d}.admin-review.human_reviewed{background:#e6f4fd;color:#276887}
-.admin-empty{padding:50px 10px;text-align:center;color:#777;font-size:12px}
+.admin-empty{padding:42px 10px;text-align:center;color:#777;font-size:11px}
 .admin-editor-backdrop{position:fixed;inset:0;z-index:10000;background:rgba(31,34,36,.48);display:flex;justify-content:flex-end}
 .admin-editor-backdrop[hidden]{display:none}
 .admin-editor{width:min(680px,100%);height:100%;overflow:auto;background:#f5f6f6;padding:24px;box-shadow:-8px 0 30px rgba(0,0,0,.12)}
 .admin-editor-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:22px}
-.admin-editor-head h2{margin:0;font-size:23px;line-height:1.25}
-.admin-editor form>label,.admin-form-grid>label{display:block;margin-bottom:13px;font-size:10px;font-weight:800;text-transform:uppercase;color:#646a6d}
+.admin-editor-head h2{margin:0;font-size:21px;line-height:1.25}
+.admin-editor form>label,.admin-form-grid>label,.admin-more-body>label{display:block;margin-bottom:13px;font-size:10px;font-weight:800;text-transform:uppercase;color:#646a6d}
 .admin-editor input,.admin-editor textarea,.admin-editor select{display:block;margin-top:6px;padding:9px 10px;text-transform:none}
 .admin-editor input,.admin-editor select{height:38px}.admin-editor textarea{resize:vertical;line-height:1.5}
 .admin-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
@@ -394,17 +392,24 @@ body.feed-complete .feed-footer{display:block}
 .admin-category-grid{display:flex;flex-wrap:wrap;gap:5px}.admin-category input{position:absolute;opacity:0;pointer-events:none}
 .admin-category span{min-height:27px;padding:5px 8px;border:1px solid var(--cat-border);background:#fff;color:var(--cat-text);display:inline-flex;align-items:center;gap:6px;font-size:9px;font-weight:800;text-transform:uppercase;cursor:pointer}
 .admin-category input:checked+span{background:var(--cat-bg);box-shadow:inset 0 0 0 1px var(--cat-active)}
-.admin-editor-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:7px;margin-top:10px;padding-top:18px;border-top:1px solid #d9dcde}
+.admin-more{margin:5px 0 12px;border-top:1px solid #d9dcde;border-bottom:1px solid #d9dcde}.admin-more summary{padding:11px 2px;cursor:pointer;color:#596064;font-size:10px;font-weight:800;text-transform:uppercase}.admin-more-body{padding:8px 0 2px}
+.admin-editor-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:7px;margin-top:10px}
 .admin-prototype-note{margin:14px 0 0;color:#7b8083;font-size:9.5px;line-height:1.5}.admin-prototype-note i{margin-right:5px}
 .admin-modal-open{overflow:hidden}
 .editor-shortcut{position:fixed;right:18px;bottom:18px;z-index:9000;min-height:38px;padding:0 12px;border:1px solid #4da9d5;border-radius:3px;background:#30363a;color:#fff;display:flex;align-items:center;gap:7px;text-decoration:none;font-size:10px;font-weight:800;box-shadow:0 3px 12px rgba(0,0,0,.18)}
 .editor-shortcut:hover{background:#252a2d}.editor-shortcut i{color:var(--accent)}
 
 @media(max-width:760px){
- .admin-page{padding:24px 10px 96px}
+ .admin-page{padding:18px 10px 96px}
  .admin-login{margin:20px 0;padding:20px}
- .admin-toolbar{grid-template-columns:1fr 1fr}.admin-search{grid-column:1/-1}
- .admin-row{grid-template-columns:1fr;gap:8px;padding:12px 5px}.admin-row-flags{justify-content:flex-start}
+ .admin-head{margin-bottom:10px}.admin-head .page-kicker{display:none}.admin-head h1{font-size:23px}
+ .admin-logout{width:36px;padding:0;justify-content:center}.admin-logout i{margin:0}.admin-logout span{display:none}
+ .admin-search{max-width:none;margin-bottom:8px}.admin-search input{height:36px}
+ .admin-tabs{margin:0 -10px;padding:0 10px}.admin-tabs button{padding:9px 10px 7px;font-size:9.5px}
+ .admin-list-head{display:none}.admin-list{margin:0 -10px}
+ .admin-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 8px;padding:9px 10px}
+ .admin-row-main{grid-row:1/3}.admin-row-main small{font-size:8.5px}.admin-row-main strong{font-size:11px}.admin-row-mobilemeta{display:block;margin-top:3px;color:#858a8d;font-size:8.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ .admin-place,.admin-cats{display:none}.admin-cell{overflow:visible}.admin-status,.admin-review{font-size:7.5px;padding:3px 4px}
  .admin-editor{padding:18px 14px calc(85px + env(safe-area-inset-bottom))}
  .admin-form-grid{grid-template-columns:1fr 1fr}
  .admin-editor-actions{justify-content:stretch}.admin-editor-actions>*{flex:1 1 auto;justify-content:center}
