@@ -91,3 +91,6 @@ Společná logika není soustředěna v jednom supersouboru. Je rozdělena podle
 - `js/events.js` – obecná logika nad akcí (lokalita, délka, dlouhodobost).
 
 Stránkové skripty mají používat tyto společné moduly místo vlastních kopií stejné logiky. Pořadí načtení je utils → categories → dates → events → stránkový skript.
+
+### Sdílený layout
+Hlavička, desktopová navigace, mobilní navigace a patička jsou generovány z `js/layout.js`. Jednotlivé HTML stránky obsahují pouze kotvy `data-layout="header"` a `data-layout="footer"` a identifikují sekci přes `data-page`. Homepage si zachovává vlastní vyhledávání v hlavičce a speciální `feed-footer` chování navázané na lazy rendering.
