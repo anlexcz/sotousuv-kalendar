@@ -26,7 +26,7 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
           root=Path('_site')
-          # Create clean-URL directories from the existing HTML templates.
+          prefix='/sotousuv-kalendar'
           mapping={
             'calendar.html':'kalendar/index.html',
             'add.html':'pridat/index.html',
@@ -42,15 +42,13 @@ jobs:
                   out.write_text(p.read_text(encoding='utf-8'),encoding='utf-8')
           for p in root.rglob('*.html'):
               s=p.read_text(encoding='utf-8')
-              s=s.replace('<head>','<head><base href="/sotousuv-kalendar/">',1)
-              # Runtime must load before layout and page scripts.
               marker='<script src="/js/layout.js'
               if marker in s and '/js/runtime.js' not in s:
                   s=s.replace(marker,'<script src="/js/runtime.js"></script>'+marker,1)
-              # Convert root-relative static assets/links so <base> controls the project path.
-              s=s.replace('href="/','href="').replace('src="/','src="')
+              # GitHub Pages project sites live below /sotousuv-kalendar/.
+              # Rewrite only root-relative URLs and keep external URLs untouched.
+              s=s.replace('href="/', f'href="{prefix}/').replace('src="/', f'src="{prefix}/')
               p.write_text(s,encoding='utf-8')
-          # GitHub Pages serves files verbatim; disable Jekyll processing.
           (root/'.nojekyll').write_text('',encoding='utf-8')
           PY
       - uses: actions/configure-pages@v5
