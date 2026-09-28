@@ -1,5 +1,5 @@
 const cats=Object.fromEntries(SK.CATEGORY_DEFS.map(c=>[c.id,c.color]));let view=new Date();view.setDate(1);let monthEvents=[];
-const iso=d=>d.toISOString().slice(0,10);
+const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 function eachDay(a,b){const out=[],d=new Date(a+'T00:00:00'),end=new Date((b||a)+'T00:00:00');while(d<=end){out.push(iso(d));d.setDate(d.getDate()+1)}return out}
 function mapMonth(events){const m=new Map();for(const e of events)for(const t of(e.dates||[]))for(const k of eachDay(t.starts_on,t.ends_on)){if(!m.has(k))m.set(k,[]);if(!m.get(k).some(x=>String(x.id)===String(e.id)))m.get(k).push(e)}return m}
 async function loadMonth(){const from=new Date(view.getFullYear(),view.getMonth(),1),to=new Date(view.getFullYear(),view.getMonth()+1,0);try{const r=await fetch('/api/events.php?from='+iso(from)+'&to='+iso(to));const data=await r.json();monthEvents=data.events||[];draw(mapMonth(monthEvents))}catch{document.querySelector('#monthGrid').innerHTML='<div class="calendar-empty">Kalendář se nepodařilo načíst.</div>'}}
