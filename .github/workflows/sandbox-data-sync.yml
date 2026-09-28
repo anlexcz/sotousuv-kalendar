@@ -1,0 +1,53 @@
+name: Sandbox data sync
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: pages/live-data
+      - name: Download sanitized event export
+        env:
+          SK_SHEET_EXPORT_URL: ${{ secrets.SK_SHEET_EXPORT_URL }}
+        run: |
+          test -n "$SK_SHEET_EXPORT_URL" || { echo 'Missing repository secret SK_SHEET_EXPORT_URL'; exit 1; }
+          curl --fail --location --silent --show-error "$SK_SHEET_EXPORT_URL" -o /tmp/events.json
+      - name: Validate export
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          src=Path('/tmp/events.json')
+          data=json.loads(src.read_text(encoding='utf-8'))
+          if not isinstance(data,dict) or not isinstance(data.get('events'),list):
+              raise SystemExit('Export must be a JSON object with an events array')
+          required=('id','title','dates','categories')
+          for i,event in enumerate(data['events']):
+              if not isinstance(event,dict):
+                  raise SystemExit(f'Event #{i} is not an object')
+              missing=[k for k in required if k not in event]
+              if missing:
+                  raise SystemExit(f'Event #{i} missing: {missing}')
+              if not isinstance(event['dates'],list):
+                  raise SystemExit(f'Event #{i}: dates must be an array')
+          Path('data/events.json').write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print(f"Validated {len(data['events'])} events")
+          PY
+      - name: Commit changed data
+        run: |
+          if git diff --quiet -- data/events.json; then
+            echo 'No data changes.'
+            exit 0
+          fi
+          git config user.name 'sotousuv-kalendar-bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git add data/events.json
+          git commit -m 'Update sandbox event data'
+          git push origin HEAD:pages/live-data
