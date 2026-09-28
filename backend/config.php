@@ -12,9 +12,7 @@ function sk_env(string $key, ?string $default = null): ?string
 function sk_config(): array
 {
     static $config;
-    if ($config !== null) {
-        return $config;
-    }
+    if ($config !== null) return $config;
 
     $config = [
         'app_env' => sk_env('SK_APP_ENV', 'production'),
@@ -29,7 +27,7 @@ function sk_config(): array
         ],
         'session_name' => sk_env('SK_SESSION_NAME', 'sk_admin'),
         'session_secure' => sk_env('SK_SESSION_SECURE', '1') !== '0',
+        'sheet_sync_token' => sk_env('SK_SHEET_SYNC_TOKEN', ''),
     ];
-
     return $config;
 }
