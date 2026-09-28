@@ -1,6 +1,6 @@
 const $=s=>document.querySelector(s),esc=SK.escapeHtml,{CATEGORY_DEFS,CATEGORY_BY_ID}=SK;
 let events=[],visibleDayCount=12;const selectedCategories=new Set(),selectedRegions=new Set();
-const iso=d=>d.toISOString().slice(0,10),today=()=>{const d=new Date();d.setHours(0,0,0,0);return d};
+const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'),today=()=>{const d=new Date();d.setHours(0,0,0,0);return d};
 const fmt=d=>d.toLocaleDateString('cs-CZ',{day:'numeric',month:'long',year:'numeric'}),weekday=d=>d.toLocaleDateString('cs-CZ',{weekday:'long'});
 const categoryHtml=e=>(e.categories||[]).map(id=>{const c=CATEGORY_BY_ID[id]||CATEGORY_BY_ID.other;return'<span class="category category-'+id+'"><i class="fas '+c.icon+'"></i>'+c.label+'</span>'}).join('');
 const loc=e=>[e.city,e.place].filter(Boolean).join(' · ')||e.region||'';
