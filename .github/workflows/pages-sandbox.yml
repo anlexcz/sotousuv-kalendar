@@ -1,0 +1,69 @@
+name: Pages sandbox
+
+on:
+  push:
+    branches: ["pages/live-data"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages-sandbox
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build static sandbox
+        run: |
+          mkdir -p _site
+          rsync -a --exclude '.git' --exclude '.github' --exclude 'api' --exclude 'backend' --exclude '.env*' ./ _site/
+          python3 - <<'PY'
+          from pathlib import Path
+          root=Path('_site')
+          # Create clean-URL directories from the existing HTML templates.
+          mapping={
+            'calendar.html':'kalendar/index.html',
+            'add.html':'pridat/index.html',
+            'about.html':'o-projektu/index.html',
+            'detail.html':'akce/index.html',
+            'admin.html':'admin/index.html',
+          }
+          for src,dst in mapping.items():
+              p=root/src
+              if p.exists():
+                  out=root/dst
+                  out.parent.mkdir(parents=True,exist_ok=True)
+                  out.write_text(p.read_text(encoding='utf-8'),encoding='utf-8')
+          for p in root.rglob('*.html'):
+              s=p.read_text(encoding='utf-8')
+              s=s.replace('<head>','<head><base href="/sotousuv-kalendar/">',1)
+              # Runtime must load before layout and page scripts.
+              marker='<script src="/js/layout.js'
+              if marker in s and '/js/runtime.js' not in s:
+                  s=s.replace(marker,'<script src="/js/runtime.js"></script>'+marker,1)
+              # Convert root-relative static assets/links so <base> controls the project path.
+              s=s.replace('href="/','href="').replace('src="/','src="')
+              p.write_text(s,encoding='utf-8')
+          # GitHub Pages serves files verbatim; disable Jekyll processing.
+          (root/'.nojekyll').write_text('',encoding='utf-8')
+          PY
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
