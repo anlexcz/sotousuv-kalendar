@@ -1,0 +1,15 @@
+RewriteEngine On
+
+# Existing files and directories are served directly.
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+RewriteRule ^kalendar/?$ calendar.html [L,QSA]
+RewriteRule ^pridat/?$ add.html [L,QSA]
+RewriteRule ^o-projektu/?$ about.html [L,QSA]
+RewriteRule ^admin/?$ admin.html [L,QSA]
+RewriteRule ^akce/([0-9]+)/?$ detail.html?id=$1 [L,QSA]
+
+# Home page.
+RewriteRule ^$ index.html [L]
