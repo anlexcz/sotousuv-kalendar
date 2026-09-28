@@ -1,15 +1,11 @@
-const {escapeHtml:esc,stripEmoji,categoryIds:eventCategories,displayLocation:displayPlace,CATEGORY_BY_ID}=SK;
-const id=new URLSearchParams(location.search).get("id");
-const edits=(()=>{try{return JSON.parse(localStorage.getItem("sk-admin-edits")||"{}")}catch{return {}}})();
-const original=EVENTS.find(x=>x.id===id);
-const e=original?{...original,...(edits[id]||{})}:null;
-const root=document.querySelector("#detail");
-const categoryTags=e=>eventCategories(e).map(key=>{const def=CATEGORY_BY_ID[key]||CATEGORY_BY_ID.other;return '<span class="category category-'+esc(key)+'"><i class="fas '+def.icon+'" aria-hidden="true"></i>'+esc(def.label)+'</span>'}).join("");
-const isHumanReviewed=e=>e.reviewStatus==="human_reviewed"||e.reviewed===true;
-function term(e){const dates=e.to&&e.to!==e.from?e.from+" – "+e.to:e.from;const times=e.time?(e.endTime?e.time+"–"+e.endTime:e.time):"";return [dates,times].filter(Boolean).join(" · ")}
-if(!e){root.innerHTML='<div class="detail-missing"><h1>Akce nenalezena</h1><p>Odkaz už nemusí být platný nebo akce není v aktuálních datech.</p></div>'}else{
- document.title=stripEmoji(e.title)+" – Šotoušův kalendář";
- root.innerHTML='<header class="event-detail-head">'+(eventCategories(e).length||displayPlace(e)?'<div class="detail-meta">'+(eventCategories(e).length?'<div class="detail-categories">'+categoryTags(e)+'</div>':"")+(displayPlace(e)?'<span class="detail-place"><i class="fas fa-map-marker-alt" aria-hidden="true"></i>'+esc(displayPlace(e))+'</span>':"")+'</div>':"")+'<h1>'+esc(stripEmoji(e.title))+'</h1></header>'+
-  '<div class="event-term">'+esc(term(e))+'</div>'+(e.source?'<a class="official-link" href="'+esc(e.source)+'" target="_blank" rel="noopener"><span>Odkaz na akci</span><i class="fas fa-external-link-alt" aria-hidden="true"></i></a>':"")+
-  (e.description?'<section class="event-description"><h2>O akci</h2><p>'+esc(e.description)+'</p></section>':"")+(!isHumanReviewed(e)?'<aside class="auto-note"><i class="fas fa-robot" aria-hidden="true"></i><p><strong>Tady pracoval robot.</strong> Občas mu něco ujede, takže před cestou raději mrkni na odkaz na akci.</p></aside>':"");
-}
+const {escapeHtml:esc,stripEmoji,CATEGORY_BY_ID}=SK;
+const pathId=location.pathname.match(/\/akce\/([0-9]+)\/?$/)?.[1];
+const id=pathId||new URLSearchParams(location.search).get('id');
+const root=document.querySelector('#detail');
+const categoryTags=e=>(e.categories||[]).map(key=>{const def=CATEGORY_BY_ID[key]||CATEGORY_BY_ID.other;return '<span class="category category-'+esc(key)+'"><i class="fas '+def.icon+'" aria-hidden="true"></i>'+esc(def.label)+'</span>'}).join('');
+const place=e=>[e.city,e.place].filter(Boolean).join(' · ')||e.region||'';
+const fmtDate=s=>s?new Date(s+'T00:00:00').toLocaleDateString('cs-CZ',{day:'numeric',month:'long',year:'numeric'}):'';
+function termList(e){return(e.dates||[]).map(d=>{const span=d.ends_on&&d.ends_on!==d.starts_on?fmtDate(d.starts_on)+' – '+fmtDate(d.ends_on):fmtDate(d.starts_on);const t=d.starts_at?(String(d.starts_at).slice(0,5)+(d.ends_at?'–'+String(d.ends_at).slice(0,5):'')):'';return'<li>'+esc([span,t].filter(Boolean).join(' · '))+'</li>'}).join('')}
+async function load(){if(!id){missing();return}try{const r=await fetch('/api/event.php?id='+encodeURIComponent(id));if(!r.ok)throw 0;const{event:e}=await r.json();document.title=stripEmoji(e.title)+' – Šotoušův kalendář';const source=e.sources?.find(s=>Number(s.is_primary))?.url||e.sources?.[0]?.url||e.public_url;root.innerHTML='<header class="event-detail-head">'+((e.categories||[]).length||place(e)?'<div class="detail-meta">'+((e.categories||[]).length?'<div class="detail-categories">'+categoryTags(e)+'</div>':'')+(place(e)?'<span class="detail-place"><i class="fas fa-map-marker-alt"></i>'+esc(place(e))+'</span>':'')+'</div>':'')+'<h1>'+esc(stripEmoji(e.title))+'</h1><small>#'+esc(String(e.id))+'</small></header><div class="event-term"><ul class="event-term-list">'+termList(e)+'</ul></div>'+(source?'<a class="official-link" href="'+esc(source)+'" target="_blank" rel="noopener"><span>Odkaz na akci</span><i class="fas fa-external-link-alt"></i></a>':'')+(e.description?'<section class="event-description"><h2>O akci</h2><p>'+esc(e.description)+'</p></section>':'')+(e.review_status!=='human_reviewed'?'<aside class="auto-note"><i class="fas fa-robot"></i><p><strong>Tady pracoval robot.</strong> Občas mu něco ujede, takže před cestou raději mrkni na odkaz na akci.</p></aside>':'');}catch{missing()}}
+function missing(){root.innerHTML='<div class="detail-missing"><h1>Akce nenalezena</h1><p>Odkaz už nemusí být platný nebo akce není dostupná.</p></div>'}
+load();

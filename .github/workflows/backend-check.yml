@@ -1,0 +1,29 @@
+name: Backend checks
+
+on:
+  push:
+    branches: ["backend/**", "prototype/**", "main"]
+  pull_request:
+
+jobs:
+  syntax:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+      - name: PHP syntax
+        run: find api backend -name '*.php' -print0 | xargs -0 -n1 php -l
+      - name: JavaScript syntax
+        run: |
+          node --check admin.js
+          node --check app.js
+          node --check calendar.js
+          node --check detail.js
+          node --check js/layout.js
+          node --check js/utils.js
+          node --check js/categories.js
+          node --check js/dates.js
+          node --check js/events.js

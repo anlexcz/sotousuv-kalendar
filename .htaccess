@@ -1,0 +1,27 @@
+RewriteEngine On
+
+# Canonical public URLs: users never need to see .html.
+RewriteCond %{THE_REQUEST} \s/+index\.html[?\s] [NC]
+RewriteRule ^index\.html$ / [R=301,L]
+RewriteCond %{THE_REQUEST} \s/+calendar\.html[?\s] [NC]
+RewriteRule ^calendar\.html$ /kalendar [R=301,L]
+RewriteCond %{THE_REQUEST} \s/+add\.html[?\s] [NC]
+RewriteRule ^add\.html$ /pridat [R=301,L]
+RewriteCond %{THE_REQUEST} \s/+about\.html[?\s] [NC]
+RewriteRule ^about\.html$ /o-projektu [R=301,L]
+RewriteCond %{THE_REQUEST} \s/+admin\.html[?\s] [NC]
+RewriteRule ^admin\.html$ /admin [R=301,L]
+RewriteCond %{THE_REQUEST} \s/+detail\.html\?id=([0-9]+) [NC]
+RewriteRule ^detail\.html$ /akce/%1? [R=301,L]
+
+# Existing assets, API and backend files are served directly.
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+RewriteRule ^kalendar/?$ calendar.html [L,QSA]
+RewriteRule ^pridat/?$ add.html [L,QSA]
+RewriteRule ^o-projektu/?$ about.html [L,QSA]
+RewriteRule ^admin/?$ admin.html [L,QSA]
+RewriteRule ^akce/([0-9]+)/?$ detail.html?id=$1 [L,QSA]
+RewriteRule ^$ index.html [L]
