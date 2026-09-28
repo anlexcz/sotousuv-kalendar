@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS users (
+CREATE TABLE IF NOT EXISTS sk_users (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     email VARCHAR(190) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS users (
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS events (
+CREATE TABLE IF NOT EXISTS sk_events (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     source_system VARCHAR(40) NULL,
     source_external_id VARCHAR(190) NULL,
@@ -31,17 +31,16 @@ CREATE TABLE IF NOT EXISTS events (
     source_last_checked_at DATETIME NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    UNIQUE KEY uq_events_source (source_system, source_external_id),
-    INDEX idx_events_status (status),
-    INDEX idx_events_review_status (review_status),
-    INDEX idx_events_city (city),
-    INDEX idx_events_region (region)
+    UNIQUE KEY uq_sk_events_source (source_system, source_external_id),
+    INDEX idx_sk_events_status (status),
+    INDEX idx_sk_events_review_status (review_status),
+    INDEX idx_sk_events_city (city),
+    INDEX idx_sk_events_region (region)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Akce nema zadnou technickou "serii" ani recurrence rule.
--- Jeden zaznam v events muze mit libovolny pocet explicitnich terminu.
--- Vice-denni konkretni vyskyt ma starts_on a ends_on ruzne; jednodenny stejne.
-CREATE TABLE IF NOT EXISTS event_dates (
+-- Akce nema zadnou technickou serii ani recurrence rule.
+-- Jeden zaznam v sk_events muze mit libovolny pocet explicitnich terminu.
+CREATE TABLE IF NOT EXISTS sk_event_dates (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     event_id BIGINT UNSIGNED NOT NULL,
     starts_on DATE NOT NULL,
@@ -50,30 +49,30 @@ CREATE TABLE IF NOT EXISTS event_dates (
     ends_at TIME NULL,
     sort_order INT NOT NULL DEFAULT 0,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_event_dates_event FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE,
-    UNIQUE KEY uq_event_dates_exact (event_id, starts_on, ends_on, starts_at, ends_at),
-    INDEX idx_event_dates_event (event_id),
-    INDEX idx_event_dates_range (starts_on, ends_on)
+    CONSTRAINT fk_sk_event_dates_event FOREIGN KEY (event_id) REFERENCES sk_events(id) ON DELETE CASCADE,
+    UNIQUE KEY uq_sk_event_dates_exact (event_id, starts_on, ends_on, starts_at, ends_at),
+    INDEX idx_sk_event_dates_event (event_id),
+    INDEX idx_sk_event_dates_range (starts_on, ends_on)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS event_categories (
+CREATE TABLE IF NOT EXISTS sk_event_categories (
     event_id BIGINT UNSIGNED NOT NULL,
     category ENUM('rail','bus','tram','trolleybus','metro','water','air','cableway','other') NOT NULL,
     PRIMARY KEY (event_id, category),
-    CONSTRAINT fk_event_categories_event FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE
+    CONSTRAINT fk_sk_event_categories_event FOREIGN KEY (event_id) REFERENCES sk_events(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS event_locations (
+CREATE TABLE IF NOT EXISTS sk_event_locations (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     event_id BIGINT UNSIGNED NOT NULL,
     label VARCHAR(190) NOT NULL,
     sort_order INT NOT NULL DEFAULT 0,
-    CONSTRAINT fk_event_locations_event FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE,
-    INDEX idx_event_locations_event (event_id),
-    INDEX idx_event_locations_label (label)
+    CONSTRAINT fk_sk_event_locations_event FOREIGN KEY (event_id) REFERENCES sk_events(id) ON DELETE CASCADE,
+    INDEX idx_sk_event_locations_event (event_id),
+    INDEX idx_sk_event_locations_label (label)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS event_sources (
+CREATE TABLE IF NOT EXISTS sk_event_sources (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     event_id BIGINT UNSIGNED NOT NULL,
     url TEXT NOT NULL,
@@ -83,24 +82,22 @@ CREATE TABLE IF NOT EXISTS event_sources (
     last_seen_at DATETIME NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    CONSTRAINT fk_event_sources_event FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE,
-    INDEX idx_event_sources_event (event_id),
-    INDEX idx_event_sources_source_key (source_key)
+    CONSTRAINT fk_sk_event_sources_event FOREIGN KEY (event_id) REFERENCES sk_events(id) ON DELETE CASCADE,
+    INDEX idx_sk_event_sources_event (event_id),
+    INDEX idx_sk_event_sources_source_key (source_key)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Volitelna redakcni vazba mezi dvema samostatnymi akcemi.
--- Typicky pro specialni den vycleneny z bezne akce.
-CREATE TABLE IF NOT EXISTS event_relations (
+CREATE TABLE IF NOT EXISTS sk_event_relations (
     event_id BIGINT UNSIGNED NOT NULL,
     related_event_id BIGINT UNSIGNED NOT NULL,
     relation ENUM('related','variant','replacement') NOT NULL DEFAULT 'related',
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (event_id, related_event_id, relation),
-    CONSTRAINT fk_event_relations_event FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE,
-    CONSTRAINT fk_event_relations_related FOREIGN KEY (related_event_id) REFERENCES events(id) ON DELETE CASCADE
+    CONSTRAINT fk_sk_event_relations_event FOREIGN KEY (event_id) REFERENCES sk_events(id) ON DELETE CASCADE,
+    CONSTRAINT fk_sk_event_relations_related FOREIGN KEY (related_event_id) REFERENCES sk_events(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS event_revisions (
+CREATE TABLE IF NOT EXISTS sk_event_revisions (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     event_id BIGINT UNSIGNED NOT NULL,
     actor_type ENUM('automatic','user','import') NOT NULL,
@@ -109,12 +106,12 @@ CREATE TABLE IF NOT EXISTS event_revisions (
     snapshot_json JSON NOT NULL,
     note VARCHAR(500) NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_event_revisions_event FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE,
-    CONSTRAINT fk_event_revisions_user FOREIGN KEY (actor_user_id) REFERENCES users(id) ON DELETE SET NULL,
-    INDEX idx_event_revisions_event_created (event_id, created_at)
+    CONSTRAINT fk_sk_event_revisions_event FOREIGN KEY (event_id) REFERENCES sk_events(id) ON DELETE CASCADE,
+    CONSTRAINT fk_sk_event_revisions_user FOREIGN KEY (actor_user_id) REFERENCES sk_users(id) ON DELETE SET NULL,
+    INDEX idx_sk_event_revisions_event_created (event_id, created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS event_change_proposals (
+CREATE TABLE IF NOT EXISTS sk_event_change_proposals (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     event_id BIGINT UNSIGNED NOT NULL,
     source_id BIGINT UNSIGNED NULL,
@@ -125,9 +122,9 @@ CREATE TABLE IF NOT EXISTS event_change_proposals (
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     resolved_at DATETIME NULL,
     resolved_by BIGINT UNSIGNED NULL,
-    CONSTRAINT fk_event_change_proposals_event FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE,
-    CONSTRAINT fk_event_change_proposals_source FOREIGN KEY (source_id) REFERENCES event_sources(id) ON DELETE SET NULL,
-    CONSTRAINT fk_event_change_proposals_user FOREIGN KEY (resolved_by) REFERENCES users(id) ON DELETE SET NULL,
-    INDEX idx_event_change_proposals_status (status),
-    INDEX idx_event_change_proposals_event (event_id)
+    CONSTRAINT fk_sk_event_change_proposals_event FOREIGN KEY (event_id) REFERENCES sk_events(id) ON DELETE CASCADE,
+    CONSTRAINT fk_sk_event_change_proposals_source FOREIGN KEY (source_id) REFERENCES sk_event_sources(id) ON DELETE SET NULL,
+    CONSTRAINT fk_sk_event_change_proposals_user FOREIGN KEY (resolved_by) REFERENCES sk_users(id) ON DELETE SET NULL,
+    INDEX idx_sk_event_change_proposals_status (status),
+    INDEX idx_sk_event_change_proposals_event (event_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
