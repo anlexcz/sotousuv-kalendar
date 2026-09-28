@@ -39,11 +39,9 @@ function sk_explicit_dates(array $row): array {
     $fallbackTo=sk_iso_date((string)($row['Datum do'] ?? '')) ?: $fallbackFrom;
     if($raw==='') return $fallbackFrom ? [['starts_on'=>$fallbackFrom,'ends_on'=>$fallbackTo]] : [];
 
-    // Synchronizer accepts canonical YYYY-MM-DD or YYYY-MM-DD..YYYY-MM-DD tokens separated by semicolons.
-    // Human Czech notation is deliberately not guessed here; Apps Script normalizes it before sending.
     $out=[];
-    foreach(array_filter(array_map('trim',explode(';',$raw))) as $token){
-        if(preg_match('/^(\d{4}-\d{2}-\d{2})(?:\.\.(\d{4}-\d{2}-\d{2}))?$/',$token,$m)){
+    foreach(array_filter(array_map('trim',explode(';',$raw))) as $term){
+        if(preg_match('/^(\d{4}-\d{2}-\d{2})(?:\.\.(\d{4}-\d{2}-\d{2}))?$/',$term,$m)){
             $out[]=['starts_on'=>$m[1],'ends_on'=>$m[2] ?: $m[1]];
         }
     }
@@ -102,8 +100,21 @@ foreach($rows as $i=>$row){
     if($existing['source_kind']==='manual' || $existing['review_status']==='human_reviewed'){
         $changes=[];foreach($proposed as $k=>$v)if(($currentCmp[$k]??null)!=$v)$changes[$k]=['current'=>$currentCmp[$k]??null,'proposed'=>$v];
         $severity=array_intersect(array_keys($changes),['dates','city','place','status'])?'important':'normal';
-        $db->prepare('INSERT INTO event_change_proposals(event_id,status,severity,proposed_json,detected_changes_json) VALUES (?,"pending",?,?,?)')->execute([$id,$severity,json_encode($incoming,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES),json_encode($changes,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES)]);
-        $db->prepare('UPDATE events SET source_last_checked_at=NOW() WHERE id=?')->execute([$id]);$proposals++;
+        $proposedJson=json_encode($incoming,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES);
+        $changesJson=json_encode($changes,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES);
+
+        $pending=$db->prepare('SELECT id,proposed_json FROM event_change_proposals WHERE event_id=? AND status="pending" ORDER BY id DESC');
+        $pending->execute([$id]);
+        $samePending=false;
+        foreach($pending->fetchAll() as $p){
+            if($p['proposed_json']===$proposedJson){$samePending=true;break;}
+        }
+        if(!$samePending){
+            $db->prepare('UPDATE event_change_proposals SET status="superseded",resolved_at=NOW() WHERE event_id=? AND status="pending"')->execute([$id]);
+            $db->prepare('INSERT INTO event_change_proposals(event_id,status,severity,proposed_json,detected_changes_json) VALUES (?,"pending",?,?,?)')->execute([$id,$severity,$proposedJson,$changesJson]);
+            $proposals++;
+        }
+        $db->prepare('UPDATE events SET source_last_checked_at=NOW() WHERE id=?')->execute([$id]);
     }else{
         sk_apply_sheet_event($db,$id,$incoming);$updated++;
     }
