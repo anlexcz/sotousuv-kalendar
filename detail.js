@@ -53,7 +53,7 @@ function chipHtml(t){
 }
 function monthHtml(group,index){
   const density=Math.min(10,Math.max(1,group.list.length));
-  return '<section class="term-month-group" data-month-index="'+index+'" style="--month-density:'+density+'">'
+  return '<section class="term-month-group" data-month-index="'+index+'" data-term-count="'+group.list.length+'" style="--month-density:'+density+'">'
     +'<h3>'+esc(group.label)+'</h3><div class="term-chip-row">'+group.list.map(chipHtml).join('')+'</div></section>';
 }
 
@@ -61,16 +61,12 @@ function compactTermBlock(e){
   const raw=sortedDates(e);
   const terms=mergeRanges(raw);
   if(!terms.length)return '';
-
-  if(terms.length===1){
-    return '<div class="event-term compact single-date"><div class="term-label">Datum</div><div class="term-primary">'+esc(termText(terms[0]))+'</div></div>';
-  }
+  if(terms.length===1)return '<div class="event-term compact single-date"><div class="term-label">Datum</div><div class="term-primary">'+esc(termText(terms[0]))+'</div></div>';
 
   const first=relevantTerm(terms);
   const groups=groupTerms(terms);
   const firstMonth=monthKey(first.starts_on);
   const activeIndex=Math.max(0,groups.findIndex(g=>g.key===firstMonth));
-
   return '<div class="event-term compact multiple-dates">'
     +'<div class="term-label">Nejbližší datum</div><div class="term-primary">'+esc(termText(first))+'</div>'
     +'<div class="term-browser" data-active-index="'+activeIndex+'">'
@@ -85,21 +81,36 @@ function initTermBrowser(){
   if(!browser)return;
   const track=browser.querySelector('.term-month-track');
   const groups=[...browser.querySelectorAll('.term-month-group')];
+  const viewport=browser.querySelector('.term-month-viewport');
   const prev=browser.querySelector('.term-browser-nav.prev');
   const next=browser.querySelector('.term-browser-nav.next');
   let index=Math.min(groups.length-1,Math.max(0,Number(browser.dataset.activeIndex)||0));
 
   function mobile(){return matchMedia('(max-width:650px)').matches;}
+  function count(i){return Number(groups[i]?.dataset.termCount||0);}
+  function pageSizeAt(i){
+    if(!mobile()||i>=groups.length-1)return 1;
+    const combined=count(i)+count(i+1);
+    const narrow=matchMedia('(max-width:360px)').matches;
+    return combined<=(narrow?9:12)?2:1;
+  }
+  function previousPageStart(current){
+    let pos=0,last=0;
+    while(pos<current){last=pos;pos+=pageSizeAt(pos);}
+    return last;
+  }
   function update(){
     if(mobile()){
-      groups.forEach((g,i)=>g.classList.toggle('active',i===index));
-      track.style.transform='translateX('+(index*-100)+'%)';
+      const size=pageSizeAt(index);
+      browser.style.setProperty('--mobile-cols',String(size));
+      groups.forEach((g,i)=>g.classList.toggle('active',i>=index&&i<index+size));
+      track.style.transform='translateX('+(index*(-100/size))+'%)';
       prev.disabled=index===0;
-      next.disabled=index===groups.length-1;
+      next.disabled=index+size>=groups.length;
     }else{
+      browser.style.removeProperty('--mobile-cols');
       groups.forEach(g=>g.classList.remove('active'));
       track.style.transform='';
-      const viewport=browser.querySelector('.term-month-viewport');
       const max=Math.max(0,track.scrollWidth-viewport.clientWidth);
       const left=viewport.scrollLeft;
       prev.disabled=left<=2;
@@ -107,14 +118,21 @@ function initTermBrowser(){
     }
   }
   function scrollDesktop(dir){
-    const viewport=browser.querySelector('.term-month-viewport');
     const amount=Math.max(220,Math.round(viewport.clientWidth*.72));
     viewport.scrollBy({left:dir*amount,behavior:'smooth'});
     setTimeout(update,220);
   }
-  prev.addEventListener('click',()=>{if(mobile()){if(index>0){index--;update();}}else scrollDesktop(-1);});
-  next.addEventListener('click',()=>{if(mobile()){if(index<groups.length-1){index++;update();}}else scrollDesktop(1);});
-  browser.querySelector('.term-month-viewport').addEventListener('scroll',()=>{if(!mobile())requestAnimationFrame(update)},{passive:true});
+  prev.addEventListener('click',()=>{
+    if(mobile()){if(index>0){index=previousPageStart(index);update();}}
+    else scrollDesktop(-1);
+  });
+  next.addEventListener('click',()=>{
+    if(mobile()){
+      const size=pageSizeAt(index);
+      if(index+size<groups.length){index+=size;update();}
+    }else scrollDesktop(1);
+  });
+  viewport.addEventListener('scroll',()=>{if(!mobile())requestAnimationFrame(update)},{passive:true});
   addEventListener('resize',update,{passive:true});
   update();
 }
@@ -149,18 +167,18 @@ function initTermBrowser(){
       .event-term.compact{padding:12px 0 10px}
       .term-label{font-size:8.5px;margin-bottom:2px}
       .term-primary{font-size:15.5px}
-      .term-browser{grid-template-columns:28px minmax(0,1fr) 28px;gap:3px;margin-top:10px;align-items:start}
-      .term-browser-nav{width:28px;min-height:68px;font-size:8px}
+      .term-browser{grid-template-columns:24px minmax(0,1fr) 24px;gap:2px;margin-top:10px;align-items:start}
+      .term-browser-nav{width:24px;min-height:68px;font-size:8px}
       .term-month-viewport{overflow:hidden}
       .term-month-track{gap:0;min-width:100%;width:100%}
-      .term-month-group{width:100%;flex:0 0 100%;padding:0 2px;opacity:.25;transition:opacity .16s ease}
+      .term-month-group{width:calc(100% / var(--mobile-cols,1));flex:0 0 calc(100% / var(--mobile-cols,1));padding:0 4px;opacity:.2;transition:opacity .16s ease}
       .term-month-group.active{opacity:1}
-      .term-month-group h3{text-align:center;font-size:10px;margin-bottom:6px}
+      .term-month-group h3{text-align:center;font-size:9.5px;margin-bottom:5px;overflow:hidden;text-overflow:ellipsis}
       .term-chip-row{justify-content:center;gap:4px}
-      .term-chip{min-width:36px;height:31px;padding:3px 6px}
-      .term-chip strong{font-size:10.5px}
-      .term-chip small{font-size:7px}
-      .term-chip.range-chip{height:28px;padding:4px 7px}
+      .term-chip{min-width:34px;height:30px;padding:3px 5px}
+      .term-chip strong{font-size:10px}
+      .term-chip small{font-size:6.8px}
+      .term-chip.range-chip{height:27px;padding:4px 6px}
     }
     @media(prefers-reduced-motion:reduce){.term-month-track{transition:none!important;scroll-behavior:auto}}
   `;
