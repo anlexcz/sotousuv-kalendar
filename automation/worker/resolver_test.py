@@ -41,28 +41,63 @@ def canonical_url(value: str | None) -> str | None:
 
 
 def infer_categories(title: str) -> list[str]:
-    t = normalize_text(title)
+    t = f" {normalize_text(title)} "
     rules = [
-        ("tram", ["tram", "tramvaj", "streetcar"]),
-        ("trolleybus", ["trolejbus", "trolleybus"]),
-        ("bus", ["autobus", "bus ", "busova", "busovy"]),
-        ("metro", ["metro"]),
-        ("cableway", ["lanovk", "funicular", "cable car"]),
-        ("rail", ["vlak", "zelezn", "railway", "railroad", "lokomotiv", "parni", "parn vlak"]),
-        ("water", ["lod", "parnik", "boat", "ship"]),
-        ("air", ["letec", "letadl", "aviation", "aircraft"]),
+        ("tram", [" tram ", " tramvaj", " streetcar"]),
+        ("trolleybus", [" trolejbus", " trolleybus"]),
+        ("bus", [" autobus", " bus ", " skoda 706", " rto "]),
+        ("metro", [" metro "]),
+        ("cableway", [" lanovk", " funicular", " cable car"]),
+        ("rail", [" vlak", " zelezn", " railway", " railroad", " lokomotiv", " parni "]),
+        ("water", [" lod", " parnik", " boat", " ship"]),
+        ("air", [" letec", " letadl", " aviation", " aircraft"]),
     ]
     found: list[str] = []
-    padded = f" {t} "
     for category, needles in rules:
-        if any(needle in padded for needle in needles):
+        if any(needle in t for needle in needles):
             found.append(category)
     return found or ["other"]
 
 
+IRRELEVANT_PATTERNS = [
+    r"\bverejn[aá] zak[aá]zka\b",
+    r"\bpopt[aá]vkov[eé] r[ií]zen[ií]\b",
+    r"\bpron[aá]jem\b",
+    r"\bv[oó]ip\b",
+    r"\btelefon[uůy]?\b",
+    r"\bskolen[ií]\b",
+    r"\bpracovn[ií] nab[ií]dka\b",
+    r"\bvoln[eé] pozice\b",
+    r"\bv[yý]b[eě]rov[eé] r[ií]zen[ií]\b",
+    r"\bomezen[ií] dopravy\b",
+    r"\btrval[eé] zm[eě]ny\b",
+    r"\bj[ií]zdn[ií] [rř][aá]dy\b",
+    r"\bprvn[ií] m[eě]s[ií]c v provozu\b",
+    r"\bcel[yý] profesn[ií] [zž]ivot\b",
+]
+
+
+def irrelevant_reason(title: str) -> str | None:
+    t = normalize_text(title)
+    for pattern in IRRELEVANT_PATTERNS:
+        if re.search(pattern, t):
+            return "obvious_non_event_title"
+    return None
+
+
+def _parse_note(note: str | None) -> dict:
+    if not note:
+        return {}
+    try:
+        obj = json.loads(note)
+        return obj if isinstance(obj, dict) else {}
+    except Exception:
+        return {}
+
+
 def load_findings(d1: D1Adapter) -> list[dict]:
     findings = d1.query(
-        "SELECT f.finding_id, f.finding_type, f.status, f.title_hint, f.source_id, f.first_seen_at, f.last_seen_at, "
+        "SELECT f.finding_id, f.finding_type, f.status, f.title_hint, f.source_id, f.first_seen_at, f.last_seen_at, f.note, "
         "s.url AS source_url, s.label AS source_label, s.source_scope, s.active AS source_active "
         "FROM findings f LEFT JOIN sources s ON s.source_id=f.source_id "
         "WHERE f.status='OPEN' ORDER BY f.last_seen_at DESC, f.finding_id"
@@ -84,13 +119,15 @@ def load_findings(d1: D1Adapter) -> list[dict]:
     out: list[dict] = []
     for f in findings:
         values = by_finding.get(f["finding_id"], {})
+        note = _parse_note(f.get("note"))
         title = (values.get("title") or {}).get("value") or f.get("title_hint") or ""
+        detail_url = (values.get("detail_url") or {}).get("value") or note.get("detail_url")
         out.append({
             **f,
             "title": title.strip(),
             "date_from": (values.get("date_from") or {}).get("value"),
             "date_to": (values.get("date_to") or {}).get("value"),
-            "detail_url": (values.get("detail_url") or {}).get("value"),
+            "detail_url": detail_url,
             "title_evidence": (values.get("title") or {}).get("evidence_ref"),
             "date_evidence": (values.get("date_from") or {}).get("evidence_ref"),
         })
@@ -135,8 +172,12 @@ def main() -> int:
         reason = "missing_explicit_date"
         duplicate_of = None
 
+        non_event = irrelevant_reason(title)
         if not title_norm:
             reason = "missing_title"
+        elif non_event:
+            decision = "IRRELEVANT_CANDIDATE"
+            reason = non_event
         elif not usable_url:
             reason = "missing_usable_source_url"
         elif date_from and date_from < today:
@@ -156,10 +197,11 @@ def main() -> int:
             decision = "READY_FOR_EVENT"
             reason = "explicit_date_title_and_source"
 
-        if detail and detail not in url_leaders:
-            url_leaders[detail] = f["finding_id"]
-        if date_from and (title_norm, date_from) not in identity_leaders:
-            identity_leaders[(title_norm, date_from)] = f["finding_id"]
+        if decision != "IRRELEVANT_CANDIDATE":
+            if detail and detail not in url_leaders:
+                url_leaders[detail] = f["finding_id"]
+            if date_from and (title_norm, date_from) not in identity_leaders:
+                identity_leaders[(title_norm, date_from)] = f["finding_id"]
 
         proposal = {
             "finding_id": f["finding_id"],
@@ -174,7 +216,7 @@ def main() -> int:
                 "date_to": date_to,
                 "source_url": usable_url,
                 "categories": infer_categories(title) if decision == "READY_FOR_EVENT" else None,
-                "all_day": "ANO" if decision == "READY_FOR_EVENT" else None,
+                "all_day": None,
                 "event_state": "AKTIVNI" if decision == "READY_FOR_EVENT" else None,
                 "review_state": "NEZKONTROLOVANO" if decision == "READY_FOR_EVENT" else None,
                 "publish": "NE",
@@ -195,11 +237,12 @@ def main() -> int:
 
     result = {
         "ok": safe,
-        "mode": "DRY_RUN",
+        "mode": "DRY_RUN_V2",
         "open_findings": len(findings),
         "decision_counts": dict(sorted(counts.items())),
         "ready_for_event": [p for p in proposals if p["decision"] == "READY_FOR_EVENT"],
         "duplicates": [p for p in proposals if p["decision"].startswith("DUPLICATE")],
+        "irrelevant_candidates": [p for p in proposals if p["decision"] == "IRRELEVANT_CANDIDATE"],
         "kept_findings_sample": [p for p in proposals if p["decision"] == "KEEP_FINDING"][:10],
         "safety": {
             "event_creation_enabled": settings.get("event_creation_enabled"),
@@ -210,8 +253,10 @@ def main() -> int:
             "writes_events": False,
             "writes_event_auto": False,
             "writes_terms": False,
+            "changes_finding_status": False,
             "publishes": False,
             "calls_llm": False,
+            "all_day_is_never_guessed": True,
         },
     }
     print(json.dumps(result, ensure_ascii=False, indent=2))
