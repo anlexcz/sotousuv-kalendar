@@ -14,6 +14,7 @@ on:
           - smoke-test
           - source-test
           - source-parse-test
+          - audit-sources
 
 permissions:
   contents: read
@@ -25,7 +26,7 @@ concurrency:
 jobs:
   worker:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
 
     steps:
       - name: Checkout automation branch
@@ -53,7 +54,12 @@ jobs:
           GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.CALENDAR_GOOGLE_SERVICE_ACCOUNT_JSON }}
           CALENDAR_TIMEZONE: Europe/Prague
           PUBLIC_EXPORT_PATH: ../../data/events.json
-        run: python main.py "${{ inputs.command }}"
+        run: |
+          if [ "${{ inputs.command }}" = "audit-sources" ]; then
+            python source_audit/audit_sources.py
+          else
+            python main.py "${{ inputs.command }}"
+          fi
 
       - name: Upload public export artifact
         if: ${{ inputs.command == 'export' }}
@@ -63,6 +69,15 @@ jobs:
           path: data/events.json
           if-no-files-found: error
           retention-days: 7
+
+      - name: Upload source audit artifact
+        if: ${{ inputs.command == 'audit-sources' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: sotousuv-kalendar-source-audit
+          path: automation/worker/audit_output/
+          if-no-files-found: error
+          retention-days: 14
 
 # Intentionally no schedule/cron yet.
 # Production scheduling and deploy to custom hosting require explicit approval.
