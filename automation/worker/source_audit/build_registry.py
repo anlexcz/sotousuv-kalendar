@@ -56,6 +56,39 @@ def role_for(name: str, url: str) -> str:
     return "PRIMARY"
 
 
+def _feed_candidates(row: dict[str, str]) -> list[str]:
+    return [item.strip() for item in (row.get("feed_links") or "").split(" | ") if item.strip()]
+
+
+def _is_comment_feed(url: str) -> bool:
+    low = url.lower()
+    return "/comments/feed" in low or "comments.xml" in low or "comment-feed" in low
+
+
+def choose_feed(row: dict[str, str]) -> str:
+    candidates = [url for url in _feed_candidates(row) if not _is_comment_feed(url)]
+    if not candidates:
+        return ""
+
+    page_path = urlparse(row.get("url") or "").path.rstrip("/")
+    if page_path:
+        page_specific = [url for url in candidates if page_path and page_path in urlparse(url).path]
+        if page_specific:
+            return sorted(page_specific, key=len)[0]
+
+    # Prefer a normal RSS/Atom content feed over JSON or generic alternates.
+    return sorted(candidates, key=lambda url: ("json" in url.lower(), len(url)))[0]
+
+
+def effective_strategy(row: dict[str, str]) -> str:
+    strategy = row.get("recommendation") or "HTML_PARSER"
+    if strategy == "RSS_ATOM_FIRST" and not choose_feed(row):
+        if (row.get("platform") or "").upper() == "WORDPRESS":
+            return "WORDPRESS_REST_OR_HTML"
+        return "HTML_PARSER"
+    return strategy
+
+
 def parser_key(strategy: str, canonical_url: str) -> str:
     if canonical_url.rstrip("/") == PILOT_URL.rstrip("/"):
         return "DPP_MUSEUM_CALENDAR"
@@ -76,11 +109,10 @@ def canonical_url(row: dict[str, str]) -> str:
     return original
 
 
-def migration_status(row: dict[str, str], role: str, canonical: str) -> str:
+def migration_status(row: dict[str, str], role: str, canonical: str, strategy: str) -> str:
     original = row["url"].strip()
     final = (row.get("final_url") or "").strip()
     status = int(float(row["status_code"])) if row.get("status_code") else None
-    strategy = row.get("recommendation") or ""
 
     if canonical.rstrip("/") == PILOT_URL.rstrip("/"):
         return "ALREADY_PILOT"
@@ -119,10 +151,11 @@ def check_policy(role: str, status: str, strategy: str) -> str:
 def build_row(row: dict[str, str]) -> dict[str, str | int]:
     canonical = canonical_url(row)
     role = role_for(row["name"], canonical)
-    status = migration_status(row, role, canonical)
-    strategy = row.get("recommendation") or "HTML_PARSER"
+    strategy = effective_strategy(row)
+    status = migration_status(row, role, canonical, strategy)
     legacy_row = int(row["legacy_row"])
     status_code = row.get("status_code") or ""
+    feed_url = choose_feed(row)
 
     if status == "ALREADY_PILOT":
         source_id = "SRC-PILOT-DPP-MUSEUM"
@@ -133,13 +166,17 @@ def build_row(row: dict[str, str]) -> dict[str, str | int]:
     scope = "DISCOVERY" if role in {"DISCOVERY", "SOCIAL"} else "BOTH"
     source_group = host(canonical).replace(".", "_").replace("-", "_").upper()
 
-    note_bits = [f"legacy_row={legacy_row}", f"audit={strategy}"]
+    note_bits = [f"legacy_row={legacy_row}", f"audit={row.get('recommendation') or 'HTML_PARSER'}"]
+    if strategy != (row.get("recommendation") or "HTML_PARSER"):
+        note_bits.append(f"effective_strategy={strategy}")
     if status_code:
         note_bits.append(f"http={int(float(status_code))}")
     if status == "REPLACE_URL":
         note_bits.append("legacy URL returned 404; locate replacement before activation")
     if status == "REJECT_REDIRECT":
         note_bits.append(f"unexpected cross-domain redirect to {row.get('final_url')}")
+    if (row.get("recommendation") or "") == "RSS_ATOM_FIRST" and not feed_url:
+        note_bits.append("only comment feed detected; ignored")
 
     return {
         "source_id": source_id,
@@ -158,7 +195,7 @@ def build_row(row: dict[str, str]) -> dict[str, str | int]:
         "platform": row.get("platform") or "",
         "status_code": status_code,
         "area": row.get("area") or "",
-        "feed_url": ((row.get("feed_links") or "").split(" | ")[0]),
+        "feed_url": feed_url,
         "calendar_url": ((row.get("calendar_links") or "").split(" | ")[0]),
         "note": "; ".join(note_bits),
     }
