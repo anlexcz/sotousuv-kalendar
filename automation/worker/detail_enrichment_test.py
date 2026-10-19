@@ -13,7 +13,7 @@ from bs4 import BeautifulSoup
 from d1 import D1Adapter
 
 USER_AGENT = "SotousuvKalendarBot/0.1 (+https://github.com/anlexcz/sotousuv-kalendar)"
-MAX_FINDINGS = 12
+MAX_FINDINGS = 100
 
 MONTHS = {
     "ledna": 1,
@@ -76,14 +76,12 @@ def extract_dates(text: str) -> list[dict]:
     out: list[dict] = []
     seen: set[str] = set()
 
-    # Numeric Czech/European dates: 30. 10. 2026 / 30.10.2026
     for m in re.finditer(r"(?<!\d)(\d{1,2})\.\s*(\d{1,2})\.\s*(20\d{2})(?!\d)", text):
         value = parse_date_value(int(m.group(1)), int(m.group(2)), int(m.group(3)))
         if value and value not in seen:
             seen.add(value)
             out.append({"date": value, "raw": m.group(0), "kind": "NUMERIC"})
 
-    # Czech textual dates: 30. října 2026. Normalize only for matching while preserving raw span approximately.
     norm = normalize(text)
     months_pattern = "|".join(MONTHS.keys())
     for m in re.finditer(rf"(?<!\d)(\d{{1,2}})\.\s*({months_pattern})\s+(20\d{{2}})(?!\d)", norm):
@@ -93,6 +91,60 @@ def extract_dates(text: str) -> list[dict]:
             out.append({"date": value, "raw": m.group(0), "kind": "CZECH_TEXT"})
 
     return out
+
+
+def _numeric_date_from_groups(day: str, month: str, year: str) -> str | None:
+    return parse_date_value(int(day), int(month), int(year))
+
+
+def extract_explicit_ranges(text: str) -> list[dict]:
+    """Return only ranges that are explicitly written as ranges.
+
+    Two unrelated dates elsewhere on a page are deliberately NOT joined.
+    """
+    ranges: list[dict] = []
+    seen: set[tuple[str, str]] = set()
+
+    numeric = (
+        r"(\d{1,2})\.\s*(\d{1,2})\.\s*(20\d{2})"
+        r"\s*(?:[-–—]|az\s+do|až\s+do|do)\s*"
+        r"(\d{1,2})\.\s*(\d{1,2})\.\s*(20\d{2})"
+    )
+    numeric_with_od = (
+        r"(?:od\s+)?(\d{1,2})\.\s*(\d{1,2})\.\s*(20\d{2})"
+        r"\s+(?:do|az\s+do|až\s+do)\s+"
+        r"(\d{1,2})\.\s*(\d{1,2})\.\s*(20\d{2})"
+    )
+    for pattern in (numeric, numeric_with_od):
+        for m in re.finditer(pattern, text, flags=re.IGNORECASE):
+            start = _numeric_date_from_groups(m.group(1), m.group(2), m.group(3))
+            end = _numeric_date_from_groups(m.group(4), m.group(5), m.group(6))
+            if not start or not end or end < start:
+                continue
+            key = (start, end)
+            if key not in seen:
+                seen.add(key)
+                ranges.append({"date_from": start, "date_to": end, "raw": m.group(0), "kind": "NUMERIC_RANGE"})
+
+    norm = normalize(text)
+    months = "|".join(MONTHS.keys())
+    textual = re.compile(
+        rf"(?:od\s+)?(\d{{1,2}})\.\s*({months})\s+(20\d{{2}})"
+        rf"\s*(?:[-–—]|do|az\s+do)\s*"
+        rf"(\d{{1,2}})\.\s*({months})\s+(20\d{{2}})",
+        flags=re.IGNORECASE,
+    )
+    for m in textual.finditer(norm):
+        start = parse_date_value(int(m.group(1)), MONTHS[m.group(2)], int(m.group(3)))
+        end = parse_date_value(int(m.group(4)), MONTHS[m.group(5)], int(m.group(6)))
+        if not start or not end or end < start:
+            continue
+        key = (start, end)
+        if key not in seen:
+            seen.add(key)
+            ranges.append({"date_from": start, "date_to": end, "raw": m.group(0), "kind": "CZECH_TEXT_RANGE"})
+
+    return ranges
 
 
 def fetch_page(url: str) -> tuple[requests.Response, str, str]:
@@ -165,6 +217,21 @@ def classify(f: dict) -> dict:
     if any(h in title_norm for h in [normalize(x) for x in NEGATIVE_TITLE_HINTS]):
         return {**f, "decision": "IRRELEVANT", "reason": "obvious_non_event_title"}
 
+    title_ranges = extract_explicit_ranges(title)
+    if len(title_ranges) == 1:
+        r = title_ranges[0]
+        return {
+            **f,
+            "decision": "DATE_FOUND",
+            "reason": "single_explicit_range_in_title",
+            "date_from": r["date_from"],
+            "date_to": r["date_to"],
+            "date_evidence": title_ranges,
+            "http_status": None,
+        }
+    if len(title_ranges) > 1:
+        return {**f, "decision": "AMBIGUOUS", "reason": "multiple_ranges_in_title", "date_evidence": title_ranges}
+
     title_dates = extract_dates(title)
     if len(title_dates) == 1:
         return {
@@ -184,11 +251,36 @@ def classify(f: dict) -> dict:
     except Exception as exc:
         return {**f, "decision": "FETCH_ERROR", "reason": str(exc)[:500]}
 
-    body_dates = extract_dates(visible)
     today = datetime.now(timezone.utc).date().isoformat()
+
+    body_ranges = extract_explicit_ranges(visible)
+    future_ranges = [r for r in body_ranges if r["date_to"] >= today]
+    if len(future_ranges) == 1:
+        r = future_ranges[0]
+        return {
+            **f,
+            "decision": "DATE_FOUND",
+            "reason": "single_explicit_future_range_in_detail",
+            "date_from": r["date_from"],
+            "date_to": r["date_to"],
+            "date_evidence": future_ranges,
+            "http_status": response.status_code,
+            "final_url": response.url,
+        }
+    if len(future_ranges) > 1:
+        return {
+            **f,
+            "decision": "AMBIGUOUS",
+            "reason": "multiple_future_ranges_in_detail",
+            "date_evidence": future_ranges[:20],
+            "http_status": response.status_code,
+            "final_url": response.url,
+        }
+
+    body_dates = extract_dates(visible)
     future_dates = [d for d in body_dates if d["date"] >= today]
 
-    # Never pick a date from body when more than one future date is present.
+    # Never pick one date from the page when several future dates remain and no explicit range connects them.
     if len(future_dates) == 1:
         return {
             **f,
@@ -244,7 +336,7 @@ def main() -> int:
 
     output = {
         "ok": safe,
-        "mode": "DETAIL_ENRICHMENT_DRY_RUN",
+        "mode": "DETAIL_ENRICHMENT_DRY_RUN_V2",
         "findings_checked": len(findings),
         "decision_counts": counts,
         "date_found": [r for r in results if r["decision"] == "DATE_FOUND"],
@@ -262,6 +354,7 @@ def main() -> int:
             "writes_events": False,
             "publishes": False,
             "calls_llm": False,
+            "joins_unrelated_dates_into_ranges": False,
         },
     }
     print(json.dumps(output, ensure_ascii=False, indent=2))
