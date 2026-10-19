@@ -3,7 +3,12 @@ from __future__ import annotations
 import csv
 import json
 import os
+import sys
 from pathlib import Path
+
+WORKER_DIR = Path(__file__).resolve().parents[1]
+if str(WORKER_DIR) not in sys.path:
+    sys.path.insert(0, str(WORKER_DIR))
 
 from d1 import D1Adapter
 
@@ -89,7 +94,7 @@ def main() -> int:
                 "note = excluded.note, source_class = excluded.source_class, fetch_strategy = excluded.fetch_strategy, "
                 "feed_url = excluded.feed_url, calendar_url = excluded.calendar_url, priority = excluded.priority, "
                 "migration_status = excluded.migration_status, source_group = excluded.source_group, "
-                "platform = excluded.platform, area = excluded.area",
+                "platform = excluded.platform, area = excluded.area, active = 'NE'",
                 [
                     source_id,
                     row["url"].strip(),
