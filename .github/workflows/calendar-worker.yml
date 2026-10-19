@@ -16,6 +16,7 @@ on:
           - source-parse-test
           - audit-sources
           - import-sources
+          - structured-source-test
 
 permissions:
   contents: read
@@ -63,6 +64,8 @@ jobs:
             python source_audit/audit_sources.py
             python source_audit/build_registry.py
             python source_audit/import_registry.py
+          elif [ "${{ inputs.command }}" = "structured-source-test" ]; then
+            python structured_source_test.py
           else
             python main.py "${{ inputs.command }}"
           fi
