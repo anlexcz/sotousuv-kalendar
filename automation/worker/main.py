@@ -68,9 +68,63 @@ def cmd_export(settings) -> int:
     return 0
 
 
+def cmd_smoke_test(settings) -> int:
+    d1 = _build_d1(settings)
+
+    request_id = "SMOKE-REQUEST-001"
+    source_id = "SRC-SMOKE-001"
+    source_url = "https://example.invalid/sotousuv-kalendar-smoke-test"
+
+    d1.execute_idempotent_request(
+        request_id=request_id,
+        operation="SMOKE_TEST_SOURCE_UPSERT",
+        entity_type="SOURCE",
+        entity_id=source_id,
+        statements=[
+            (
+                "INSERT INTO sources (source_id, url, source_type, source_scope, label, active, origin, "
+                "parser_key, check_policy, first_seen_at, created_at, created_by, note) "
+                "VALUES (?, ?, 'TEST', 'DISCOVERY', 'Smoke test source', 'NE', 'SMOKE_TEST', NULL, "
+                "'MANUAL_ONLY', datetime('now'), datetime('now'), 'smoke-test', 'Safe synthetic test record') "
+                "ON CONFLICT(source_id) DO NOTHING",
+                [source_id, source_url],
+            )
+        ],
+        actor="smoke-test",
+    )
+
+    request_rows = d1.query(
+        "SELECT request_id, status, operation, entity_id FROM requests WHERE request_id = ? LIMIT 1",
+        [request_id],
+    ).rows
+    source_rows = d1.query(
+        "SELECT source_id, url, active, origin, check_policy FROM sources WHERE source_id = ? LIMIT 1",
+        [source_id],
+    ).rows
+    source_count = d1.query(
+        "SELECT COUNT(*) AS count FROM sources WHERE source_id = ? OR url = ?",
+        [source_id, source_url],
+    ).rows
+
+    result = {
+        "request": request_rows[0] if request_rows else None,
+        "source": source_rows[0] if source_rows else None,
+        "matching_source_rows": int(source_count[0]["count"]) if source_count else 0,
+        "idempotency_ok": bool(
+            request_rows
+            and request_rows[0].get("status") == "SUCCESS"
+            and source_rows
+            and int(source_count[0]["count"]) == 1
+        ),
+    }
+    print(json.dumps(result, ensure_ascii=False, indent=2))
+
+    return 0 if result["idempotency_ok"] else 5
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Šotoušův kalendář worker")
-    parser.add_argument("command", choices=["health", "export"])
+    parser.add_argument("command", choices=["health", "export", "smoke-test"])
     args = parser.parse_args()
 
     settings = load_settings()
@@ -79,6 +133,8 @@ def main() -> int:
         return cmd_health(settings)
     if args.command == "export":
         return cmd_export(settings)
+    if args.command == "smoke-test":
+        return cmd_smoke_test(settings)
     return 1
 
 
