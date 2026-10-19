@@ -12,6 +12,7 @@ on:
           - health
           - export
           - smoke-test
+          - source-test
 
 permissions:
   contents: read
