@@ -57,6 +57,7 @@ jobs:
         run: |
           if [ "${{ inputs.command }}" = "audit-sources" ]; then
             python source_audit/audit_sources.py
+            python source_audit/build_registry.py
           else
             python main.py "${{ inputs.command }}"
           fi
