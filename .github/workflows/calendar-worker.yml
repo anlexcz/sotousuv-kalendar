@@ -18,6 +18,7 @@ on:
           - import-sources
           - structured-source-test
           - wp-html-source-test
+          - resolver-test
 
 permissions:
   contents: read
@@ -69,6 +70,8 @@ jobs:
             python structured_source_test.py
           elif [ "${{ inputs.command }}" = "wp-html-source-test" ]; then
             python wp_html_source_test.py
+          elif [ "${{ inputs.command }}" = "resolver-test" ]; then
+            python resolver_test.py
           else
             python main.py "${{ inputs.command }}"
           fi
