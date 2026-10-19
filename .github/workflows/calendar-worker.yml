@@ -19,6 +19,7 @@ on:
           - structured-source-test
           - wp-html-source-test
           - resolver-test
+          - detail-enrichment-test
 
 permissions:
   contents: read
@@ -72,6 +73,8 @@ jobs:
             python wp_html_source_test.py
           elif [ "${{ inputs.command }}" = "resolver-test" ]; then
             python resolver_test.py
+          elif [ "${{ inputs.command }}" = "detail-enrichment-test" ]; then
+            python detail_enrichment_test.py
           else
             python main.py "${{ inputs.command }}"
           fi
