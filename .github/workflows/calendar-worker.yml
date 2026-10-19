@@ -11,6 +11,7 @@ on:
         options:
           - health
           - export
+          - smoke-test
 
 permissions:
   contents: read
