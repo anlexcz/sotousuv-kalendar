@@ -101,9 +101,13 @@ def store_candidate(
     return finding_id
 
 
+def _looks_like_valid_ical(text: str) -> bool:
+    upper = text.lstrip("\ufeff\r\n \t").upper()
+    return "BEGIN:VCALENDAR" in upper and "END:VCALENDAR" in upper
+
+
 def process_source(d1: D1Adapter, row: dict, strategy: str) -> dict:
     source_id = row["source_id"]
-    source_url = row["url"]
     fetch_url = row.get("feed_url") if strategy == "RSS_ATOM_FIRST" else row.get("calendar_url")
     if not fetch_url:
         raise RuntimeError("missing structured endpoint")
@@ -114,13 +118,18 @@ def process_source(d1: D1Adapter, row: dict, strategy: str) -> dict:
         else "text/calendar,text/plain;q=0.9,*/*;q=0.1"
     )
     text, status_code, headers = fetch_text(fetch_url, accept)
+    valid_empty = False
+
     if strategy == "RSS_ATOM_FIRST":
         candidates = parse_rss_atom(text, fetch_url, limit=MAX_ITEMS_PER_SOURCE)
+        if not candidates:
+            raise RuntimeError("RSS/Atom parser returned zero candidates")
     else:
+        if not _looks_like_valid_ical(text):
+            preview = " ".join(text[:160].split())
+            raise RuntimeError(f"calendar endpoint did not return VCALENDAR; preview={preview!r}")
         candidates = parse_ical(text, fetch_url, limit=MAX_ITEMS_PER_SOURCE)
-
-    if not candidates:
-        raise RuntimeError("structured parser returned zero candidates")
+        valid_empty = not candidates
 
     observed_at = datetime.now(timezone.utc).isoformat()
     finding_ids = [store_candidate(d1, source_id, c, observed_at, fetch_url) for c in candidates]
@@ -149,6 +158,7 @@ def process_source(d1: D1Adapter, row: dict, strategy: str) -> dict:
         "endpoint": fetch_url,
         "status_code": status_code,
         "parsed_items": len(candidates),
+        "valid_empty_calendar": valid_empty,
         "finding_ids": finding_ids,
         "sample": [
             {
@@ -218,6 +228,7 @@ def main() -> int:
             "publishes": False,
             "calls_llm": False,
             "rss_publication_time_never_used_as_event_date": True,
+            "valid_empty_ical_is_success": True,
         },
     }
     print(json.dumps(result, ensure_ascii=False, indent=2))
