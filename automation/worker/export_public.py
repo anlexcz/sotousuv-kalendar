@@ -3,88 +3,69 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from sheets import SheetsAdapter
+from d1 import D1Adapter
 
 
-def _rows_to_dicts(rows: list[list[str]]) -> list[dict[str, str]]:
-    if not rows:
-        return []
-    headers = rows[0]
-    result: list[dict[str, str]] = []
-    for row in rows[1:]:
-        padded = row + [""] * (len(headers) - len(row))
-        result.append(dict(zip(headers, padded)))
-    return result
+def build_public_export(adapter: D1Adapter) -> dict:
+    events = adapter.query(
+        "SELECT event_id, title, description, municipality, place, region, country, route, organizer, "
+        "all_day, event_state, categories, public_source_id "
+        "FROM events WHERE publish = 'ANO' AND is_active = 'ANO' AND event_state <> 'SKRYTA' "
+        "ORDER BY event_id"
+    ).rows
 
+    terms = adapter.query(
+        "SELECT term_id, event_id, date_from, date_to, term_state, replacement_term_id "
+        "FROM terms WHERE is_active = 'ANO' ORDER BY event_id, date_from, term_id"
+    ).rows
 
-def build_public_export(adapter: SheetsAdapter) -> dict:
-    events = _rows_to_dicts(adapter.read_values("Akce!A1:AD5000"))
-    terms = _rows_to_dicts(adapter.read_values("Termíny!A1:O10000"))
-    sources = _rows_to_dicts(adapter.read_values("Zdroje!A1:X10000"))
-    links = _rows_to_dicts(adapter.read_values("Vazby zdrojů!A1:J20000"))
+    source_rows = adapter.query(
+        "SELECT es.event_id, s.source_id, s.url, es.source_role "
+        "FROM event_sources es JOIN sources s ON s.source_id = es.source_id "
+        "WHERE es.active = 'ANO' AND s.active = 'ANO' ORDER BY es.event_id, es.link_id"
+    ).rows
+
+    terms_by_event: dict[str, list[dict]] = {}
+    for term in terms:
+        terms_by_event.setdefault(str(term["event_id"]), []).append(term)
+
+    sources_by_event: dict[str, list[dict]] = {}
+    for source in source_rows:
+        sources_by_event.setdefault(str(source["event_id"]), []).append(
+            {
+                "source_id": source["source_id"],
+                "url": source["url"],
+                "role": source["source_role"],
+            }
+        )
 
     public_events = []
-    terms_by_event: dict[str, list[dict[str, str]]] = {}
-    for term in terms:
-        if term.get("is_active") != "ANO":
-            continue
-        terms_by_event.setdefault(term.get("event_id", ""), []).append(term)
-
-    source_by_id = {source.get("source_id", ""): source for source in sources if source.get("active") == "ANO"}
-    links_by_event: dict[str, list[dict[str, str]]] = {}
-    for link in links:
-        if link.get("active") != "ANO":
-            continue
-        links_by_event.setdefault(link.get("event_id", ""), []).append(link)
-
     for event in events:
-        if event.get("publish") != "ANO" or event.get("is_active") != "ANO" or event.get("event_state") == "SKRYTA":
-            continue
+        event_id = str(event["event_id"])
+        categories = [item.strip() for item in (event.get("categories") or "").split(";") if item.strip()]
+        public_events.append(
+            {
+                "event_id": event["event_id"],
+                "title": event["title"],
+                "description": event.get("description") or "",
+                "municipality": event.get("municipality") or "",
+                "place": event.get("place") or "",
+                "region": event.get("region") or "",
+                "country": event.get("country") or "",
+                "route": event.get("route") or "",
+                "organizer": event.get("organizer") or "",
+                "all_day": event["all_day"],
+                "event_state": event["event_state"],
+                "categories": categories,
+                "terms": terms_by_event.get(event_id, []),
+                "sources": sources_by_event.get(event_id, []),
+            }
+        )
 
-        event_id = event.get("event_id", "")
-        event_sources = []
-        for link in links_by_event.get(event_id, []):
-            source = source_by_id.get(link.get("source_id", ""))
-            if source:
-                event_sources.append({
-                    "source_id": source.get("source_id", ""),
-                    "url": source.get("url", ""),
-                    "role": link.get("source_role", ""),
-                })
-
-        public_events.append({
-            "event_id": event_id,
-            "title": event.get("title", ""),
-            "description": event.get("description", ""),
-            "municipality": event.get("municipality", ""),
-            "place": event.get("place", ""),
-            "region": event.get("region", ""),
-            "country": event.get("country", ""),
-            "route": event.get("route", ""),
-            "organizer": event.get("organizer", ""),
-            "all_day": event.get("all_day", ""),
-            "event_state": event.get("event_state", ""),
-            "categories": [item.strip() for item in event.get("categories", "").split(";") if item.strip()],
-            "terms": [
-                {
-                    "term_id": term.get("term_id", ""),
-                    "date_from": term.get("date_from", ""),
-                    "date_to": term.get("date_to", ""),
-                    "term_state": term.get("term_state", ""),
-                    "replacement_term_id": term.get("replacement_term_id", ""),
-                }
-                for term in terms_by_event.get(event_id, [])
-            ],
-            "sources": event_sources,
-        })
-
-    return {
-        "schema_version": 2,
-        "events": public_events,
-    }
+    return {"schema_version": 2, "events": public_events}
 
 
-def write_public_export(adapter: SheetsAdapter, output_path: str) -> None:
+def write_public_export(adapter: D1Adapter, output_path: str) -> None:
     payload = build_public_export(adapter)
     path = Path(output_path)
     path.parent.mkdir(parents=True, exist_ok=True)
