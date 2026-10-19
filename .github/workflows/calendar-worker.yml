@@ -20,6 +20,7 @@ on:
           - wp-html-source-test
           - resolver-test
           - detail-enrichment-test
+          - ai-enrichment-test
 
 permissions:
   contents: read
@@ -57,6 +58,7 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CALENDAR_CLOUDFLARE_API_TOKEN }}
           GOOGLE_SHEET_ID: ${{ secrets.CALENDAR_GOOGLE_SHEET_ID }}
           GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.CALENDAR_GOOGLE_SERVICE_ACCOUNT_JSON }}
+          GEMINI_API_KEY: ${{ secrets.CALENDAR_GEMINI_API_KEY }}
           CALENDAR_TIMEZONE: Europe/Prague
           PUBLIC_EXPORT_PATH: ../../data/events.json
         run: |
@@ -75,6 +77,8 @@ jobs:
             python resolver_test.py
           elif [ "${{ inputs.command }}" = "detail-enrichment-test" ]; then
             python detail_enrichment_test.py
+          elif [ "${{ inputs.command }}" = "ai-enrichment-test" ]; then
+            python ai_enrichment_test.py
           else
             python main.py "${{ inputs.command }}"
           fi
