@@ -22,17 +22,12 @@ class Candidate:
 
 
 def _next_detail_url(heading: Tag, base_url: str) -> str | None:
-    node = heading.next_sibling
-    while node is not None:
-        if isinstance(node, Tag):
-            if node.name in {"h2", "h3"}:
-                return None
-            if node.name == "a" and node.get("href"):
-                return urljoin(base_url, node["href"])
-            link = node.find("a", href=True)
-            if link is not None:
-                return urljoin(base_url, link["href"])
-        node = node.next_sibling
+    for node in heading.find_all_next(["a", "h2", "h3"]):
+        if node.name in {"h2", "h3"}:
+            return None
+        href = node.get("href")
+        if href:
+            return urljoin(base_url, href)
     return None
 
 
@@ -67,21 +62,21 @@ def parse_current_events(html: str, base_url: str) -> list[Candidate]:
         raise ValueError("Section 'Aktuální akce' not found")
 
     candidates: list[Candidate] = []
-    node = start.find_next()
-    while node is not None:
-        if isinstance(node, Tag) and node.name == "h2":
+    for heading in start.find_all_next(["h2", "h3"]):
+        if heading is start:
+            continue
+        if heading.name == "h2":
             break
-        if isinstance(node, Tag) and node.name == "h3":
-            raw_heading = node.get_text(" ", strip=True)
-            title, date_from = _parse_heading(raw_heading)
-            candidates.append(
-                Candidate(
-                    title=title,
-                    detail_url=_next_detail_url(node, base_url),
-                    date_from=date_from,
-                    raw_heading=raw_heading,
-                )
+
+        raw_heading = heading.get_text(" ", strip=True)
+        title, date_from = _parse_heading(raw_heading)
+        candidates.append(
+            Candidate(
+                title=title,
+                detail_url=_next_detail_url(heading, base_url),
+                date_from=date_from,
+                raw_heading=raw_heading,
             )
-        node = node.find_next()
+        )
 
     return candidates
