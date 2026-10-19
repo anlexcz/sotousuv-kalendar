@@ -1,8 +1,12 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import sys
+from datetime import datetime, timedelta, timezone
+
+import requests
 
 from config import load_settings
 from d1 import D1Adapter
@@ -122,9 +126,120 @@ def cmd_smoke_test(settings) -> int:
     return 0 if result["idempotency_ok"] else 5
 
 
+def cmd_source_test(settings) -> int:
+    d1 = _build_d1(settings)
+
+    source_id = "SRC-PILOT-DPP-MUSEUM"
+    source_url = "https://muzeum.dpp.cz/kalendar-akci"
+    checked_at = datetime.now(timezone.utc)
+    next_check_at = checked_at + timedelta(hours=24)
+
+    previous = d1.query(
+        "SELECT content_hash FROM sources WHERE url = ? LIMIT 1",
+        [source_url],
+    ).rows
+    previous_hash = previous[0].get("content_hash") if previous else None
+
+    response = requests.get(
+        source_url,
+        headers={
+            "User-Agent": "SotousuvKalendarBot/0.1 (+https://github.com/anlexcz/sotousuv-kalendar)",
+            "Accept": "text/html,application/xhtml+xml",
+        },
+        timeout=30,
+    )
+    response.raise_for_status()
+
+    content_hash = hashlib.sha256(response.content).hexdigest()
+    changed = previous_hash != content_hash
+    etag = response.headers.get("ETag")
+    last_modified = response.headers.get("Last-Modified")
+
+    if previous:
+        d1.query(
+            "UPDATE sources SET last_checked_at = ?, last_success_at = ?, last_http_status = ?, "
+            "consecutive_errors = 0, etag = ?, last_modified = ?, content_hash = ?, next_check_at = ?, "
+            "note = ? WHERE url = ?",
+            [
+                checked_at.isoformat(),
+                checked_at.isoformat(),
+                response.status_code,
+                etag,
+                last_modified,
+                content_hash,
+                next_check_at.isoformat(),
+                "Pilot source fetch; intentionally inactive until scheduler approval",
+                source_url,
+            ],
+        )
+    else:
+        d1.query(
+            "INSERT INTO sources (source_id, url, source_type, source_scope, label, active, origin, parser_key, "
+            "check_policy, next_check_at, last_checked_at, last_success_at, last_http_status, consecutive_errors, "
+            "etag, last_modified, content_hash, first_seen_at, created_at, created_by, note) "
+            "VALUES (?, ?, 'WEB_CALENDAR', 'DISCOVERY', 'Muzeum MHD Praha – kalendář akcí', 'NE', 'PILOT', NULL, "
+            "'PILOT_24H', ?, ?, ?, ?, 0, ?, ?, ?, ?, ?, 'source-test', ?)",
+            [
+                source_id,
+                source_url,
+                next_check_at.isoformat(),
+                checked_at.isoformat(),
+                checked_at.isoformat(),
+                response.status_code,
+                etag,
+                last_modified,
+                content_hash,
+                checked_at.isoformat(),
+                checked_at.isoformat(),
+                "Pilot source fetch; intentionally inactive until scheduler approval",
+            ],
+        )
+
+    readback = d1.query(
+        "SELECT source_id, url, active, source_scope, check_policy, next_check_at, last_checked_at, "
+        "last_http_status, consecutive_errors, etag, last_modified, content_hash FROM sources WHERE url = ? LIMIT 1",
+        [source_url],
+    ).rows
+
+    if not readback:
+        print(json.dumps({"ok": False, "error": "Source read-back failed"}, ensure_ascii=False, indent=2))
+        return 6
+
+    row = readback[0]
+    ok = (
+        row.get("source_id") == source_id
+        and row.get("url") == source_url
+        and row.get("active") == "NE"
+        and int(row.get("last_http_status") or 0) == response.status_code
+        and row.get("content_hash") == content_hash
+    )
+
+    result = {
+        "ok": ok,
+        "source": row,
+        "fetch": {
+            "status_code": response.status_code,
+            "bytes": len(response.content),
+            "changed_since_previous_check": changed,
+            "previous_hash": previous_hash,
+            "content_hash": content_hash,
+            "etag": etag,
+            "last_modified": last_modified,
+        },
+        "safety": {
+            "active": "NE",
+            "creates_events": False,
+            "calls_llm": False,
+            "scheduler_enabled": False,
+        },
+    }
+    print(json.dumps(result, ensure_ascii=False, indent=2))
+    return 0 if ok else 7
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Šotoušův kalendář worker")
-    parser.add_argument("command", choices=["health", "export", "smoke-test"])
+    parser.add_argument("command", choices=["health", "export", "smoke-test", "source-test"])
     args = parser.parse_args()
 
     settings = load_settings()
@@ -135,6 +250,8 @@ def main() -> int:
         return cmd_export(settings)
     if args.command == "smoke-test":
         return cmd_smoke_test(settings)
+    if args.command == "source-test":
+        return cmd_source_test(settings)
     return 1
 
 
