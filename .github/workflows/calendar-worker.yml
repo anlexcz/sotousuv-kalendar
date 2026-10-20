@@ -10,6 +10,7 @@ on:
         type: choice
         options:
           - health
+          - collect-batch
           - event-registry
           - state-audit
           - export
@@ -55,8 +56,12 @@ jobs:
           PUBLIC_EXPORT_PATH: ../../data/events.json
           EVENT_REGISTRY_PATH: ../../data/event_registry.json
           EVENT_REGISTRY_HTML_PATH: ../../data/event_registry.html
+          COLLECT_BATCH_SIZE: 20
+          COLLECT_MAX_ITEMS_PER_SOURCE: 10
         run: |
-          if [ "${{ inputs.command }}" = "event-registry" ]; then
+          if [ "${{ inputs.command }}" = "collect-batch" ]; then
+            python source_collector.py
+          elif [ "${{ inputs.command }}" = "event-registry" ]; then
             python event_registry.py
             python event_registry_html.py
           elif [ "${{ inputs.command }}" = "state-audit" ]; then
@@ -86,5 +91,6 @@ jobs:
           retention-days: 7
 
 # Intentionally no schedule/cron yet.
-# Test and migration scripts remain in the repository but are not exposed in the normal UI.
+# collect-batch is manual-only discovery: it may update sources/findings/observations,
+# but it does not create events or publish anything.
 # Production scheduling and deploy to custom hosting require explicit approval.
