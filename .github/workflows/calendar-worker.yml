@@ -22,6 +22,7 @@ on:
           - detail-enrichment-test
           - ai-enrichment-test
           - materialize-test
+          - materialize-batch-test
 
 permissions:
   contents: read
@@ -82,6 +83,8 @@ jobs:
             python ai_enrichment_test_v2.py
           elif [ "${{ inputs.command }}" = "materialize-test" ]; then
             python materialize_test.py
+          elif [ "${{ inputs.command }}" = "materialize-batch-test" ]; then
+            python materialize_batch_test.py
           else
             python main.py "${{ inputs.command }}"
           fi
