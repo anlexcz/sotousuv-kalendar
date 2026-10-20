@@ -34,7 +34,7 @@ jobs:
         run: |
           cat > wrangler.toml <<EOF
           name = "sotousuv-kalendar-admin"
-          main = "src/index_v2.js"
+          main = "src/index_v3.js"
           compatibility_date = "2026-10-20"
           workers_dev = true
 
