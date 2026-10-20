@@ -9,7 +9,7 @@ import requests
 
 from d1 import D1Adapter
 from detail_enrichment_test import build_d1, classify, extract_dates, fetch_page, load_findings, normalize
-from ai_enrichment_test import SCHEMA, ALLOWED_CATEGORIES
+from ai_enrichment_test import SCHEMA, ALLOWED_CATEGORIES, ALLOWED_RECURRENCE
 
 MODEL = "gemini-3.5-flash-lite"
 API_URL = f"https://generativelanguage.googleapis.com/v1beta/models/{MODEL}:generateContent"
@@ -33,10 +33,11 @@ Interpret only the supplied source text. Do not use outside knowledge.
 Task:
 1. Decide whether the page describes a calendar-worthy event (special ride, open day, exhibition, transport festival, anniversary event, museum event, special transport product, etc.), a NON_EVENT (news, procurement, construction update, regular disruption, policy/tariff information, ordinary operations), or UNCERTAIN.
 2. Interpret event dates. You may ONLY use dates from CANDIDATE_DATES below. Never invent or infer another date.
-3. Distinguish one-day SINGLE, several discrete MULTIPLE terms, and a continuous INTERVAL. Do not turn two unrelated dates into an interval.
-4. For exhibitions, an opening date / opening ceremony / vernissage date is NOT automatically the full duration of the exhibition. If the end or duration is unclear, return UNCERTAIN rather than a one-day event.
-5. Return transport categories only when supported by the source. Use 'other' if event relevance is clear but mode is not.
-6. Be conservative. When meaning is unclear, return UNCERTAIN and lower confidence.
+3. Distinguish SINGLE, MULTIPLE, continuous INTERVAL, and RECURRENCE. RECURRENCE means the event occurs only on selected repeated days inside a wider validity period, for example weekends, weekdays, weekly, or weekends and public holidays. Never turn recurrence into one continuous interval.
+4. If term_semantics is RECURRENCE, set recurrence_type and recurrence_date_from/to. Those boundary dates must come from CANDIDATE_DATES. Put the rule as stated by the source into recurrence_description. For non-recurring cases set recurrence_type=NONE and the recurrence date strings/description to empty strings.
+5. For exhibitions, an opening date / opening ceremony / vernissage date is NOT automatically the full duration of the exhibition. If the end or duration is unclear, return UNCERTAIN rather than a one-day event.
+6. Return transport categories only when supported by the source. Use 'other' if event relevance is clear but mode is not.
+7. Be conservative. When meaning is unclear, return UNCERTAIN and lower confidence.
 
 TITLE: {title}
 URL: {url}
@@ -54,7 +55,7 @@ SOURCE_TEXT:
                     "schema": SCHEMA,
                 }
             },
-            "maxOutputTokens": 1200,
+            "maxOutputTokens": 1400,
         },
     }
 
@@ -99,13 +100,18 @@ def validate_ai(result: dict, candidate_dates: set[str], title: str, visible_tex
     semantics = result.get("term_semantics")
     terms = result.get("terms") or []
     categories = result.get("categories") or []
+    recurrence_type = result.get("recurrence_type")
+    recurrence_from = str(result.get("recurrence_date_from") or "")
+    recurrence_to = str(result.get("recurrence_date_to") or "")
 
     if relevance not in {"EVENT", "NON_EVENT", "UNCERTAIN"}:
         errors.append("invalid_relevance")
     if not isinstance(confidence, (int, float)) or not 0 <= float(confidence) <= 1:
         errors.append("invalid_confidence")
-    if semantics not in {"SINGLE", "MULTIPLE", "INTERVAL", "NONE", "UNCERTAIN"}:
+    if semantics not in {"SINGLE", "MULTIPLE", "INTERVAL", "RECURRENCE", "NONE", "UNCERTAIN"}:
         errors.append("invalid_term_semantics")
+    if recurrence_type not in ALLOWED_RECURRENCE:
+        errors.append("invalid_recurrence_type")
 
     valid_terms: list[dict] = []
     seen: set[tuple[str, str]] = set()
@@ -130,7 +136,17 @@ def validate_ai(result: dict, candidate_dates: set[str], title: str, visible_tex
     if any(c not in ALLOWED_CATEGORIES for c in categories):
         errors.append("invalid_categories")
 
-    if relevance == "EVENT" and float(confidence or 0) >= 0.8 and not valid_terms:
+    if semantics == "RECURRENCE":
+        if recurrence_type in {"NONE", "UNKNOWN", None}:
+            errors.append("recurrence_type_required")
+        if recurrence_from not in candidate_dates or recurrence_to not in candidate_dates:
+            errors.append("recurrence_boundary_not_in_source")
+        elif recurrence_to < recurrence_from:
+            errors.append("reversed_recurrence_window")
+    elif recurrence_type not in {"NONE", None}:
+        errors.append("unexpected_recurrence_type")
+
+    if relevance == "EVENT" and float(confidence or 0) >= 0.8 and not valid_terms and semantics != "RECURRENCE":
         errors.append("confident_event_without_valid_term")
     if semantics == "SINGLE" and len(valid_terms) != 1:
         errors.append("single_semantics_term_count")
@@ -140,7 +156,10 @@ def validate_ai(result: dict, candidate_dates: set[str], title: str, visible_tex
         errors.append("multiple_semantics_term_count")
 
     today = datetime.now(timezone.utc).date().isoformat()
-    if valid_terms and max(t["date_to"] for t in valid_terms) < today:
+    if semantics == "RECURRENCE":
+        if recurrence_to and recurrence_to < today:
+            errors.append("historical_recurrence_only")
+    elif valid_terms and max(t["date_to"] for t in valid_terms) < today:
         errors.append("historical_term_only")
 
     nt = normalize(title + " " + visible_text[:5000])
@@ -181,7 +200,7 @@ def main() -> int:
             valid, validation_errors, clean = validate_ai(model_result, set(dates), finding["title"], visible)
             disposition = "AI_UNCERTAIN"
             if valid and clean.get("relevance") == "EVENT" and float(clean.get("confidence", 0)) >= 0.8:
-                disposition = "AI_EVENT_PROPOSAL"
+                disposition = "AI_RECURRENCE_PROPOSAL" if clean.get("term_semantics") == "RECURRENCE" else "AI_EVENT_PROPOSAL"
             elif valid and clean.get("relevance") == "NON_EVENT" and float(clean.get("confidence", 0)) >= 0.8:
                 disposition = "AI_NON_EVENT_PROPOSAL"
             elif not valid:
@@ -208,7 +227,7 @@ def main() -> int:
 
     print(json.dumps({
         "ok": safe,
-        "mode": "AI_ENRICHMENT_DRY_RUN_V5",
+        "mode": "AI_ENRICHMENT_DRY_RUN_V6_RECURRENCE",
         "model": MODEL,
         "api": "generateContent",
         "deterministic_findings_checked": len(deterministic),
@@ -225,6 +244,7 @@ def main() -> int:
             "publishes": False,
             "ai_can_only_use_dates_seen_in_source": True,
             "historical_only_proposals_rejected": True,
+            "recurrence_is_distinct_from_interval": True,
             "gemini_retries_enabled": True,
         },
     }, ensure_ascii=False, indent=2))
