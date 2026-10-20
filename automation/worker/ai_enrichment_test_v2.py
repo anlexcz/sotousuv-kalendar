@@ -50,7 +50,7 @@ SOURCE_TEXT:
         "generationConfig": {
             "responseFormat": {
                 "text": {
-                    "mimeType": "application/json",
+                    "mimeType": "APPLICATION_JSON",
                     "schema": SCHEMA,
                 }
             },
@@ -208,7 +208,7 @@ def main() -> int:
 
     print(json.dumps({
         "ok": safe,
-        "mode": "AI_ENRICHMENT_DRY_RUN_V4",
+        "mode": "AI_ENRICHMENT_DRY_RUN_V5",
         "model": MODEL,
         "api": "generateContent",
         "deterministic_findings_checked": len(deterministic),
