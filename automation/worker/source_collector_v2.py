@@ -11,7 +11,8 @@ import source_collector as base
 from structured_sources import parse_rss_atom
 
 COLLECTOR_VERSION = "v2"
-MAX_FEED_AGE_DAYS = int(os.environ.get("COLLECT_MAX_FEED_AGE_DAYS", "450"))
+MAX_FEED_AGE_DAYS = int(os.environ.get("COLLECT_MAX_FEED_AGE_DAYS", "180"))
+SOURCE_RECHECK_HOURS = int(os.environ.get("COLLECT_RECHECK_HOURS", "24"))
 FEED_SCAN_LIMIT = max(base.MAX_ITEMS_PER_SOURCE * 3, 30)
 
 _NAVIGATION_JUNK = (
@@ -23,6 +24,18 @@ _NAVIGATION_JUNK = (
     "fotografie z akce najdete",
     "více fotografií zde",
     "vice fotografii zde",
+)
+
+_OBVIOUS_NON_EVENT = (
+    "za námi",
+    "za nami",
+    "fotogalerie",
+    "dárkové poukazy",
+    "darkove poukazy",
+    "změna otevírací doby",
+    "zmena oteviraci doby",
+    "získalo podporu",
+    "ziskalo podporu",
 )
 
 
@@ -52,9 +65,25 @@ def _explicit_old_year(title: str) -> bool:
     years = [int(x) for x in re.findall(r"(?<!\d)(20\d{2})(?!\d)", title)]
     if not years:
         return False
-    # Keep current and previous year. Older explicit editions are not useful
-    # discovery candidates for the live calendar.
     return max(years) < datetime.now(timezone.utc).year - 1
+
+
+def _all_explicit_numeric_dates_are_past(title: str) -> bool:
+    matches = re.findall(r"(?<!\d)(\d{1,2})\.\s*(\d{1,2})\.\s*(20\d{2})(?!\d)", title)
+    if not matches:
+        return False
+    parsed = []
+    for d, m, y in matches:
+        try:
+            parsed.append(datetime(int(y), int(m), int(d), tzinfo=timezone.utc).date())
+        except ValueError:
+            pass
+    return bool(parsed) and max(parsed) < datetime.now(timezone.utc).date()
+
+
+def _obvious_non_event(title: str) -> bool:
+    normalized = " ".join(title.lower().split())
+    return any(phrase in normalized for phrase in _OBVIOUS_NON_EVENT)
 
 
 def _filter_feed_freshness(candidates):
@@ -68,6 +97,12 @@ def _filter_feed_freshness(candidates):
             continue
         if published is None and _explicit_old_year(candidate.title):
             rejected.append((candidate, "explicit_old_year"))
+            continue
+        if _all_explicit_numeric_dates_are_past(candidate.title):
+            rejected.append((candidate, "explicit_past_event_date"))
+            continue
+        if _obvious_non_event(candidate.title):
+            rejected.append((candidate, "obvious_non_event_title"))
             continue
         accepted.append(candidate)
     return accepted[: base.MAX_ITEMS_PER_SOURCE], rejected
@@ -99,6 +134,9 @@ def _fetch_rss_v2(row: dict[str, Any]) -> base.FetchResult:
     )
     raw = parse_rss_atom(text, url, limit=FEED_SCAN_LIMIT)
     accepted, rejected = _filter_feed_freshness(raw)
+    reasons: dict[str, int] = {}
+    for _candidate, reason in rejected:
+        reasons[reason] = reasons.get(reason, 0) + 1
     fetched = base.FetchResult(
         accepted,
         url,
@@ -110,7 +148,7 @@ def _fetch_rss_v2(row: dict[str, Any]) -> base.FetchResult:
         len(rejected),
     )
     fetched.prefilter_stats = {
-        "stale_or_old_year_rejected": len(rejected),
+        "rejected_by_reason": reasons,
         "feed_scan_limit": FEED_SCAN_LIMIT,
         "max_feed_age_days": MAX_FEED_AGE_DAYS,
     }
@@ -137,7 +175,7 @@ def persist_success_v2(d1, row: dict[str, Any], fetched: base.FetchResult) -> di
     source_id = str(row["source_id"])
     content_hash = hashlib.sha256(fetched.body.encode("utf-8", errors="replace")).hexdigest()
     request_id = f"collect:{COLLECTOR_VERSION}:{source_id}:{content_hash[:20]}"
-    next_check_at = (datetime.now(timezone.utc) + timedelta(days=7)).isoformat()
+    next_check_at = (datetime.now(timezone.utc) + timedelta(hours=SOURCE_RECHECK_HOURS)).isoformat()
 
     statements = []
     finding_ids = []
@@ -201,8 +239,6 @@ def persist_success_v2(d1, row: dict[str, Any], fetched: base.FetchResult) -> di
     }
 
 
-# Reuse the proven batch orchestration/safety guards but replace the two pieces
-# whose semantics changed in v2.
 base.fetch_source = fetch_source_v2
 base.persist_success = persist_success_v2
 
