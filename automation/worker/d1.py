@@ -29,11 +29,7 @@ class D1Adapter:
             f"/d1/database/{database_id}/query"
         )
 
-    def query(self, sql: str, params: Iterable[Any] | None = None) -> D1Result:
-        payload: dict[str, Any] = {"sql": sql}
-        if params is not None:
-            payload["params"] = list(params)
-
+    def _post(self, payload: dict[str, Any]) -> list[dict[str, Any]]:
         response = requests.post(
             self.base_url,
             headers={
@@ -49,13 +45,45 @@ class D1Adapter:
             raise RuntimeError(f"D1 API request failed: {body.get('errors')}")
 
         result = body.get("result") or []
+        for idx, item in enumerate(result):
+            if not item.get("success", False):
+                raise RuntimeError(f"D1 statement {idx} failed: {item}")
+        return result
+
+    def query(self, sql: str, params: Iterable[Any] | None = None) -> D1Result:
+        payload: dict[str, Any] = {"sql": sql}
+        if params is not None:
+            payload["params"] = list(params)
+
+        result = self._post(payload)
         if not result:
             return D1Result(rows=[], meta={})
 
         first = result[0]
-        if not first.get("success", False):
-            raise RuntimeError(f"D1 query failed: {first}")
         return D1Result(rows=first.get("results") or [], meta=first.get("meta") or {})
+
+    def batch(self, statements: list[tuple[str, Iterable[Any] | None]]) -> list[D1Result]:
+        """Execute statements as one D1 batch transaction.
+
+        D1 batch statements execute sequentially and are transactional: if one
+        statement fails, the entire batch is rolled back. This is the canonical
+        primitive for multi-table domain writes.
+        """
+        if not statements:
+            return []
+
+        batch_payload: list[dict[str, Any]] = []
+        for sql, params in statements:
+            item: dict[str, Any] = {"sql": sql}
+            if params is not None:
+                item["params"] = list(params)
+            batch_payload.append(item)
+
+        result = self._post({"batch": batch_payload})
+        return [
+            D1Result(rows=item.get("results") or [], meta=item.get("meta") or {})
+            for item in result
+        ]
 
     def health(self) -> dict[str, Any]:
         result = self.query(
@@ -75,12 +103,13 @@ class D1Adapter:
         statements: list[tuple[str, list[Any]]],
         actor: str = "worker",
     ) -> None:
-        """Apply a request at most once.
+        """Apply a domain mutation at most once and atomically.
 
-        This is intentionally conservative. The first production implementation should
-        execute the ledger reservation + domain mutation transactionally. D1 supports
-        multiple statements/batches; this method is a guardrail skeleton until the
-        repository layer for individual entities is implemented and tested.
+        A previously successful request is a no-op. For a new request, the request
+        ledger reservation, all domain statements, and SUCCESS completion are sent
+        in one D1 batch transaction. If any statement fails, none of them persist.
+        A retry after an ambiguous network failure is safe: if the first attempt
+        actually committed, the SUCCESS ledger row is found and the retry returns.
         """
         existing = self.query(
             "SELECT status FROM requests WHERE request_id = ? LIMIT 1",
@@ -91,24 +120,16 @@ class D1Adapter:
                 return
             raise RuntimeError(f"request_id {request_id} already exists with non-success status")
 
-        self.query(
-            "INSERT INTO requests (request_id, operation, entity_type, entity_id, status, started_at, actor) "
-            "VALUES (?, ?, ?, ?, 'STARTED', datetime('now'), ?)",
-            [request_id, operation, entity_type, entity_id, actor],
-        )
-        try:
-            for sql, params in statements:
-                self.query(sql, params)
-            self.query(
+        atomic_statements: list[tuple[str, Iterable[Any] | None]] = [
+            (
+                "INSERT INTO requests (request_id, operation, entity_type, entity_id, status, started_at, actor) "
+                "VALUES (?, ?, ?, ?, 'STARTED', datetime('now'), ?)",
+                [request_id, operation, entity_type, entity_id, actor],
+            ),
+            *statements,
+            (
                 "UPDATE requests SET status = 'SUCCESS', finished_at = datetime('now') WHERE request_id = ?",
                 [request_id],
-            )
-        except Exception as exc:
-            try:
-                self.query(
-                    "UPDATE requests SET status = 'FAILED', finished_at = datetime('now'), error = ? "
-                    "WHERE request_id = ?",
-                    [str(exc)[:2000], request_id],
-                )
-            finally:
-                raise
+            ),
+        ]
+        self.batch(atomic_statements)
