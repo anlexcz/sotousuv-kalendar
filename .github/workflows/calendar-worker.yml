@@ -12,6 +12,7 @@ on:
           - health
           - collect-batch
           - collect-source
+          - ai-free-test
           - event-registry
           - state-audit
           - export
@@ -21,6 +22,7 @@ on:
         type: string
   schedule:
     - cron: "17 * * * *"
+    - cron: "43 */4 * * *"
 
 permissions:
   contents: read
@@ -65,12 +67,24 @@ jobs:
           EVENT_REGISTRY_HTML_PATH: ../../data/event_registry.html
           COLLECT_BATCH_SIZE: 20
           COLLECT_MAX_ITEMS_PER_SOURCE: 10
-          COLLECT_MAX_FEED_AGE_DAYS: 450
+          COLLECT_MAX_FEED_AGE_DAYS: 180
+          COLLECT_RECHECK_HOURS: 24
+          AI_MODEL: gemini-3.5-flash-lite
+          AI_MAX_CASES: 1
+          AI_MAX_RETRIES: 1
+          AI_MAX_OUTPUT_TOKENS: 1000
+          AI_FREE_DAILY_LIMIT: 6
+          AI_FREE_SCAN_LIMIT: 25
         run: |
           COMMAND="${{ inputs.command }}"
+
           if [ "${{ github.event_name }}" = "schedule" ]; then
-            COMMAND="collect-batch"
-            export COLLECT_DUE_ONLY=1
+            if [ "${{ github.event.schedule }}" = "43 */4 * * *" ]; then
+              COMMAND="ai-free-test"
+            else
+              COMMAND="collect-batch"
+              export COLLECT_DUE_ONLY=1
+            fi
           fi
 
           if [ "$COMMAND" = "collect-batch" ]; then
@@ -82,6 +96,8 @@ jobs:
             fi
             export COLLECT_SOURCE_ID="${{ inputs.source_id }}"
             python source_collector_runner.py
+          elif [ "$COMMAND" = "ai-free-test" ]; then
+            python ai_free_tier_runner.py
           elif [ "$COMMAND" = "event-registry" ]; then
             python event_registry.py
             python event_registry_html.py
@@ -111,7 +127,7 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
-# Scheduled runs only collect sources whose next_check_at is due.
-# collect-source is intended for authenticated admin dispatch of one source.
+# Hourly schedule: source-only collection of due sources.
+# Every four hours: at most one Gemini 3.5 Flash Lite attempt, capped at six attempts/day in D1.
 # Neither path creates events or publishes anything.
-# Production event materialization and deploy remain disabled until separately approved.
+# Production event materialization remains disabled until separately approved.
