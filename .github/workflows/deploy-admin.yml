@@ -2,6 +2,12 @@ name: Deploy calendar admin
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "admin-worker/**"
+      - ".github/workflows/deploy-admin.yml"
 
 permissions:
   contents: read
@@ -28,7 +34,7 @@ jobs:
         run: |
           cat > wrangler.toml <<EOF
           name = "sotousuv-kalendar-admin"
-          main = "src/index.js"
+          main = "src/index_v2.js"
           compatibility_date = "2026-10-20"
           workers_dev = true
 
