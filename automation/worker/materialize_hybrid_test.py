@@ -5,6 +5,8 @@ import os
 import re
 from datetime import datetime, timezone
 
+import requests
+
 from ai_enrichment_test_v2 import call_gemini, validate_ai
 from detail_enrichment_test import build_d1, extract_dates, fetch_page
 from materialize_test import allocate_event_id, ensure_allocator, now_iso, q1
@@ -13,6 +15,7 @@ from resolver_test import infer_categories, load_findings
 ACTOR = "materialize-hybrid-test"
 MAX_EVENTS = 5
 TIME_RE = re.compile(r"(?<!\d)(?:[01]?\d|2[0-3])[:.]([0-5]\d)(?!\d)")
+RETRYABLE_HTTP = {429, 500, 502, 503, 504}
 
 
 def existing_by_origin(d1, finding_id: str):
@@ -28,15 +31,40 @@ def duplicate_by_title_date(d1, title: str, date_from: str):
     )
 
 
+def safe_fetch_page(detail_url: str):
+    try:
+        response, html, visible = fetch_page(detail_url)
+        return response, html, visible, None
+    except requests.HTTPError as exc:
+        status = exc.response.status_code if exc.response is not None else None
+        if status in {404, 410}:
+            code = f"SKIPPED_HTTP_{status}"
+        elif status in RETRYABLE_HTTP:
+            code = "SKIPPED_HTTP_RETRYABLE"
+        else:
+            code = "SKIPPED_HTTP_ERROR"
+        return None, None, None, {
+            "status": code,
+            "http_status": status,
+            "retryable": status in RETRYABLE_HTTP if status is not None else False,
+        }
+    except requests.RequestException as exc:
+        return None, None, None, {
+            "status": "SKIPPED_FETCH_ERROR",
+            "error": str(exc)[:500],
+            "retryable": True,
+        }
+
+
 def ai_candidate(api_key: str, finding: dict) -> dict:
     title = (finding.get("title") or "").strip()
     detail_url = finding.get("detail_url")
     if not title or not detail_url:
         return {"status": "SKIPPED_MISSING_REQUIRED_DATA"}
 
-    response, _html, visible = fetch_page(detail_url)
-    if response.status_code != 200:
-        return {"status": "SKIPPED_HTTP", "http_status": response.status_code}
+    response, _html, visible, fetch_error = safe_fetch_page(detail_url)
+    if fetch_error:
+        return fetch_error
 
     dates = sorted({x["date"] for x in extract_dates(title + " " + visible)})
     if not dates:
@@ -77,9 +105,9 @@ def deterministic_candidate(finding: dict) -> dict:
     if not title or not date_from or not detail_url:
         return {"status": "NOT_DETERMINISTIC_READY"}
 
-    response, _html, visible = fetch_page(detail_url)
-    if response.status_code != 200:
-        return {"status": "SKIPPED_HTTP", "http_status": response.status_code}
+    response, _html, visible, fetch_error = safe_fetch_page(detail_url)
+    if fetch_error:
+        return fetch_error
 
     seen_dates = {x["date"] for x in extract_dates(title + " " + visible)}
     if date_from not in seen_dates or date_to not in seen_dates:
@@ -209,19 +237,28 @@ def main() -> int:
     for finding in load_findings(d1):
         if materialized >= MAX_EVENTS:
             break
-        det = deterministic_candidate(finding)
-        candidate = det
-        if det.get("status") == "NOT_DETERMINISTIC_READY":
-            candidate = ai_candidate(api_key, finding)
 
-        if candidate.get("status") not in {"READY_DETERMINISTIC", "READY_AI"}:
-            results.append({"finding_id": finding["finding_id"], **candidate})
+        try:
+            det = deterministic_candidate(finding)
+            candidate = det
+            if det.get("status") == "NOT_DETERMINISTIC_READY":
+                candidate = ai_candidate(api_key, finding)
+
+            if candidate.get("status") not in {"READY_DETERMINISTIC", "READY_AI"}:
+                results.append({"finding_id": finding["finding_id"], **candidate})
+                continue
+
+            result = materialize_one(d1, finding, candidate)
+            results.append(result)
+            if result.get("status") == "MATERIALIZED":
+                materialized += 1
+        except Exception as exc:
+            results.append({
+                "finding_id": finding.get("finding_id"),
+                "status": "SKIPPED_UNEXPECTED_ERROR",
+                "error": str(exc)[:800],
+            })
             continue
-
-        result = materialize_one(d1, finding, candidate)
-        results.append(result)
-        if result.get("status") == "MATERIALIZED":
-            materialized += 1
 
     after_count = int(q1(d1, "SELECT COUNT(*) AS c FROM events")["c"])
     if after_count - before_count != materialized:
@@ -236,7 +273,7 @@ def main() -> int:
 
     print(json.dumps({
         "ok": True,
-        "mode": "MATERIALIZE_HYBRID_TEST_WRITE",
+        "mode": "MATERIALIZE_HYBRID_TEST_WRITE_V2",
         "max_events": MAX_EVENTS,
         "materialized_count": materialized,
         "events_before": before_count,
@@ -251,6 +288,7 @@ def main() -> int:
             "production_status": settings.get("production_status"),
             "all_day_ne_requires_explicit_clock_time": True,
             "ai_dates_must_exist_in_source": True,
+            "per_finding_http_errors_do_not_abort_batch": True,
             "all_materialized_rows_read_back_verified": all(r.get("read_back_verified") is True for r in results if r.get("status") == "MATERIALIZED"),
             "batch_count_verified": True,
         },
