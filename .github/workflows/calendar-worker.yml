@@ -24,6 +24,7 @@ on:
           - materialize-test
           - materialize-batch-test
           - materialize-hybrid-test
+          - recurrence-test
           - state-audit-test
           - atomicity-test
 
@@ -89,7 +90,9 @@ jobs:
           elif [ "${{ inputs.command }}" = "materialize-batch-test" ]; then
             python materialize_batch_test.py
           elif [ "${{ inputs.command }}" = "materialize-hybrid-test" ]; then
-            python materialize_hybrid_test.py
+            python materialize_hybrid_test_v3.py
+          elif [ "${{ inputs.command }}" = "recurrence-test" ]; then
+            python recurrence_test.py
           elif [ "${{ inputs.command }}" = "state-audit-test" ]; then
             python state_audit_test.py
           elif [ "${{ inputs.command }}" = "atomicity-test" ]; then
