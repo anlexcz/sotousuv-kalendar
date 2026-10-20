@@ -54,9 +54,11 @@ jobs:
           CALENDAR_TIMEZONE: Europe/Prague
           PUBLIC_EXPORT_PATH: ../../data/events.json
           EVENT_REGISTRY_PATH: ../../data/event_registry.json
+          EVENT_REGISTRY_HTML_PATH: ../../data/event_registry.html
         run: |
           if [ "${{ inputs.command }}" = "event-registry" ]; then
             python event_registry.py
+            python event_registry_html.py
           elif [ "${{ inputs.command }}" = "state-audit" ]; then
             python state_audit_test.py
           else
@@ -68,7 +70,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: sotousuv-kalendar-event-registry
-          path: data/event_registry.json
+          path: |
+            data/event_registry.json
+            data/event_registry.html
           if-no-files-found: error
           retention-days: 14
 
