@@ -9,10 +9,21 @@ import requests
 
 from d1 import D1Adapter
 from detail_enrichment_test import build_d1, classify, extract_dates, fetch_page, load_findings, normalize
-from ai_enrichment_test import API_URL, MODEL, SCHEMA, ALLOWED_CATEGORIES, extract_output_text
+from ai_enrichment_test import SCHEMA, ALLOWED_CATEGORIES
 
+MODEL = "gemini-3.5-flash-lite"
+API_URL = f"https://generativelanguage.googleapis.com/v1beta/models/{MODEL}:generateContent"
 MAX_AI_CASES = 8
 RETRYABLE_STATUS = {429, 500, 502, 503, 504}
+
+
+def extract_generate_content_text(payload: dict) -> str:
+    for candidate in payload.get("candidates", []) or []:
+        content = candidate.get("content") or {}
+        for part in content.get("parts", []) or []:
+            if isinstance(part, dict) and isinstance(part.get("text"), str):
+                return part["text"]
+    raise RuntimeError("Gemini generateContent response did not contain text output")
 
 
 def call_gemini(api_key: str, title: str, url: str, visible_text: str, candidate_dates: list[str]) -> dict:
@@ -32,26 +43,30 @@ URL: {url}
 CANDIDATE_DATES: {json.dumps(candidate_dates, ensure_ascii=False)}
 
 SOURCE_TEXT:
-{visible_text[:12000]}
+{visible_text[:10000]}
 """
     body = {
-        "model": MODEL,
-        "input": prompt,
-        "response_format": {"type": "text", "mime_type": "application/json", "schema": SCHEMA},
+        "contents": [{"parts": [{"text": prompt}]}],
+        "generationConfig": {
+            "responseMimeType": "application/json",
+            "responseSchema": SCHEMA,
+            "maxOutputTokens": 1200,
+        },
     }
+
     last_exc: Exception | None = None
-    for attempt in range(3):
+    for attempt in range(2):
         try:
             response = requests.post(
                 API_URL,
                 headers={"x-goog-api-key": api_key, "Content-Type": "application/json"},
                 json=body,
-                timeout=45,
+                timeout=30,
             )
             if response.status_code in RETRYABLE_STATUS:
                 raise requests.HTTPError(f"retryable HTTP {response.status_code}", response=response)
             response.raise_for_status()
-            return json.loads(extract_output_text(response.json()))
+            return json.loads(extract_generate_content_text(response.json()))
         except (requests.Timeout, requests.ConnectionError, requests.HTTPError) as exc:
             last_exc = exc
             retryable = isinstance(exc, (requests.Timeout, requests.ConnectionError)) or (
@@ -59,9 +74,9 @@ SOURCE_TEXT:
                 and exc.response is not None
                 and exc.response.status_code in RETRYABLE_STATUS
             )
-            if not retryable or attempt == 2:
+            if not retryable or attempt == 1:
                 raise
-            time.sleep(2 ** attempt)
+            time.sleep(2)
     raise last_exc or RuntimeError("Gemini request failed")
 
 
@@ -160,9 +175,16 @@ def main() -> int:
                 disposition = "AI_NON_EVENT_PROPOSAL"
             elif not valid:
                 disposition = "AI_REJECTED_BY_VALIDATOR"
-            ai_cases.append({**finding, "candidate_dates": dates, "ai_status": disposition,
-                             "validation_ok": valid, "validation_errors": validation_errors,
-                             "ai": clean, "http_status": response.status_code, "final_url": response.url})
+            ai_cases.append({
+                **finding,
+                "candidate_dates": dates,
+                "ai_status": disposition,
+                "validation_ok": valid,
+                "validation_errors": validation_errors,
+                "ai": clean,
+                "http_status": response.status_code,
+                "final_url": response.url,
+            })
         except Exception as exc:
             ai_cases.append({**finding, "ai_status": "AI_ERROR", "error": str(exc)[:800]})
 
@@ -175,8 +197,9 @@ def main() -> int:
 
     print(json.dumps({
         "ok": safe,
-        "mode": "AI_ENRICHMENT_DRY_RUN_V2",
+        "mode": "AI_ENRICHMENT_DRY_RUN_V3",
         "model": MODEL,
+        "api": "generateContent",
         "deterministic_findings_checked": len(deterministic),
         "ai_cases": len(ai_cases),
         "ai_status_counts": counts,
