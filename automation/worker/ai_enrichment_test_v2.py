@@ -11,9 +11,11 @@ from d1 import D1Adapter
 from detail_enrichment_test import build_d1, classify, extract_dates, fetch_page, load_findings, normalize
 from ai_enrichment_test import SCHEMA, ALLOWED_CATEGORIES, ALLOWED_RECURRENCE
 
-MODEL = "gemini-3.5-flash-lite"
+MODEL = os.environ.get("AI_MODEL", "gemini-3.5-flash-lite").strip() or "gemini-3.5-flash-lite"
 API_URL = f"https://generativelanguage.googleapis.com/v1beta/models/{MODEL}:generateContent"
-MAX_AI_CASES = 8
+MAX_AI_CASES = int(os.environ.get("AI_MAX_CASES", "8"))
+MAX_AI_RETRIES = max(1, int(os.environ.get("AI_MAX_RETRIES", "2")))
+MAX_OUTPUT_TOKENS = int(os.environ.get("AI_MAX_OUTPUT_TOKENS", "1000"))
 RETRYABLE_STATUS = {429, 500, 502, 503, 504}
 
 
@@ -55,12 +57,12 @@ SOURCE_TEXT:
                     "schema": SCHEMA,
                 }
             },
-            "maxOutputTokens": 1400,
+            "maxOutputTokens": MAX_OUTPUT_TOKENS,
         },
     }
 
     last_exc: Exception | None = None
-    for attempt in range(2):
+    for attempt in range(MAX_AI_RETRIES):
         try:
             response = requests.post(
                 API_URL,
@@ -86,9 +88,9 @@ SOURCE_TEXT:
                 and exc.response is not None
                 and exc.response.status_code in RETRYABLE_STATUS
             )
-            if not retryable or attempt == 1:
+            if not retryable or attempt == MAX_AI_RETRIES - 1:
                 raise
-            time.sleep(2)
+            time.sleep(min(8, 2 ** (attempt + 1)))
     raise last_exc or RuntimeError("Gemini request failed")
 
 
@@ -245,7 +247,10 @@ def main() -> int:
             "ai_can_only_use_dates_seen_in_source": True,
             "historical_only_proposals_rejected": True,
             "recurrence_is_distinct_from_interval": True,
-            "gemini_retries_enabled": True,
+            "gemini_retries_enabled": MAX_AI_RETRIES > 1,
+            "max_ai_cases": MAX_AI_CASES,
+            "max_ai_retries": MAX_AI_RETRIES,
+            "max_output_tokens": MAX_OUTPUT_TOKENS,
         },
     }, ensure_ascii=False, indent=2))
     return 0 if safe else 17
