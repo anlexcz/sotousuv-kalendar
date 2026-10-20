@@ -46,10 +46,14 @@ SOURCE_TEXT:
 {visible_text[:10000]}
 """
     body = {
-        "contents": [{"parts": [{"text": prompt}]}],
+        "contents": [{"role": "user", "parts": [{"text": prompt}]}],
         "generationConfig": {
-            "responseMimeType": "application/json",
-            "responseSchema": SCHEMA,
+            "responseFormat": {
+                "text": {
+                    "mimeType": "application/json",
+                    "schema": SCHEMA,
+                }
+            },
             "maxOutputTokens": 1200,
         },
     }
@@ -64,8 +68,15 @@ SOURCE_TEXT:
                 timeout=30,
             )
             if response.status_code in RETRYABLE_STATUS:
-                raise requests.HTTPError(f"retryable HTTP {response.status_code}", response=response)
-            response.raise_for_status()
+                detail = response.text[:1000]
+                raise requests.HTTPError(
+                    f"retryable HTTP {response.status_code}: {detail}",
+                    response=response,
+                )
+            if not response.ok:
+                raise RuntimeError(
+                    f"Gemini HTTP {response.status_code}: {response.text[:1200]}"
+                )
             return json.loads(extract_generate_content_text(response.json()))
         except (requests.Timeout, requests.ConnectionError, requests.HTTPError) as exc:
             last_exc = exc
@@ -186,7 +197,7 @@ def main() -> int:
                 "final_url": response.url,
             })
         except Exception as exc:
-            ai_cases.append({**finding, "ai_status": "AI_ERROR", "error": str(exc)[:800]})
+            ai_cases.append({**finding, "ai_status": "AI_ERROR", "error": str(exc)[:1200]})
 
     after_events = int(d1.query("SELECT COUNT(*) AS count FROM events").rows[0]["count"])
     safe = settings.get("event_creation_enabled") == "NE" and settings.get("scheduler_enabled") == "NE" and before_events == after_events
@@ -197,7 +208,7 @@ def main() -> int:
 
     print(json.dumps({
         "ok": safe,
-        "mode": "AI_ENRICHMENT_DRY_RUN_V3",
+        "mode": "AI_ENRICHMENT_DRY_RUN_V4",
         "model": MODEL,
         "api": "generateContent",
         "deterministic_findings_checked": len(deterministic),
