@@ -10,25 +10,9 @@ on:
         type: choice
         options:
           - health
+          - event-registry
+          - state-audit
           - export
-          - smoke-test
-          - source-test
-          - source-parse-test
-          - audit-sources
-          - import-sources
-          - structured-source-test
-          - wp-html-source-test
-          - resolver-test
-          - detail-enrichment-test
-          - ai-enrichment-test
-          - materialize-test
-          - materialize-batch-test
-          - materialize-hybrid-test
-          - recurrence-test
-          - recurrence-expand-test
-          - recurrence-apply-test
-          - state-audit-test
-          - atomicity-test
 
 permissions:
   contents: read
@@ -69,43 +53,24 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.CALENDAR_GEMINI_API_KEY }}
           CALENDAR_TIMEZONE: Europe/Prague
           PUBLIC_EXPORT_PATH: ../../data/events.json
+          EVENT_REGISTRY_PATH: ../../data/event_registry.json
         run: |
-          if [ "${{ inputs.command }}" = "audit-sources" ]; then
-            python source_audit/audit_sources.py
-            python source_audit/build_registry.py
-          elif [ "${{ inputs.command }}" = "import-sources" ]; then
-            python source_audit/audit_sources.py
-            python source_audit/build_registry.py
-            python source_audit/import_registry.py
-          elif [ "${{ inputs.command }}" = "structured-source-test" ]; then
-            python structured_source_test.py
-          elif [ "${{ inputs.command }}" = "wp-html-source-test" ]; then
-            python wp_html_source_test.py
-          elif [ "${{ inputs.command }}" = "resolver-test" ]; then
-            python resolver_test.py
-          elif [ "${{ inputs.command }}" = "detail-enrichment-test" ]; then
-            python detail_enrichment_test.py
-          elif [ "${{ inputs.command }}" = "ai-enrichment-test" ]; then
-            python ai_enrichment_test_v2.py
-          elif [ "${{ inputs.command }}" = "materialize-test" ]; then
-            python materialize_test.py
-          elif [ "${{ inputs.command }}" = "materialize-batch-test" ]; then
-            python materialize_batch_test.py
-          elif [ "${{ inputs.command }}" = "materialize-hybrid-test" ]; then
-            python materialize_hybrid_test_v3.py
-          elif [ "${{ inputs.command }}" = "recurrence-test" ]; then
-            python recurrence_test.py
-          elif [ "${{ inputs.command }}" = "recurrence-expand-test" ]; then
-            python recurrence_expand_test.py
-          elif [ "${{ inputs.command }}" = "recurrence-apply-test" ]; then
-            python recurrence_apply_test.py
-          elif [ "${{ inputs.command }}" = "state-audit-test" ]; then
+          if [ "${{ inputs.command }}" = "event-registry" ]; then
+            python event_registry.py
+          elif [ "${{ inputs.command }}" = "state-audit" ]; then
             python state_audit_test.py
-          elif [ "${{ inputs.command }}" = "atomicity-test" ]; then
-            python atomicity_test.py
           else
             python main.py "${{ inputs.command }}"
           fi
+
+      - name: Upload event registry artifact
+        if: ${{ inputs.command == 'event-registry' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: sotousuv-kalendar-event-registry
+          path: data/event_registry.json
+          if-no-files-found: error
+          retention-days: 14
 
       - name: Upload public export artifact
         if: ${{ inputs.command == 'export' }}
@@ -116,14 +81,6 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
-      - name: Upload source audit artifact
-        if: ${{ inputs.command == 'audit-sources' || inputs.command == 'import-sources' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: sotousuv-kalendar-source-audit
-          path: automation/worker/audit_output/
-          if-no-files-found: error
-          retention-days: 14
-
 # Intentionally no schedule/cron yet.
+# Test and migration scripts remain in the repository but are not exposed in the normal UI.
 # Production scheduling and deploy to custom hosting require explicit approval.
