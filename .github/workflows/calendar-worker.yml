@@ -11,9 +11,16 @@ on:
         options:
           - health
           - collect-batch
+          - collect-source
           - event-registry
           - state-audit
           - export
+      source_id:
+        description: Source ID for collect-source (for example SRC-LEGACY-031)
+        required: false
+        type: string
+  schedule:
+    - cron: "17 * * * *"
 
 permissions:
   contents: read
@@ -60,19 +67,32 @@ jobs:
           COLLECT_MAX_ITEMS_PER_SOURCE: 10
           COLLECT_MAX_FEED_AGE_DAYS: 450
         run: |
-          if [ "${{ inputs.command }}" = "collect-batch" ]; then
-            python source_collector_v2.py
-          elif [ "${{ inputs.command }}" = "event-registry" ]; then
+          COMMAND="${{ inputs.command }}"
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            COMMAND="collect-batch"
+            export COLLECT_DUE_ONLY=1
+          fi
+
+          if [ "$COMMAND" = "collect-batch" ]; then
+            python source_collector_runner.py
+          elif [ "$COMMAND" = "collect-source" ]; then
+            if [ -z "${{ inputs.source_id }}" ]; then
+              echo "source_id is required for collect-source" >&2
+              exit 2
+            fi
+            export COLLECT_SOURCE_ID="${{ inputs.source_id }}"
+            python source_collector_runner.py
+          elif [ "$COMMAND" = "event-registry" ]; then
             python event_registry.py
             python event_registry_html.py
-          elif [ "${{ inputs.command }}" = "state-audit" ]; then
+          elif [ "$COMMAND" = "state-audit" ]; then
             python state_audit_test.py
           else
-            python main.py "${{ inputs.command }}"
+            python main.py "$COMMAND"
           fi
 
       - name: Upload event registry artifact
-        if: ${{ inputs.command == 'event-registry' }}
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.command == 'event-registry' }}
         uses: actions/upload-artifact@v4
         with:
           name: sotousuv-kalendar-event-registry
@@ -83,7 +103,7 @@ jobs:
           retention-days: 14
 
       - name: Upload public export artifact
-        if: ${{ inputs.command == 'export' }}
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.command == 'export' }}
         uses: actions/upload-artifact@v4
         with:
           name: sotousuv-kalendar-public-export
@@ -91,7 +111,7 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
-# Intentionally no schedule/cron yet.
-# collect-batch is manual-only discovery: it may update sources/findings/observations,
-# but it does not create events or publish anything.
-# Production scheduling and deploy to custom hosting require explicit approval.
+# Scheduled runs only collect sources whose next_check_at is due.
+# collect-source is intended for authenticated admin dispatch of one source.
+# Neither path creates events or publishes anything.
+# Production event materialization and deploy remain disabled until separately approved.
