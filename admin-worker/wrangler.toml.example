@@ -1,0 +1,9 @@
+name = "sotousuv-kalendar-admin"
+main = "src/index.js"
+compatibility_date = "2026-10-20"
+workers_dev = true
+
+[[d1_databases]]
+binding = "DB"
+database_name = "sotousuv-kalendar"
+database_id = "PUT_D1_DATABASE_ID_HERE"
