@@ -26,6 +26,7 @@ on:
           - materialize-hybrid-test
           - recurrence-test
           - recurrence-expand-test
+          - recurrence-apply-test
           - state-audit-test
           - atomicity-test
 
@@ -96,6 +97,8 @@ jobs:
             python recurrence_test.py
           elif [ "${{ inputs.command }}" = "recurrence-expand-test" ]; then
             python recurrence_expand_test.py
+          elif [ "${{ inputs.command }}" = "recurrence-apply-test" ]; then
+            python recurrence_apply_test.py
           elif [ "${{ inputs.command }}" = "state-audit-test" ]; then
             python state_audit_test.py
           elif [ "${{ inputs.command }}" = "atomicity-test" ]; then
