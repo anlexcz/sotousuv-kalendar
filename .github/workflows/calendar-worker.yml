@@ -58,9 +58,10 @@ jobs:
           EVENT_REGISTRY_HTML_PATH: ../../data/event_registry.html
           COLLECT_BATCH_SIZE: 20
           COLLECT_MAX_ITEMS_PER_SOURCE: 10
+          COLLECT_MAX_FEED_AGE_DAYS: 450
         run: |
           if [ "${{ inputs.command }}" = "collect-batch" ]; then
-            python source_collector.py
+            python source_collector_v2.py
           elif [ "${{ inputs.command }}" = "event-registry" ]; then
             python event_registry.py
             python event_registry_html.py
