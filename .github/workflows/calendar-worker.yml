@@ -24,6 +24,7 @@ on:
           - materialize-test
           - materialize-batch-test
           - materialize-hybrid-test
+          - state-audit-test
 
 permissions:
   contents: read
@@ -88,6 +89,8 @@ jobs:
             python materialize_batch_test.py
           elif [ "${{ inputs.command }}" = "materialize-hybrid-test" ]; then
             python materialize_hybrid_test.py
+          elif [ "${{ inputs.command }}" = "state-audit-test" ]; then
+            python state_audit_test.py
           else
             python main.py "${{ inputs.command }}"
           fi
