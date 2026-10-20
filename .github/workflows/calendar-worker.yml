@@ -23,6 +23,7 @@ on:
           - ai-enrichment-test
           - materialize-test
           - materialize-batch-test
+          - materialize-hybrid-test
 
 permissions:
   contents: read
@@ -85,6 +86,8 @@ jobs:
             python materialize_test.py
           elif [ "${{ inputs.command }}" = "materialize-batch-test" ]; then
             python materialize_batch_test.py
+          elif [ "${{ inputs.command }}" = "materialize-hybrid-test" ]; then
+            python materialize_hybrid_test.py
           else
             python main.py "${{ inputs.command }}"
           fi
