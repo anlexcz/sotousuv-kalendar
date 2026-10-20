@@ -367,8 +367,12 @@ def main() -> int:
                 }
             )
             d1.query(
-                "UPDATE sources SET last_checked_at=? WHERE source_id=?",
-                [datetime.now(timezone.utc).isoformat(), row["source_id"]],
+                "UPDATE sources SET last_checked_at=?,next_check_at=? WHERE source_id=?",
+                [
+                    datetime.now(timezone.utc).isoformat(),
+                    (datetime.now(timezone.utc) + timedelta(days=7)).isoformat(),
+                    row["source_id"],
+                ],
             )
             continue
         try:
@@ -386,9 +390,13 @@ def main() -> int:
         and settings.get("production_status") == "DISABLED"
     )
 
+    due_only = os.environ.get("COLLECT_DUE_ONLY", "").strip().lower() in {"1", "true", "ano", "yes"}
+    one_source = bool(os.environ.get("COLLECT_SOURCE_ID", "").strip())
+    mode = "COLLECT_SOURCE_MANUAL" if one_source else ("COLLECT_BATCH_SCHEDULED" if due_only else "COLLECT_BATCH_MANUAL")
+
     output = {
         "ok": safe,
-        "mode": "COLLECT_BATCH_MANUAL",
+        "mode": mode,
         "batch_size": BATCH_SIZE,
         "sources_selected": len(rows),
         "sources_succeeded": len(successes),
@@ -411,7 +419,8 @@ def main() -> int:
             "scheduler_enabled": settings.get("scheduler_enabled"),
             "production_status": settings.get("production_status"),
             "source_writes_atomic_on_success": True,
-            "manual_only": True,
+            "manual_only": not due_only,
+            "scheduled_source_collection": due_only,
         },
     }
     print(json.dumps(output, ensure_ascii=False, indent=2))
